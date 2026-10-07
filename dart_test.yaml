@@ -1,0 +1,4 @@
+tags:
+  # Pixel comparisons of screens; font rasterization differs between
+  # platforms, so regenerate goldens on the machine that checks them.
+  golden: {}

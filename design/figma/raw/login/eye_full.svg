@@ -1,0 +1,22 @@
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="20" height="20" fill="#323232"/>
+<g id="Registration">
+<rect width="2424" height="2029" transform="translate(-910 -506.333)" fill="#5A5A5A"/>
+<g id="Screen-Login">
+<rect x="-330" y="-363.333" width="390" height="844" rx="40" fill="#FAFAF7"/>
+<g id="Content">
+<g id="Form">
+<g id="Field-Password">
+<g id="InputContainer">
+<rect x="-306" y="-15" width="342" height="50" rx="12" fill="#1A1A1A" fill-opacity="0.0509804"/>
+<rect x="-305.5" y="-14.5" width="341" height="49" rx="11.5" stroke="#1A1A1A" stroke-opacity="0.101961"/>
+<g id="eye">
+<path id="Vector" d="M1.7181 9.71079C1.64865 9.89788 1.64865 10.1037 1.7181 10.2908C2.39452 11.9309 3.5427 13.3333 5.01708 14.32C6.49146 15.3068 8.22564 15.8336 9.99977 15.8336C11.7739 15.8336 13.5081 15.3068 14.9825 14.32C16.4568 13.3333 17.605 11.9309 18.2814 10.2908C18.3509 10.1037 18.3509 9.89788 18.2814 9.71079C17.605 8.07067 16.4568 6.66832 14.9825 5.68154C13.5081 4.69475 11.7739 4.16797 9.99977 4.16797C8.22564 4.16797 6.49146 4.69475 5.01708 5.68154C3.5427 6.66832 2.39452 8.07067 1.7181 9.71079Z" stroke="#807A87" stroke-width="2" stroke-linecap="round"/>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</g>
+</svg>
