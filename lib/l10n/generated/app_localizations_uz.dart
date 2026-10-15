@@ -245,6 +245,52 @@ class AppLocalizationsUz extends AppLocalizations {
   String get tabProfile => 'Profil';
 
   @override
+  String get postOutfitDetails => 'Obraz tafsilotlari';
+
+  @override
+  String get postSimilar => 'Oʻxshash';
+
+  @override
+  String get postShop => 'Xarid';
+
+  @override
+  String get postAddToWardrobe => 'Garderobga';
+
+  @override
+  String get postSeeLooks => 'Obrazlar';
+
+  @override
+  String get postSave => 'Saqlash';
+
+  @override
+  String postStyledCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count kishi buni kiygan',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get postLike => 'Yoqdi';
+
+  @override
+  String get postComments => 'Izohlar';
+
+  @override
+  String get postShare => 'Ulashish';
+
+  @override
+  String get postMore => 'Yana';
+
+  @override
+  String get signInToInteract => 'Postlarni yoqtirish va saqlash uchun kiring.';
+
+  @override
+  String get errorPostNotFound => 'Bu post endi mavjud emas.';
+
+  @override
   String get profilePlaceholderTitle => 'Profilingiz tez orada paydo boʻladi';
 
   @override

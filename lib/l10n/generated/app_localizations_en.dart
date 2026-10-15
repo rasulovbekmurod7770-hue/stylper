@@ -244,6 +244,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tabProfile => 'Profile';
 
   @override
+  String get postOutfitDetails => 'Outfit details';
+
+  @override
+  String get postSimilar => 'Similar';
+
+  @override
+  String get postShop => 'Shop';
+
+  @override
+  String get postAddToWardrobe => 'Add to wardrobe';
+
+  @override
+  String get postSeeLooks => 'See looks';
+
+  @override
+  String get postSave => 'Save';
+
+  @override
+  String postStyledCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count people styled this',
+      one: '1 person styled this',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get postLike => 'Like';
+
+  @override
+  String get postComments => 'Comments';
+
+  @override
+  String get postShare => 'Share';
+
+  @override
+  String get postMore => 'More';
+
+  @override
+  String get signInToInteract => 'Sign in to like and save posts.';
+
+  @override
+  String get errorPostNotFound => 'This post is no longer available.';
+
+  @override
   String get profilePlaceholderTitle => 'Your profile is coming soon';
 
   @override

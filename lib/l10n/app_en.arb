@@ -116,6 +116,23 @@
   "tabExplore": "Explore",
   "tabProfile": "Profile",
 
+  "postOutfitDetails": "Outfit details",
+  "postSimilar": "Similar",
+  "postShop": "Shop",
+  "postAddToWardrobe": "Add to wardrobe",
+  "postSeeLooks": "See looks",
+  "postSave": "Save",
+  "postStyledCount": "{count, plural, =1{1 person styled this} other{{count} people styled this}}",
+  "@postStyledCount": {
+    "placeholders": { "count": { "type": "int" } }
+  },
+  "postLike": "Like",
+  "postComments": "Comments",
+  "postShare": "Share",
+  "postMore": "More",
+  "signInToInteract": "Sign in to like and save posts.",
+  "errorPostNotFound": "This post is no longer available.",
+
   "profilePlaceholderTitle": "Your profile is coming soon",
   "profileGuestMessage": "You're browsing as a guest.",
   "profileSignedInMessage": "Signed in as {name}",

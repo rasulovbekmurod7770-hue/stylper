@@ -5,6 +5,7 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:stylper/core/error/exceptions.dart';
 import 'package:stylper/core/fake_backend/fake_backend.dart';
+import 'package:stylper/core/network/auth_token_store.dart';
 import 'package:stylper/core/usecase/usecase.dart';
 import 'package:stylper/features/home/data/datasources/home_remote_data_source.dart';
 import 'package:stylper/features/home/data/repositories/home_repository_impl.dart';
@@ -17,35 +18,43 @@ class _MockRemote extends Mock implements HomeRemoteDataSource {}
 
 class _MockGetHomeFeed extends Mock implements GetHomeFeed {}
 
+HomeRepositoryImpl _repository() => HomeRepositoryImpl(
+  remote: FakeHomeRemoteDataSource(
+    FakeBackend(latency: Duration.zero),
+    InMemoryAuthTokenStore(),
+  ),
+);
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('HomeRepositoryImpl', () {
     test('parses the fake backend feed', () async {
-      final repository = HomeRepositoryImpl(
-        remote: FakeHomeRemoteDataSource(FakeBackend(latency: Duration.zero)),
-      );
-
-      final feed = (await repository.getHomeFeed()).getOrElse(
+      final feed = (await _repository().getHomeFeed()).getOrElse(
         (failure) => throw StateError('$failure'),
       );
 
       expect(feed.city, 'Tashkent');
-      expect(feed.featured.map((p) => p.author.name), [
-        'Mina Cho',
-        'Fozil Can Fly',
-        'Bob',
+      expect(feed.styles, ['Casual', 'Minimal', 'Street']);
+      expect(feed.featured.first.author.name, 'Mina Cho');
+      expect(feed.featured.first.engagement.likeCount, 1248);
+      expect(feed.featured.first.engagement.liked, isFalse);
+      for (final style in feed.styles) {
+        expect(feed.featuredIn(style), hasLength(2), reason: style);
+      }
+      expect(feed.featuredIn('Minimal').map((p) => p.id), [
+        'post_bobur',
+        'post_soft_neutrals',
       ]);
-      expect(feed.featured.first.likeCount, 1248);
       expect(feed.peopleWearing.map((p) => p.name), ['Sofia', 'Leo', 'Amin']);
       expect(feed.trending, hasLength(4));
       expect(feed.trending.last.caption, 'I like my Outfit');
     });
 
     test('every feed image is bundled', () async {
-      final feed = (await HomeRepositoryImpl(
-        remote: FakeHomeRemoteDataSource(FakeBackend(latency: Duration.zero)),
-      ).getHomeFeed()).getOrElse((failure) => throw StateError('$failure'));
+      final feed = (await _repository().getHomeFeed()).getOrElse(
+        (failure) => throw StateError('$failure'),
+      );
       final paths = {
         for (final post in feed.featured) ...[
           post.imagePath,
@@ -85,6 +94,7 @@ void main() {
   group('HomeFeedCubit', () {
     const feed = HomeFeed(
       city: 'Tashkent',
+      styles: ['Casual', 'Street'],
       featured: [],
       peopleWearing: [],
       trending: [],
@@ -124,6 +134,33 @@ void main() {
           failure: failure,
         ),
       ],
+    );
+
+    test('the first style is selected until another is chosen', () {
+      final cubit = HomeFeedCubit(getHomeFeed)
+        ..emit(const HomeFeedState(status: HomeFeedStatus.ready, feed: feed));
+      expect(cubit.state.style, 'Casual');
+
+      cubit.selectStyle('Street');
+      expect(cubit.state.style, 'Street');
+
+      cubit.selectStyle('Unknown');
+      expect(cubit.state.style, 'Street', reason: 'not offered by the feed');
+    });
+
+    blocTest<HomeFeedCubit, HomeFeedState>(
+      'a refresh keeps the chosen style',
+      setUp: () =>
+          when(() => getHomeFeed(any()))
+              .thenAnswer((_) async => const Right(feed)),
+      build: () => HomeFeedCubit(getHomeFeed),
+      seed: () => const HomeFeedState(
+        status: HomeFeedStatus.ready,
+        feed: feed,
+        selectedStyle: 'Street',
+      ),
+      act: (cubit) => cubit.load(),
+      verify: (cubit) => expect(cubit.state.style, 'Street'),
     );
   });
 }

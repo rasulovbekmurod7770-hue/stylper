@@ -25,6 +25,12 @@ import '../../features/onboarding/domain/repositories/onboarding_repository.dart
 import '../../features/onboarding/domain/usecases/onboarding_usecases.dart';
 import '../../features/onboarding/presentation/cubits/profile_setup_cubit.dart';
 import '../../features/onboarding/presentation/cubits/style_quiz_cubit.dart';
+import '../../features/post/data/datasources/post_remote_data_source.dart';
+import '../../features/post/data/repositories/post_repository_impl.dart';
+import '../../features/post/domain/repositories/post_repository.dart';
+import '../../features/post/domain/usecases/post_usecases.dart';
+import '../../features/post/presentation/cubits/post_detail_cubit.dart';
+import '../../features/post/presentation/cubits/post_engagement_cubit.dart';
 import '../session/session_cubit.dart';
 
 final sl = GetIt.instance;
@@ -37,8 +43,8 @@ void configureDependencies({FakeBackend? backend}) {
     // ── Backend ────────────────────────────────────────────────────────────
     // Until the Stylper API exists, remote data sources talk to an in-memory
     // FakeBackend. When it's ready, register HTTP implementations of
-    // AuthRemoteDataSource, OnboardingRemoteDataSource and HomeRemoteDataSource
-    // here instead;
+    // AuthRemoteDataSource, OnboardingRemoteDataSource, HomeRemoteDataSource
+    // and PostRemoteDataSource here instead;
     // nothing outside this block needs to change.
     ..registerLazySingleton(() => backend ?? FakeBackend())
     ..registerLazySingleton<AuthRemoteDataSource>(
@@ -48,7 +54,10 @@ void configureDependencies({FakeBackend? backend}) {
       () => FakeOnboardingRemoteDataSource(sl(), sl()),
     )
     ..registerLazySingleton<HomeRemoteDataSource>(
-      () => FakeHomeRemoteDataSource(sl()),
+      () => FakeHomeRemoteDataSource(sl(), sl()),
+    )
+    ..registerLazySingleton<PostRemoteDataSource>(
+      () => FakePostRemoteDataSource(sl(), sl()),
     )
     // ───────────────────────────────────────────────────────────────────────
     ..registerLazySingleton(StyleQuizLocalDataSource.new)
@@ -62,6 +71,9 @@ void configureDependencies({FakeBackend? backend}) {
     ..registerLazySingleton<HomeRepository>(
       () => HomeRepositoryImpl(remote: sl()),
     )
+    ..registerLazySingleton<PostRepository>(
+      () => PostRepositoryImpl(remote: sl()),
+    )
     // Use cases
     ..registerFactory(() => RestoreSession(sl()))
     ..registerFactory(() => WatchCurrentUser(sl()))
@@ -74,6 +86,9 @@ void configureDependencies({FakeBackend? backend}) {
     ..registerFactory(() => GetStyleQuiz(sl()))
     ..registerFactory(() => CompleteStyleQuiz(sl(), sl()))
     ..registerFactory(() => GetHomeFeed(sl()))
+    ..registerFactory(() => GetPost(sl()))
+    ..registerFactory(() => SetPostLiked(sl()))
+    ..registerFactory(() => SetPostSaved(sl()))
     // Presentation
     ..registerLazySingleton(
       () => SessionCubit(
@@ -88,5 +103,10 @@ void configureDependencies({FakeBackend? backend}) {
     ..registerFactory(() => SocialSignInCubit(sl()))
     ..registerFactory(() => ProfileSetupCubit(sl()))
     ..registerFactory(() => StyleQuizCubit(sl(), sl()))
-    ..registerFactory(() => HomeFeedCubit(sl()));
+    ..registerFactory(() => HomeFeedCubit(sl()))
+    // App-wide, so every screen showing a post agrees on likes / saves.
+    ..registerLazySingleton(() => PostEngagementCubit(sl(), sl()))
+    ..registerFactoryParam<PostDetailCubit, String, void>(
+      (postId, _) => PostDetailCubit(sl(), postId: postId),
+    );
 }

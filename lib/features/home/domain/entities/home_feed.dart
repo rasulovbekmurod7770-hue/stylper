@@ -1,26 +1,9 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../post/domain/entities/post.dart';
+
 // Image fields hold a bundled asset path for now; an image URL once the feed
 // comes from the API.
-
-class FeedAuthor extends Equatable {
-  const FeedAuthor({
-    required this.id,
-    required this.name,
-    required this.handle,
-    required this.avatarPath,
-  });
-
-  final String id;
-  final String name;
-
-  /// Username without the leading `@`.
-  final String handle;
-  final String avatarPath;
-
-  @override
-  List<Object?> get props => [id, name, handle, avatarPath];
-}
 
 /// A large "For you" post at the top of the feed.
 class FeaturedPost extends Equatable {
@@ -28,75 +11,50 @@ class FeaturedPost extends Equatable {
     required this.id,
     required this.imagePath,
     required this.author,
-    required this.likeCount,
+    required this.engagement,
     required this.commentCount,
-    this.tags = const [],
+    this.styles = const [],
   });
 
+  /// The post's id.
   final String id;
+
+  /// The card crop (366×300).
   final String imagePath;
-  final FeedAuthor author;
-  final int likeCount;
+  final PostAuthor author;
+  final PostEngagement engagement;
   final int commentCount;
 
-  /// Style chips on the card; the first is the post's main style.
-  final List<String> tags;
+  /// Styles the post belongs to, from [HomeFeed.styles].
+  final List<String> styles;
 
   @override
   List<Object?> get props => [
     id,
     imagePath,
     author,
-    likeCount,
+    engagement,
     commentCount,
-    tags,
+    styles,
   ];
 }
 
-/// Someone shown under "People wearing".
+/// Someone shown under "People wearing"; opens their outfit post.
 class PersonPreview extends Equatable {
   const PersonPreview({
     required this.id,
     required this.name,
     required this.photoPath,
+    required this.postId,
   });
 
   final String id;
   final String name;
   final String photoPath;
+  final String postId;
 
   @override
-  List<Object?> get props => [id, name, photoPath];
-}
-
-/// A card in the "Trending in {city}" grid.
-class TrendingPost extends Equatable {
-  const TrendingPost({
-    required this.id,
-    required this.imagePath,
-    required this.aspectRatio,
-    this.caption,
-    this.authorHandle,
-  });
-
-  final String id;
-  final String imagePath;
-
-  /// Width / height of the card, so the grid can stagger like the design.
-  final double aspectRatio;
-  final String? caption;
-
-  /// Username without the leading `@`.
-  final String? authorHandle;
-
-  @override
-  List<Object?> get props => [
-    id,
-    imagePath,
-    aspectRatio,
-    caption,
-    authorHandle,
-  ];
+  List<Object?> get props => [id, name, photoPath, postId];
 }
 
 class HomeFeed extends Equatable {
@@ -105,14 +63,27 @@ class HomeFeed extends Equatable {
     required this.featured,
     required this.peopleWearing,
     required this.trending,
+    this.styles = const [],
   });
 
   /// City the "Trending in" section is about.
   final String city;
+
+  /// Style chips on the "For you" card, e.g. Casual / Minimal / Street.
+  final List<String> styles;
   final List<FeaturedPost> featured;
   final List<PersonPreview> peopleWearing;
-  final List<TrendingPost> trending;
+  final List<PostPreview> trending;
+
+  /// Featured posts in [style]; all of them when none match.
+  List<FeaturedPost> featuredIn(String? style) {
+    final matching = [
+      for (final post in featured)
+        if (post.styles.contains(style)) post,
+    ];
+    return matching.isEmpty ? featured : matching;
+  }
 
   @override
-  List<Object?> get props => [city, featured, peopleWearing, trending];
+  List<Object?> get props => [city, styles, featured, peopleWearing, trending];
 }

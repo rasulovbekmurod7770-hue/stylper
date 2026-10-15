@@ -47,6 +47,11 @@ void main() {
       AppRoutes.home,
     );
     expect(
+      redirectFor(const SessionGuest(), AppRoutes.post('post_mina')),
+      isNull,
+      reason: 'guests can open posts',
+    );
+    expect(
       redirectFor(const SessionUnauthenticated(), AppRoutes.search),
       AppRoutes.welcome,
     );

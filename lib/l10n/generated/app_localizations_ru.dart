@@ -244,6 +244,55 @@ class AppLocalizationsRu extends AppLocalizations {
   String get tabProfile => 'Профиль';
 
   @override
+  String get postOutfitDetails => 'Детали образа';
+
+  @override
+  String get postSimilar => 'Похожие';
+
+  @override
+  String get postShop => 'Купить';
+
+  @override
+  String get postAddToWardrobe => 'В гардероб';
+
+  @override
+  String get postSeeLooks => 'Образы';
+
+  @override
+  String get postSave => 'Сохранить';
+
+  @override
+  String postStyledCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count человек примерили это',
+      few: '$count человека примерили это',
+      one: '$count человек примерил это',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get postLike => 'Нравится';
+
+  @override
+  String get postComments => 'Комментарии';
+
+  @override
+  String get postShare => 'Поделиться';
+
+  @override
+  String get postMore => 'Ещё';
+
+  @override
+  String get signInToInteract =>
+      'Войдите, чтобы ставить лайки и сохранять посты.';
+
+  @override
+  String get errorPostNotFound => 'Этот пост больше недоступен.';
+
+  @override
   String get profilePlaceholderTitle => 'Ваш профиль скоро появится';
 
   @override

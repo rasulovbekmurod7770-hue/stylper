@@ -35,7 +35,13 @@ it", local brands first, and trust (nothing that misleads).
 
 - Clean architecture per feature (`domain` / `data` / `presentation`),
   flutter_bloc Cubits, go_router, get_it, fpdart `Either`, equatable. Follow
-  `features/onboarding` and `features/home` as the reference patterns.
+  `features/onboarding`, `features/home` and `features/post` as the
+  reference patterns.
+- Posts are shared across features: `features/post` owns `Post`,
+  `PostPreview`, `PostAuthor`, `PostGrid`, `openPost`. Likes and saves go
+  through the app-wide `PostEngagementCubit` (optimistic, rolled back on
+  failure, reset when the user changes) so every screen agrees; guests get a
+  sign-in prompt instead.
 - **No backend yet, and no Firebase.** The real API will be a custom REST
   backend (likely Node.js). Every remote call goes through a
   `*RemoteDataSource` interface; until the API exists, a `Fake…` data source
@@ -63,9 +69,13 @@ it", local brands first, and trust (nothing that misleads).
   there. When many assets are needed, ask the user to export them instead.
 - Implemented: welcome `2775:2369`, sign in `2775:2318`, sign up `2775:2441`,
   forgot password `2775:2408`, profile setup `2775:2501`, style quiz
-  `2775:2389`, home `2775:2563`. Next in the flow: outfit post
-  "home-feed-2" `2775:2840`, product detail `2775:3077`, profile `2775:3285`,
-  brand profile `2856:1809`, brand showroom `2856:1919`.
+  `2775:2389`, home `2775:2563`, outfit post "home-feed-2" `2775:2840`
+  (layout from cached metadata only; styling marked PROVISIONAL until its
+  design context or an SVG export is cached — variant `2775:2953` is the
+  tapped-tag state). Next in the flow: product detail `2775:3077`, profile
+  `2775:3285`, brand profile `2856:1809`, brand showroom `2856:1919`.
+- Controls whose screens don't exist yet show "Coming soon" — never leave a
+  tappable-looking control dead.
 - Fonts: Poppins on most screens (it has no Cyrillic, so styles fall back to
   Inter); Inter on the auth forms; Figma's unlicensed "Canela Trial" is
   replaced by Playfair Display Black Italic. Figma's "normal" Poppins line

@@ -520,6 +520,84 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get tabProfile;
 
+  /// No description provided for @postOutfitDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Outfit details'**
+  String get postOutfitDetails;
+
+  /// No description provided for @postSimilar.
+  ///
+  /// In en, this message translates to:
+  /// **'Similar'**
+  String get postSimilar;
+
+  /// No description provided for @postShop.
+  ///
+  /// In en, this message translates to:
+  /// **'Shop'**
+  String get postShop;
+
+  /// No description provided for @postAddToWardrobe.
+  ///
+  /// In en, this message translates to:
+  /// **'Add to wardrobe'**
+  String get postAddToWardrobe;
+
+  /// No description provided for @postSeeLooks.
+  ///
+  /// In en, this message translates to:
+  /// **'See looks'**
+  String get postSeeLooks;
+
+  /// No description provided for @postSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get postSave;
+
+  /// No description provided for @postStyledCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 person styled this} other{{count} people styled this}}'**
+  String postStyledCount(int count);
+
+  /// No description provided for @postLike.
+  ///
+  /// In en, this message translates to:
+  /// **'Like'**
+  String get postLike;
+
+  /// No description provided for @postComments.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments'**
+  String get postComments;
+
+  /// No description provided for @postShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get postShare;
+
+  /// No description provided for @postMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get postMore;
+
+  /// No description provided for @signInToInteract.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to like and save posts.'**
+  String get signInToInteract;
+
+  /// No description provided for @errorPostNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This post is no longer available.'**
+  String get errorPostNotFound;
+
   /// No description provided for @profilePlaceholderTitle.
   ///
   /// In en, this message translates to:

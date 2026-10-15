@@ -384,4 +384,107 @@ abstract final class AppTypography {
     color: Color(0xCCFFFFFF),
     shadows: _cardTextShadow,
   );
+
+  // Outfit post (Figma "home-feed-2" 2775:2840). PROVISIONAL: the frame's
+  // design context isn't cached yet; families and sizes are inferred from its
+  // text boxes (mostly Inter). Refine from the frame's export.
+  static const postAuthorName = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 13,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const postCount = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 13,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const productTagLabel = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    color: Color(0xFFFFFFFF),
+  );
+
+  static const productCardName = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 10,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const productCardMeta = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 9,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textMuted,
+  );
+
+  static const tagCardBrand = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textMuted,
+  );
+
+  static const tagCardName = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const tagCardPrice = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 13,
+    fontWeight: FontWeight.w700,
+    color: AppColors.textPrimary,
+  );
+
+  static const tagCardMeta = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 11,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textMuted,
+  );
+
+  static const tagCardButton = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const productPill = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 7.3,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
 }

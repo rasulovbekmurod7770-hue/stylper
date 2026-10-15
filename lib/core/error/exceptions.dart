@@ -28,4 +28,5 @@ abstract final class ApiErrorCodes {
   static const usernameTaken = 'username_taken';
   static const providerUnavailable = 'provider_unavailable';
   static const validation = 'validation_failed';
+  static const notFound = 'not_found';
 }

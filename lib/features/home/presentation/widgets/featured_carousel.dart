@@ -2,19 +2,33 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_assets.dart';
+import '../../../../core/l10n/l10n.dart';
 import '../../../../core/presentation/compact_count.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/feed_photo.dart';
+import '../../../post/presentation/open_post.dart';
+import '../../../post/presentation/widgets/engagement_buttons.dart';
 import '../../domain/entities/home_feed.dart';
-import 'feed_photo.dart';
 
-/// "Hero Card" + "Hero Meta" (2775:2581 / 2775:2589): a swipeable post with
-/// its style chips, and its author and counters underneath. The three Figma
-/// "Home" frames are its three pages.
+/// "Hero Card" + "Hero Meta" (2775:2581 / 2775:2589): swipeable posts of the
+/// selected style, with the style chips over the card and the author and
+/// counters underneath. Tapping the card or the comment count opens the post.
+///
+/// Give it a key per style so switching styles starts from the first post.
 class FeaturedCarousel extends StatefulWidget {
-  const FeaturedCarousel({super.key, required this.posts});
+  const FeaturedCarousel({
+    super.key,
+    required this.posts,
+    required this.styles,
+    required this.selectedStyle,
+    required this.onStyleSelected,
+  });
 
   final List<FeaturedPost> posts;
+  final List<String> styles;
+  final String? selectedStyle;
+  final ValueChanged<String> onStyleSelected;
 
   @override
   State<FeaturedCarousel> createState() => _FeaturedCarouselState();
@@ -34,10 +48,37 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
       children: [
         SizedBox(
           height: 300,
-          child: PageView.builder(
-            itemCount: posts.length,
-            onPageChanged: (page) => setState(() => _page = page),
-            itemBuilder: (context, index) => _HeroCard(post: posts[index]),
+          child: Stack(
+            children: [
+              PageView.builder(
+                itemCount: posts.length,
+                onPageChanged: (page) => setState(() => _page = page),
+                itemBuilder: (context, index) => GestureDetector(
+                  onTap: () => openPost(context, posts[index].id),
+                  child: FeedPhoto(path: posts[index].imagePath, radius: 24),
+                ),
+              ),
+              // "Hero Tags": fixed over the pages, so they read as a filter.
+              if (widget.styles.isNotEmpty)
+                Positioned(
+                  left: 16,
+                  right: 16,
+                  bottom: 16,
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    verticalDirection: VerticalDirection.up,
+                    children: [
+                      for (final style in widget.styles)
+                        _StyleChip(
+                          label: style,
+                          selected: style == widget.selectedStyle,
+                          onTap: () => widget.onStyleSelected(style),
+                        ),
+                    ],
+                  ),
+                ),
+            ],
           ),
         ),
         const SizedBox(height: 16),
@@ -47,58 +88,40 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
   }
 }
 
-class _HeroCard extends StatelessWidget {
-  const _HeroCard({required this.post});
-
-  final FeaturedPost post;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [
-        FeedPhoto(path: post.imagePath, radius: 24),
-        if (post.tags.isNotEmpty)
-          Positioned(
-            left: 16,
-            right: 16,
-            bottom: 16,
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              verticalDirection: VerticalDirection.up,
-              children: [
-                for (final (index, tag) in post.tags.indexed)
-                  _HeroTag(label: tag, highlighted: index == 0),
-              ],
-            ),
-          ),
-      ],
-    );
-  }
-}
-
-/// "Hero Tags" chip: the main style is filled with the brand gradient, the
-/// rest are frosted.
-class _HeroTag extends StatelessWidget {
-  const _HeroTag({required this.label, required this.highlighted});
+/// A "Hero Tags" chip: the selected style is filled with the brand gradient,
+/// the rest are frosted.
+class _StyleChip extends StatelessWidget {
+  const _StyleChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   final String label;
-  final bool highlighted;
+  final bool selected;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: highlighted ? null : const Color(0x1AFFFFFF),
-        gradient: highlighted ? AppColors.brandGradient : null,
-        border: Border.all(color: const Color(0x26FFFFFF)),
-        borderRadius: const BorderRadius.all(Radius.circular(999)),
-      ),
-      child: Padding(
-        // The border is drawn inside the padding, as Figma does.
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        child: Text(label, style: AppTypography.heroTag),
+    return Semantics(
+      button: true,
+      selected: selected,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: selected ? null : const Color(0x1AFFFFFF),
+            gradient: selected ? AppColors.brandGradient : null,
+            border: Border.all(color: const Color(0x26FFFFFF)),
+            borderRadius: const BorderRadius.all(Radius.circular(999)),
+          ),
+          child: Padding(
+            // The border is drawn inside the padding, as Figma does.
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+            child: Text(label, style: AppTypography.heroTag),
+          ),
+        ),
       ),
     );
   }
@@ -138,28 +161,35 @@ class _PostMeta extends StatelessWidget {
             ],
           ),
         ),
-        _Counter(icon: AppIcons.heart, count: post.likeCount),
+        LikeButton(
+          postId: post.id,
+          loaded: post.engagement,
+          iconSize: 16,
+          countStyle: AppTypography.feedCount,
+        ),
         const SizedBox(width: 16),
-        _Counter(icon: AppIcons.messageCircle, count: post.commentCount),
-      ],
-    );
-  }
-}
-
-class _Counter extends StatelessWidget {
-  const _Counter({required this.icon, required this.count});
-
-  final String icon;
-  final int count;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SvgPicture.asset(icon, width: 16, height: 16),
-        const SizedBox(width: 6),
-        Text(compactCount(count), style: AppTypography.feedCount),
+        Semantics(
+          button: true,
+          label: context.l10n.postComments,
+          value: compactCount(post.commentCount),
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => openPost(context, post.id),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                SvgPicture.asset(AppIcons.messageCircle, width: 16, height: 16),
+                const SizedBox(width: 6),
+                ExcludeSemantics(
+                  child: Text(
+                    compactCount(post.commentCount),
+                    style: AppTypography.feedCount,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ],
     );
   }

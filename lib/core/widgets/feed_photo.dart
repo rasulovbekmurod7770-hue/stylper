@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
 
-import '../../../../core/presentation/image_source.dart';
-import '../../../../core/theme/app_colors.dart';
+import '../presentation/image_source.dart';
+import '../theme/app_colors.dart';
 
 /// A rounded feed photo that fills its box, cropping like CSS `cover`.
 class FeedPhoto extends StatelessWidget {

@@ -16,6 +16,9 @@ abstract final class AppRoutes {
   static const profile = '/profile';
   static const mainTabs = [home, search, explore, profile];
 
+  /// An outfit post, shown over the tab bar.
+  static String post(String id) => '$home/post/$id';
+
   static bool isAuthRoute(String location) => location.startsWith(welcome);
 
   static bool isMainRoute(String location) =>

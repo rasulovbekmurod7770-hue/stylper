@@ -6,6 +6,7 @@ import '../../../../core/constants/app_assets.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/load_error_view.dart';
 import '../../../../core/widgets/snackbars.dart';
 import '../../domain/entities/home_feed.dart';
 import '../cubits/home_feed_cubit.dart';
@@ -56,12 +57,14 @@ class HomePage extends StatelessWidget {
                         _gutter,
                         MediaQuery.paddingOf(context).bottom + 24,
                       ),
-                      sliver: SliverList.list(children: _sections(feed)),
+                      sliver: SliverList.list(
+                        children: _sections(feed, state.style, cubit),
+                      ),
                     ),
                     HomeFeedState(status: HomeFeedStatus.failure) =>
                       SliverFillRemaining(
                         hasScrollBody: false,
-                        child: _LoadError(
+                        child: LoadErrorView(
                           message: state.failure!.message(l10n),
                           onRetry: cubit.load,
                         ),
@@ -84,10 +87,20 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  static List<Widget> _sections(HomeFeed feed) => [
+  static List<Widget> _sections(
+    HomeFeed feed,
+    String? style,
+    HomeFeedCubit cubit,
+  ) => [
     const _ForYouHeading(),
     const SizedBox(height: 16),
-    FeaturedCarousel(posts: feed.featured),
+    FeaturedCarousel(
+      key: ValueKey(style),
+      posts: feed.featuredIn(style),
+      styles: feed.styles,
+      selectedStyle: style,
+      onStyleSelected: cubit.selectStyle,
+    ),
     const SizedBox(height: _sectionGap),
     PeopleWearingSection(people: feed.peopleWearing),
     const SizedBox(height: _sectionGap),
@@ -191,37 +204,6 @@ class _ForYouHeading extends StatelessWidget {
         const SizedBox(height: 6),
         Text(l10n.homeForYouTitle, style: AppTypography.feedSectionTitle),
       ],
-    );
-  }
-}
-
-class _LoadError extends StatelessWidget {
-  const _LoadError({required this.message, required this.onRetry});
-
-  final String message;
-  final VoidCallback onRetry;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              message,
-              style: AppTypography.subtitle,
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 12),
-            TextButton(
-              onPressed: onRetry,
-              child: Text(context.l10n.retry, style: AppTypography.link),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

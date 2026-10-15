@@ -3,11 +3,13 @@ import 'package:flutter/widgets.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/feed_photo.dart';
+import '../../../post/presentation/open_post.dart';
 import '../../domain/entities/home_feed.dart';
-import 'feed_photo.dart';
 
 /// "People Wearing Section" (2775:2605): a label with a short rule, then a
-/// horizontally scrolling row of 108px person cards.
+/// horizontally scrolling row of 108px person cards; each opens that person's
+/// outfit post.
 class PeopleWearingSection extends StatelessWidget {
   const PeopleWearingSection({super.key, required this.people});
 
@@ -45,23 +47,27 @@ class PeopleWearingSection extends StatelessWidget {
             separatorBuilder: (_, _) => const SizedBox(width: 12),
             itemBuilder: (context, index) {
               final person = people[index];
-              return SizedBox(
-                width: _cardSize,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox.square(
-                      dimension: _cardSize,
-                      child: FeedPhoto(path: person.photoPath, radius: 18),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      person.name,
-                      style: AppTypography.feedPersonName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
+              return GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => openPost(context, person.postId),
+                child: SizedBox(
+                  width: _cardSize,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox.square(
+                        dimension: _cardSize,
+                        child: FeedPhoto(path: person.photoPath, radius: 18),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        person.name,
+                        style: AppTypography.feedPersonName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
                 ),
               );
             },

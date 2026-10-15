@@ -20,6 +20,8 @@ import '../../features/onboarding/presentation/cubits/profile_setup_cubit.dart';
 import '../../features/onboarding/presentation/cubits/style_quiz_cubit.dart';
 import '../../features/onboarding/presentation/pages/profile_setup_page.dart';
 import '../../features/onboarding/presentation/pages/style_quiz_page.dart';
+import '../../features/post/presentation/cubits/post_detail_cubit.dart';
+import '../../features/post/presentation/pages/post_detail_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../di/injection.dart';
 import '../session/session_cubit.dart';
@@ -27,122 +29,137 @@ import '../shell/app_shell.dart';
 import '../shell/tab_placeholder_page.dart';
 import 'splash_page.dart';
 
-GoRouter createRouter(SessionCubit session) => GoRouter(
-  initialLocation: AppRoutes.splash,
-  refreshListenable: _StreamListenable(session.stream),
-  redirect: (context, state) =>
-      redirectFor(session.state, state.matchedLocation),
-  routes: [
-    GoRoute(
-      path: AppRoutes.splash,
-      builder: (context, state) => const SplashPage(),
-    ),
-    GoRoute(
-      path: AppRoutes.welcome,
-      builder: (context, state) =>
-          WelcomePage(onContinueAsGuest: session.continueAsGuest),
-      routes: [
-        GoRoute(
-          path: 'sign-in',
-          builder: (context, state) => MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (_) => sl<SignInCubit>()),
-              BlocProvider(create: (_) => sl<SocialSignInCubit>()),
+GoRouter createRouter(SessionCubit session) {
+  final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+  return GoRouter(
+    navigatorKey: rootNavigatorKey,
+    initialLocation: AppRoutes.splash,
+    refreshListenable: _StreamListenable(session.stream),
+    redirect: (context, state) =>
+        redirectFor(session.state, state.matchedLocation),
+    routes: [
+      GoRoute(
+        path: AppRoutes.splash,
+        builder: (context, state) => const SplashPage(),
+      ),
+      GoRoute(
+        path: AppRoutes.welcome,
+        builder: (context, state) =>
+            WelcomePage(onContinueAsGuest: session.continueAsGuest),
+        routes: [
+          GoRoute(
+            path: 'sign-in',
+            builder: (context, state) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => sl<SignInCubit>()),
+                BlocProvider(create: (_) => sl<SocialSignInCubit>()),
+              ],
+              child: const SignInPage(),
+            ),
+            routes: [
+              GoRoute(
+                path: 'forgot-password',
+                builder: (context, state) => BlocProvider(
+                  create: (_) => sl<ForgotPasswordCubit>(),
+                  child: const ForgotPasswordPage(),
+                ),
+              ),
             ],
-            child: const SignInPage(),
           ),
-          routes: [
-            GoRoute(
-              path: 'forgot-password',
-              builder: (context, state) => BlocProvider(
-                create: (_) => sl<ForgotPasswordCubit>(),
-                child: const ForgotPasswordPage(),
-              ),
+          GoRoute(
+            path: 'sign-up',
+            builder: (context, state) => MultiBlocProvider(
+              providers: [
+                BlocProvider(create: (_) => sl<SignUpCubit>()),
+                BlocProvider(create: (_) => sl<SocialSignInCubit>()),
+              ],
+              child: const SignUpPage(),
             ),
-          ],
+          ),
+        ],
+      ),
+      GoRoute(
+        path: AppRoutes.profileSetup,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<ProfileSetupCubit>(),
+          child: const ProfileSetupPage(),
         ),
-        GoRoute(
-          path: 'sign-up',
-          builder: (context, state) => MultiBlocProvider(
-            providers: [
-              BlocProvider(create: (_) => sl<SignUpCubit>()),
-              BlocProvider(create: (_) => sl<SocialSignInCubit>()),
+      ),
+      GoRoute(
+        path: AppRoutes.styleQuiz,
+        builder: (context, state) => BlocProvider(
+          create: (_) => sl<StyleQuizCubit>()..load(),
+          child: const StyleQuizPage(),
+        ),
+      ),
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, shell) => AppShell(
+          currentTab: MainTab.values[shell.currentIndex],
+          onTabSelected: (tab) => shell.goBranch(
+            tab.index,
+            // Tapping the current tab again returns to its first screen.
+            initialLocation: tab.index == shell.currentIndex,
+          ),
+          child: shell,
+        ),
+        // One branch per MainTab, in the same order.
+        branches: [
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.home,
+                builder: (context, state) => BlocProvider(
+                  create: (_) => sl<HomeFeedCubit>()..load(),
+                  child: const HomePage(),
+                ),
+                routes: [
+                  // Under /home so guests may open posts; on the root navigator
+                  // so it covers the tab bar, as in the Figma frame.
+                  GoRoute(
+                    path: 'post/:postId',
+                    parentNavigatorKey: rootNavigatorKey,
+                    builder: (context, state) => BlocProvider(
+                      create: (_) => sl<PostDetailCubit>(
+                        param1: state.pathParameters['postId'],
+                      )..load(),
+                      child: const PostDetailPage(),
+                    ),
+                  ),
+                ],
+              ),
             ],
-            child: const SignUpPage(),
           ),
-        ),
-      ],
-    ),
-    GoRoute(
-      path: AppRoutes.profileSetup,
-      builder: (context, state) => BlocProvider(
-        create: (_) => sl<ProfileSetupCubit>(),
-        child: const ProfileSetupPage(),
-      ),
-    ),
-    GoRoute(
-      path: AppRoutes.styleQuiz,
-      builder: (context, state) => BlocProvider(
-        create: (_) => sl<StyleQuizCubit>()..load(),
-        child: const StyleQuizPage(),
-      ),
-    ),
-    StatefulShellRoute.indexedStack(
-      builder: (context, state, shell) => AppShell(
-        currentTab: MainTab.values[shell.currentIndex],
-        onTabSelected: (tab) => shell.goBranch(
-          tab.index,
-          // Tapping the current tab again returns to its first screen.
-          initialLocation: tab.index == shell.currentIndex,
-        ),
-        child: shell,
-      ),
-      // One branch per MainTab, in the same order.
-      branches: [
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: AppRoutes.home,
-              builder: (context, state) => BlocProvider(
-                create: (_) => sl<HomeFeedCubit>()..load(),
-                child: const HomePage(),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.search,
+                builder: (context, state) =>
+                    TabPlaceholderPage(title: context.l10n.tabSearch),
               ),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: AppRoutes.search,
-              builder: (context, state) =>
-                  TabPlaceholderPage(title: context.l10n.tabSearch),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: AppRoutes.explore,
-              builder: (context, state) =>
-                  TabPlaceholderPage(title: context.l10n.tabExplore),
-            ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: AppRoutes.profile,
-              builder: (context, state) => BlocProvider.value(
-                value: session,
-                child: const ProfilePage(),
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.explore,
+                builder: (context, state) =>
+                    TabPlaceholderPage(title: context.l10n.tabExplore),
               ),
-            ),
-          ],
-        ),
-      ],
-    ),
-  ],
-);
+            ],
+          ),
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: AppRoutes.profile,
+                builder: (context, state) => const ProfilePage(),
+              ),
+            ],
+          ),
+        ],
+      ),
+    ],
+  );
+}
 
 /// Where a user in [session] may be when trying to open [location]; null
 /// keeps them there.

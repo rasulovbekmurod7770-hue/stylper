@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../core/l10n/l10n.dart';
 import '../core/theme/app_theme.dart';
+import '../features/post/presentation/cubits/post_engagement_cubit.dart';
+import 'di/injection.dart';
 import 'router/app_router.dart';
 import 'session/session_cubit.dart';
 
@@ -19,6 +22,7 @@ class StylperApp extends StatefulWidget {
 
 class _StylperAppState extends State<StylperApp> {
   late final GoRouter _router = createRouter(widget.session);
+  late final PostEngagementCubit _engagement = sl<PostEngagementCubit>();
 
   @override
   void dispose() {
@@ -28,21 +32,38 @@ class _StylperAppState extends State<StylperApp> {
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.dark,
-      child: MaterialApp.router(
-        onGenerateTitle: (context) => context.l10n.appName,
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.light,
-        routerConfig: _router,
-        supportedLocales: AppLocalizations.supportedLocales,
-        localizationsDelegates: const [
-          AppLocalizations.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
+    // Above the router so every route, including ones pushed over the tab
+    // bar, shares the session and the like / save state.
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: widget.session),
+        BlocProvider.value(value: _engagement),
+      ],
+      child: BlocListener<SessionCubit, SessionState>(
+        // Likes and saves belong to the user who made them.
+        listenWhen: (previous, current) =>
+            _userId(previous) != _userId(current),
+        listener: (_, _) => _engagement.reset(),
+        child: AnnotatedRegion<SystemUiOverlayStyle>(
+          value: SystemUiOverlayStyle.dark,
+          child: MaterialApp.router(
+            onGenerateTitle: (context) => context.l10n.appName,
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.light,
+            routerConfig: _router,
+            supportedLocales: AppLocalizations.supportedLocales,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+          ),
+        ),
       ),
     );
   }
+
+  static String? _userId(SessionState state) =>
+      state is SessionAuthenticated ? state.user.id : null;
 }

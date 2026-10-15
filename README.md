@@ -42,6 +42,7 @@ lib/
     auth/               welcome, sign in, sign up, forgot password
     onboarding/         profile setup, "Dress like you." style quiz
     home/               home feed (For you, People wearing, Trending)
+    post/               outfit post screen, likes / saves, post grid
     profile/            placeholder Profile tab (sign in / sign out)
   l10n/                 app_en.arb, app_ru.arb, app_uz.arb
 ```
@@ -69,7 +70,8 @@ session changes and the router redirects:
 ### Connecting the real backend
 
 Every remote call goes through `AuthRemoteDataSource`,
-`OnboardingRemoteDataSource` and `HomeRemoteDataSource`. To switch to the API:
+`OnboardingRemoteDataSource`, `HomeRemoteDataSource` and
+`PostRemoteDataSource`. To switch to the API:
 
 1. Implement these interfaces over HTTP. Throw `ServerException(statusCode, code)`
    using the codes in `ApiErrorCodes`, and `NetworkException` when offline.

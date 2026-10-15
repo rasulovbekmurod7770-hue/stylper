@@ -19,6 +19,8 @@ abstract final class AppIcons {
   // Home (Figma 2775:2563)
   static const stylperLogoGradient = '$_dir/stylper_logo_gradient.svg';
   static const heart = '$_dir/heart.svg';
+  // Not in Figma: the liked state, drawn from the same heart path.
+  static const heartFilled = '$_dir/heart_filled.svg';
   static const messageCircle = '$_dir/message_circle.svg';
   static const mapPin = '$_dir/map_pin.svg';
   static const tabHome = '$_dir/tab_home.svg';
@@ -62,8 +64,13 @@ abstract final class AppImages {
   static const homeAvatarMina = '$_home/avatar_mina.webp';
   static const homeHeroFozil = '$_home/hero_fozil.webp';
   static const homeAvatarFozil = '$_home/avatar_fozil.webp';
-  static const homeHeroBob = '$_home/hero_bob.webp';
+  static const homeHeroBobur = '$_home/hero_bobur.webp';
+  static const homeAvatarBobur = '$_home/avatar_bobur.webp';
+  static const homeHeroSofia = '$_home/hero_sofia.webp';
+  static const homeHeroUtilityChic = '$_home/hero_utility_chic.webp';
+  static const homeHeroSoftNeutrals = '$_home/hero_soft_neutrals.webp';
   static const homeAvatarBob = '$_home/avatar_bob.webp';
+  static const homeAvatarZokir = '$_home/avatar_zokir.webp';
   static const homePersonSofia = '$_home/person_sofia.webp';
   static const homePersonLeo = '$_home/person_leo.webp';
   static const homePersonAmin = '$_home/person_amin.webp';
@@ -71,4 +78,17 @@ abstract final class AppImages {
   static const homeTrendSoftNeutrals = '$_home/trend_soft_neutrals.webp';
   static const homeTrendNoWords = '$_home/trend_no_words.webp';
   static const homeTrendLikeMyOutfit = '$_home/trend_like_my_outfit.webp';
+
+  // Full post photos (the post screen's 390x516 Image-Frame).
+  static const _posts = 'assets/images/posts';
+  static const postMina = '$_posts/mina.webp';
+  static const postFozil = '$_posts/fozil.webp';
+  static const postBobur = '$_posts/bobur.webp';
+  static const postSofia = '$_posts/sofia.webp';
+  static const postLeo = '$_posts/leo.webp';
+  static const postAmin = '$_posts/amin.webp';
+  static const postUtilityChic = '$_posts/utility_chic.webp';
+  static const postSoftNeutrals = '$_posts/soft_neutrals.webp';
+  static const postNoWords = '$_posts/no_words.webp';
+  static const postLikeMyOutfit = '$_posts/like_my_outfit.webp';
 }

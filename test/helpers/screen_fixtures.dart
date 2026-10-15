@@ -1,8 +1,10 @@
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:stylper/app/session/session_cubit.dart';
 import 'package:stylper/app/shell/app_shell.dart';
 import 'package:stylper/core/constants/app_assets.dart';
 import 'package:stylper/core/fake_backend/fake_backend.dart';
@@ -29,6 +31,11 @@ import 'package:stylper/features/onboarding/presentation/cubits/profile_setup_cu
 import 'package:stylper/features/onboarding/presentation/cubits/style_quiz_cubit.dart';
 import 'package:stylper/features/onboarding/presentation/pages/profile_setup_page.dart';
 import 'package:stylper/features/onboarding/presentation/pages/style_quiz_page.dart';
+import 'package:stylper/features/post/data/models/post_json.dart';
+import 'package:stylper/features/post/domain/usecases/post_usecases.dart';
+import 'package:stylper/features/post/presentation/cubits/post_detail_cubit.dart';
+import 'package:stylper/features/post/presentation/cubits/post_engagement_cubit.dart';
+import 'package:stylper/features/post/presentation/pages/post_detail_page.dart';
 
 import 'screen_harness.dart';
 
@@ -49,6 +56,36 @@ class _MockGetStyleQuiz extends Mock implements GetStyleQuiz {}
 class _MockCompleteStyleQuiz extends Mock implements CompleteStyleQuiz {}
 
 class _MockGetHomeFeed extends Mock implements GetHomeFeed {}
+
+class _MockGetPost extends Mock implements GetPost {}
+
+class _MockSetPostLiked extends Mock implements SetPostLiked {}
+
+class _MockSetPostSaved extends Mock implements SetPostSaved {}
+
+class _MockSessionCubit extends MockCubit<SessionState>
+    implements SessionCubit {}
+
+/// The app-wide cubits that post widgets read (provided above the router in
+/// the app): a guest session and the like / save state.
+Widget _withAppState(Widget child) {
+  final session = _MockSessionCubit();
+  whenListen(
+    session,
+    const Stream<SessionState>.empty(),
+    initialState: const SessionGuest(),
+  );
+  return MultiBlocProvider(
+    providers: [
+      BlocProvider<SessionCubit>.value(value: session),
+      BlocProvider(
+        create: (_) =>
+            PostEngagementCubit(_MockSetPostLiked(), _MockSetPostSaved()),
+      ),
+    ],
+    child: child,
+  );
+}
 
 /// One app screen with its cubits (backed by unused mock use
 /// cases) and the sample content from the Figma frame.
@@ -183,12 +220,14 @@ List<ScreenFixture> screenFixtures() {
             ),
           ),
         );
-        return AppShell(
-          currentTab: MainTab.home,
-          onTabSelected: (_) {},
-          child: BlocProvider(
-            create: (_) => HomeFeedCubit(getFeed)..load(),
-            child: const HomePage(),
+        return _withAppState(
+          AppShell(
+            currentTab: MainTab.home,
+            onTabSelected: (_) {},
+            child: BlocProvider(
+              create: (_) => HomeFeedCubit(getFeed)..load(),
+              child: const HomePage(),
+            ),
           ),
         );
       },
@@ -200,6 +239,39 @@ List<ScreenFixture> screenFixtures() {
         AppImages.homePersonAmin,
         AppImages.homeTrendUtilityChic,
         AppImages.homeTrendSoftNeutrals,
+        AppImages.homeTrendNoWords,
+        AppImages.homeTrendLikeMyOutfit,
+      ],
+    ),
+    ScreenFixture(
+      name: 'post',
+      goldenSize: const Size(390, 1287),
+      build: () {
+        final getPost = _MockGetPost();
+        when(() => getPost(any())).thenAnswer(
+          (_) async => Right(
+            PostJson.post(
+              await FakeBackend(latency: Duration.zero)
+                  .post('post_utility_chic'),
+            ),
+          ),
+        );
+        return _withAppState(
+          BlocProvider(
+            create: (_) =>
+                PostDetailCubit(getPost, postId: 'post_utility_chic')..load(),
+            child: const PostDetailPage(),
+          ),
+        );
+      },
+      images: const [
+        AppImages.postUtilityChic,
+        AppImages.homePersonLeo,
+        AppImages.quizCottonCardigan,
+        AppImages.quizWhiteTShirt,
+        AppImages.quizWideLegTrousers,
+        AppImages.homeTrendSoftNeutrals,
+        AppImages.postFozil,
         AppImages.homeTrendNoWords,
         AppImages.homeTrendLikeMyOutfit,
       ],

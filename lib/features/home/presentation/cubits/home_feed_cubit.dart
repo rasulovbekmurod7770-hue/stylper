@@ -13,6 +13,7 @@ final class HomeFeedState extends Equatable {
     this.status = HomeFeedStatus.loading,
     this.feed,
     this.failure,
+    this.selectedStyle,
   });
 
   final HomeFeedStatus status;
@@ -21,8 +22,14 @@ final class HomeFeedState extends Equatable {
   final HomeFeed? feed;
   final HomeFailure? failure;
 
+  /// The chosen "For you" style chip; null means the feed's first style.
+  final String? selectedStyle;
+
+  /// The style chip shown as selected.
+  String? get style => selectedStyle ?? feed?.styles.firstOrNull;
+
   @override
-  List<Object?> get props => [status, feed, failure];
+  List<Object?> get props => [status, feed, failure, selectedStyle];
 }
 
 class HomeFeedCubit extends Cubit<HomeFeedState> {
@@ -31,9 +38,9 @@ class HomeFeedCubit extends Cubit<HomeFeedState> {
   final GetHomeFeed _getHomeFeed;
 
   /// Loads the feed; also used for pull-to-refresh, which keeps the current
-  /// feed on screen.
+  /// feed and style on screen.
   Future<void> load() async {
-    emit(HomeFeedState(feed: state.feed));
+    emit(HomeFeedState(feed: state.feed, selectedStyle: state.selectedStyle));
     final result = await _getHomeFeed(const NoParams());
     if (isClosed) return;
     emit(
@@ -42,9 +49,31 @@ class HomeFeedCubit extends Cubit<HomeFeedState> {
           status: HomeFeedStatus.failure,
           feed: state.feed,
           failure: failure,
+          selectedStyle: state.selectedStyle,
         ),
-        (feed) => HomeFeedState(status: HomeFeedStatus.ready, feed: feed),
+        (feed) => HomeFeedState(
+          status: HomeFeedStatus.ready,
+          feed: feed,
+          // Keep the choice only if the new feed still offers it.
+          selectedStyle: feed.styles.contains(state.selectedStyle)
+              ? state.selectedStyle
+              : null,
+        ),
       ),
     );
+  }
+
+  /// Shows the "For you" posts of [style].
+  void selectStyle(String style) {
+    if (state.feed?.styles.contains(style) ?? false) {
+      emit(
+        HomeFeedState(
+          status: state.status,
+          feed: state.feed,
+          failure: state.failure,
+          selectedStyle: style,
+        ),
+      );
+    }
   }
 }

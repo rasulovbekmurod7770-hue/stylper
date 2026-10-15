@@ -1,12 +1,15 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../core/constants/app_assets.dart';
 import '../../core/l10n/l10n.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/snackbars.dart';
+import '../../features/post/presentation/cubits/post_engagement_cubit.dart';
+import '../../features/post/presentation/post_failure_message.dart';
 
 /// The main tabs, in branch order of the router's shell route.
 enum MainTab { home, search, explore, profile }
@@ -28,12 +31,19 @@ class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      extendBody: true,
-      body: child,
-      bottomNavigationBar: _FloatingTabBar(
-        currentTab: currentTab,
-        onTabSelected: onTabSelected,
+    return BlocListener<PostEngagementCubit, PostEngagementState>(
+      // A like / save that the API refused (it was rolled back).
+      listenWhen: (previous, current) =>
+          current.failureCount != previous.failureCount,
+      listener: (context, state) =>
+          context.showMessage(state.failure!.message(context.l10n)),
+      child: Scaffold(
+        extendBody: true,
+        body: child,
+        bottomNavigationBar: _FloatingTabBar(
+          currentTab: currentTab,
+          onTabSelected: onTabSelected,
+        ),
       ),
     );
   }

@@ -1,5 +1,5 @@
-import '../constants/app_assets.dart';
 import '../error/exceptions.dart';
+import 'fake_content.dart';
 
 /// In-memory stand-in for the Stylper REST API, used until the real backend
 /// exists. Each method mirrors one endpoint, takes/returns JSON-like maps and
@@ -27,9 +27,15 @@ class FakeBackend {
   final _usernames = <String, String>{}; // username → userId
   final _bodyMetrics = <String, Map<String, Object?>>{}; // userId → private
   final _outfitLikes = <String, List<Map<String, Object?>>>{};
+  final _postLikes = <String, int>{}; // postId → like count
+  final _likedBy = <String, Set<String>>{}; // postId → userIds
+  final _savedBy = <String, Set<String>>{}; // postId → userIds
   var _nextId = 1;
 
   void _seed() {
+    for (final MapEntry(key: id, value: post) in FakeContent.posts.entries) {
+      _postLikes[id] = post['likes']! as int;
+    }
     _createUser(
       email: demoEmail,
       password: demoPassword,
@@ -182,106 +188,138 @@ class FakeBackend {
     return Map.of(user);
   }
 
-  /// GET /feed/home → `{city, featured, peopleWearing, trending}`. Public, so
-  /// guests get it too. Seeded with the sample content of the Figma "Home"
-  /// frames (2775:2563, 2775:2656, 2775:2748).
-  Future<Map<String, Object?>> homeFeed() async {
+  /// GET /feed/home → `{city, styles, featured, peopleWearing, trending}`.
+  /// Public, so guests get it too; with a [token], `likedByMe` / `savedByMe`
+  /// are the signed-in user's. Featured posts carry their `styles` so the app
+  /// can filter the carousel by the selected style.
+  Future<Map<String, Object?>> homeFeed({String? token}) async {
     await _delay();
-    Map<String, Object?> featured({
-      required String id,
-      required String name,
-      required String handle,
-      required String image,
-      required String avatar,
-    }) => {
-      'id': id,
-      'image': image,
-      'likes': 1248,
-      'comments': 48,
-      'tags': ['Casual', 'Minimal', 'Street'],
-      'author': {
-        'id': 'author_$handle',
-        'name': name,
-        'handle': handle,
-        'avatar': avatar,
-      },
-    };
-    Map<String, Object?> trending(
-      String id,
-      String image,
-      double aspectRatio,
-      String caption,
-      String handle,
-    ) => {
-      'id': id,
-      'image': image,
-      'aspectRatio': aspectRatio,
-      'caption': caption,
-      'authorHandle': handle,
-    };
-
+    final userId = _tokens[token];
     return {
-      'city': 'Tashkent',
+      'city': FakeContent.city,
+      'styles': FakeContent.styles,
       'featured': [
-        featured(
-          id: 'post_1',
-          name: 'Mina Cho',
-          handle: 'fozil',
-          image: AppImages.homeHeroMina,
-          avatar: AppImages.homeAvatarMina,
-        ),
-        // Slides 2 and 3 use stand-in photos until their Figma images are
-        // exported.
-        featured(
-          id: 'post_2',
-          name: 'Fozil Can Fly',
-          handle: 'fozil',
-          image: AppImages.homeHeroFozil,
-          avatar: AppImages.homeAvatarFozil,
-        ),
-        featured(
-          id: 'post_3',
-          name: 'Bob',
-          handle: 'Bobur',
-          image: AppImages.homeHeroBob,
-          avatar: AppImages.homeAvatarBob,
-        ),
+        for (final item in FakeContent.featured)
+          {..._postSummary(item['post']!, userId), 'image': item['image']},
       ],
       'peopleWearing': [
-        {'id': 'person_1', 'name': 'Sofia', 'photo': AppImages.homePersonSofia},
-        {'id': 'person_2', 'name': 'Leo', 'photo': AppImages.homePersonLeo},
-        {'id': 'person_3', 'name': 'Amin', 'photo': AppImages.homePersonAmin},
+        for (final person in FakeContent.peopleWearing)
+          {
+            'id': person['id'],
+            'name': person['name'],
+            'photo': person['photo'],
+            'postId': person['post'],
+          },
       ],
-      'trending': [
-        trending(
-          'trend_1',
-          AppImages.homeTrendUtilityChic,
-          177 / 264,
-          'Utility chic',
-          'leo',
-        ),
-        trending(
-          'trend_2',
-          AppImages.homeTrendSoftNeutrals,
-          177 / 228,
-          'Soft neutrals',
-          'bob',
-        ),
-        trending(
-          'trend_3',
-          AppImages.homeTrendNoWords,
-          177 / 238,
-          'No words',
-          'zokir',
-        ),
-        trending(
-          'trend_4',
-          AppImages.homeTrendLikeMyOutfit,
-          180 / 197,
-          'I like my Outfit',
-          'fozil',
-        ),
+      'trending': [for (final id in FakeContent.trending) _postPreview(id)],
+    };
+  }
+
+  /// GET /posts/:id → `{id, image, author, likes, comments, likedByMe,
+  /// savedByMe, styles, products, similar}`. Public. Each product carries
+  /// `{id, name, shortName, brand, price: {amount, currency}, image,
+  /// styledCount, tag: {x, y}}`, the tag as fractions of the photo.
+  Future<Map<String, Object?>> post(String id, {String? token}) async {
+    await _delay();
+    final post = _postOr404(id);
+    return {
+      ..._postSummary(id, _tokens[token]),
+      'products': [
+        for (final tag in post['products']! as List<Object?>)
+          _taggedProduct(tag! as Map<String, Object?>),
       ],
+      'similar': [
+        for (final similar in post['similar']! as List<Object?>)
+          _postPreview(similar! as String),
+      ],
+    };
+  }
+
+  /// POST /posts/:id/like (liked) / DELETE /posts/:id/like →
+  /// `{likes, likedByMe, savedByMe}`. Signed-in users only.
+  Future<Map<String, Object?>> setLiked(
+    String? token,
+    String id, {
+    required bool liked,
+  }) async {
+    await _delay();
+    final userId = _userIdFor(token ?? '');
+    _postOr404(id);
+    final likers = _likedBy.putIfAbsent(id, () => {});
+    final changed = liked ? likers.add(userId) : likers.remove(userId);
+    if (changed) _postLikes[id] = _postLikes[id]! + (liked ? 1 : -1);
+    return _engagement(id, userId);
+  }
+
+  /// PUT /posts/:id/save (saved) / DELETE /posts/:id/save →
+  /// `{likes, likedByMe, savedByMe}`. Signed-in users only.
+  Future<Map<String, Object?>> setSaved(
+    String? token,
+    String id, {
+    required bool saved,
+  }) async {
+    await _delay();
+    final userId = _userIdFor(token ?? '');
+    _postOr404(id);
+    final savers = _savedBy.putIfAbsent(id, () => {});
+    saved ? savers.add(userId) : savers.remove(userId);
+    return _engagement(id, userId);
+  }
+
+  Map<String, Object?> _postOr404(String id) =>
+      FakeContent.posts[id] ??
+      (throw const ServerException(
+        statusCode: 404,
+        code: ApiErrorCodes.notFound,
+      ));
+
+  Map<String, Object?> _engagement(String postId, String? userId) => {
+    'likes': _postLikes[postId],
+    'likedByMe': _likedBy[postId]?.contains(userId) ?? false,
+    'savedByMe': _savedBy[postId]?.contains(userId) ?? false,
+  };
+
+  Map<String, Object?> _author(String id) => {
+    'id': id,
+    ...FakeContent.authors[id]!,
+  };
+
+  Map<String, Object?> _postSummary(String id, String? userId) {
+    final post = FakeContent.posts[id]!;
+    return {
+      'id': id,
+      'image': post['image'],
+      'author': _author(post['author']! as String),
+      'comments': post['comments'],
+      'styles': post['styles'],
+      ..._engagement(id, userId),
+    };
+  }
+
+  Map<String, Object?> _postPreview(String id) {
+    final post = FakeContent.posts[id]!;
+    final thumbnail = FakeContent.thumbnails[id];
+    return {
+      'id': id,
+      'image': thumbnail?.image ?? post['image'],
+      'aspectRatio': thumbnail?.aspectRatio ?? 390 / 516,
+      'caption': post['caption'],
+      'authorHandle': FakeContent.authors[post['author']]!['handle'],
+    };
+  }
+
+  Map<String, Object?> _taggedProduct(Map<String, Object?> tag) {
+    final id = tag['product']! as String;
+    final product = FakeContent.products[id]!;
+    return {
+      'id': id,
+      'name': product['name'],
+      'shortName': product['shortName'],
+      'brand': product['brand'],
+      'price': {'amount': product['price'], 'currency': 'USD'},
+      'image': product['image'],
+      'styledCount': product['styledCount'],
+      'tag': {'x': tag['x'], 'y': tag['y']},
     };
   }
 }
