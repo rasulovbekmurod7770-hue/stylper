@@ -33,6 +33,18 @@ abstract final class AppColors {
   static const accentSurface = Color(0x0FFF325B); // 6%
   static const accentBorder = Color(0x33FF325B); // 20%
 
+  // Home feed
+  static const hairline = Color(0xFFEBEBE8);
+  static const navBorder = Color(0xFF424242);
+  static const iconInactive = Color(0xFF767680);
+
+  /// Top-to-bottom brand gradient ("stylper-1" → pink): selected tab, chips.
+  static const brandGradient = LinearGradient(
+    begin: Alignment.topCenter,
+    end: Alignment.bottomCenter,
+    colors: [brandRed, brandPink],
+  );
+
   // Switch track: accent with a 20% black overlay, as in the Figma switch.
   static const switchTrackOn = Color(0xFFCC2849);
   static const switchTrackOff = Color(0x261A1A1A);

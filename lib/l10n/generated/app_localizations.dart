@@ -448,23 +448,95 @@ abstract class AppLocalizations {
   /// **'bottom'**
   String get bottomsCategory;
 
-  /// No description provided for @homePlaceholderTitle.
+  /// No description provided for @homeForYou.
   ///
   /// In en, this message translates to:
-  /// **'Your style feed is coming soon'**
-  String get homePlaceholderTitle;
+  /// **'For you'**
+  String get homeForYou;
 
-  /// No description provided for @homeGuestMessage.
+  /// No description provided for @homeFollowing.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get homeFollowing;
+
+  /// No description provided for @homeForYouTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s style inspiration'**
+  String get homeForYouTitle;
+
+  /// No description provided for @homePeopleWearing.
+  ///
+  /// In en, this message translates to:
+  /// **'People wearing'**
+  String get homePeopleWearing;
+
+  /// No description provided for @homeTrendingIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Trending in {city}'**
+  String homeTrendingIn(String city);
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get retry;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get comingSoon;
+
+  /// No description provided for @tabHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get tabHome;
+
+  /// No description provided for @tabSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get tabSearch;
+
+  /// No description provided for @tabCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'New post'**
+  String get tabCreate;
+
+  /// No description provided for @tabExplore.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get tabExplore;
+
+  /// No description provided for @tabProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get tabProfile;
+
+  /// No description provided for @profilePlaceholderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your profile is coming soon'**
+  String get profilePlaceholderTitle;
+
+  /// No description provided for @profileGuestMessage.
   ///
   /// In en, this message translates to:
   /// **'You\'re browsing as a guest.'**
-  String get homeGuestMessage;
+  String get profileGuestMessage;
 
-  /// No description provided for @homeSignedInMessage.
+  /// No description provided for @profileSignedInMessage.
   ///
   /// In en, this message translates to:
   /// **'Signed in as {name}'**
-  String homeSignedInMessage(String name);
+  String profileSignedInMessage(String name);
 
   /// No description provided for @signOut.
   ///

@@ -13,6 +13,11 @@ import '../../features/auth/presentation/cubits/forgot_password_cubit.dart';
 import '../../features/auth/presentation/cubits/sign_in_cubit.dart';
 import '../../features/auth/presentation/cubits/sign_up_cubit.dart';
 import '../../features/auth/presentation/cubits/social_sign_in_cubit.dart';
+import '../../features/home/data/datasources/home_remote_data_source.dart';
+import '../../features/home/data/repositories/home_repository_impl.dart';
+import '../../features/home/domain/repositories/home_repository.dart';
+import '../../features/home/domain/usecases/get_home_feed.dart';
+import '../../features/home/presentation/cubits/home_feed_cubit.dart';
 import '../../features/onboarding/data/datasources/onboarding_remote_data_source.dart';
 import '../../features/onboarding/data/datasources/style_quiz_local_data_source.dart';
 import '../../features/onboarding/data/repositories/onboarding_repository_impl.dart';
@@ -32,7 +37,8 @@ void configureDependencies({FakeBackend? backend}) {
     // ── Backend ────────────────────────────────────────────────────────────
     // Until the Stylper API exists, remote data sources talk to an in-memory
     // FakeBackend. When it's ready, register HTTP implementations of
-    // AuthRemoteDataSource and OnboardingRemoteDataSource here instead;
+    // AuthRemoteDataSource, OnboardingRemoteDataSource and HomeRemoteDataSource
+    // here instead;
     // nothing outside this block needs to change.
     ..registerLazySingleton(() => backend ?? FakeBackend())
     ..registerLazySingleton<AuthRemoteDataSource>(
@@ -40,6 +46,9 @@ void configureDependencies({FakeBackend? backend}) {
     )
     ..registerLazySingleton<OnboardingRemoteDataSource>(
       () => FakeOnboardingRemoteDataSource(sl(), sl()),
+    )
+    ..registerLazySingleton<HomeRemoteDataSource>(
+      () => FakeHomeRemoteDataSource(sl()),
     )
     // ───────────────────────────────────────────────────────────────────────
     ..registerLazySingleton(StyleQuizLocalDataSource.new)
@@ -49,6 +58,9 @@ void configureDependencies({FakeBackend? backend}) {
     )
     ..registerLazySingleton<OnboardingRepository>(
       () => OnboardingRepositoryImpl(remote: sl(), quizLocal: sl()),
+    )
+    ..registerLazySingleton<HomeRepository>(
+      () => HomeRepositoryImpl(remote: sl()),
     )
     // Use cases
     ..registerFactory(() => RestoreSession(sl()))
@@ -61,6 +73,7 @@ void configureDependencies({FakeBackend? backend}) {
     ..registerFactory(() => SaveProfile(sl(), sl()))
     ..registerFactory(() => GetStyleQuiz(sl()))
     ..registerFactory(() => CompleteStyleQuiz(sl(), sl()))
+    ..registerFactory(() => GetHomeFeed(sl()))
     // Presentation
     ..registerLazySingleton(
       () => SessionCubit(
@@ -74,5 +87,6 @@ void configureDependencies({FakeBackend? backend}) {
     ..registerFactory(() => ForgotPasswordCubit(sl()))
     ..registerFactory(() => SocialSignInCubit(sl()))
     ..registerFactory(() => ProfileSetupCubit(sl()))
-    ..registerFactory(() => StyleQuizCubit(sl(), sl()));
+    ..registerFactory(() => StyleQuizCubit(sl(), sl()))
+    ..registerFactory(() => HomeFeedCubit(sl()));
 }

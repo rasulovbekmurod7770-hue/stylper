@@ -38,6 +38,20 @@ void main() {
     expect(redirectFor(const SessionGuest(), AppRoutes.home), isNull);
   });
 
+  test('guests can switch between the main tabs', () {
+    for (final tab in AppRoutes.mainTabs) {
+      expect(redirectFor(const SessionGuest(), tab), isNull, reason: tab);
+    }
+    expect(
+      redirectFor(const SessionGuest(), AppRoutes.styleQuiz),
+      AppRoutes.home,
+    );
+    expect(
+      redirectFor(const SessionUnauthenticated(), AppRoutes.search),
+      AppRoutes.welcome,
+    );
+  });
+
   test('new accounts are sent through onboarding', () {
     expect(
       redirectFor(const SessionAuthenticated(newUser), AppRoutes.signUp),

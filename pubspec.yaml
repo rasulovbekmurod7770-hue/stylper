@@ -37,6 +37,7 @@ flutter:
     - assets/icons/
     - assets/images/welcome/
     - assets/images/style_quiz/
+    - assets/images/home/
 
   fonts:
     - family: Inter

@@ -1,3 +1,4 @@
+import '../constants/app_assets.dart';
 import '../error/exceptions.dart';
 
 /// In-memory stand-in for the Stylper REST API, used until the real backend
@@ -179,5 +180,108 @@ class FakeBackend {
     }
     final user = _users[userId]!..['onboardingCompleted'] = true;
     return Map.of(user);
+  }
+
+  /// GET /feed/home → `{city, featured, peopleWearing, trending}`. Public, so
+  /// guests get it too. Seeded with the sample content of the Figma "Home"
+  /// frames (2775:2563, 2775:2656, 2775:2748).
+  Future<Map<String, Object?>> homeFeed() async {
+    await _delay();
+    Map<String, Object?> featured({
+      required String id,
+      required String name,
+      required String handle,
+      required String image,
+      required String avatar,
+    }) => {
+      'id': id,
+      'image': image,
+      'likes': 1248,
+      'comments': 48,
+      'tags': ['Casual', 'Minimal', 'Street'],
+      'author': {
+        'id': 'author_$handle',
+        'name': name,
+        'handle': handle,
+        'avatar': avatar,
+      },
+    };
+    Map<String, Object?> trending(
+      String id,
+      String image,
+      double aspectRatio,
+      String caption,
+      String handle,
+    ) => {
+      'id': id,
+      'image': image,
+      'aspectRatio': aspectRatio,
+      'caption': caption,
+      'authorHandle': handle,
+    };
+
+    return {
+      'city': 'Tashkent',
+      'featured': [
+        featured(
+          id: 'post_1',
+          name: 'Mina Cho',
+          handle: 'fozil',
+          image: AppImages.homeHeroMina,
+          avatar: AppImages.homeAvatarMina,
+        ),
+        // Slides 2 and 3 use stand-in photos until their Figma images are
+        // exported.
+        featured(
+          id: 'post_2',
+          name: 'Fozil Can Fly',
+          handle: 'fozil',
+          image: AppImages.homeHeroFozil,
+          avatar: AppImages.homeAvatarFozil,
+        ),
+        featured(
+          id: 'post_3',
+          name: 'Bob',
+          handle: 'Bobur',
+          image: AppImages.homeHeroBob,
+          avatar: AppImages.homeAvatarBob,
+        ),
+      ],
+      'peopleWearing': [
+        {'id': 'person_1', 'name': 'Sofia', 'photo': AppImages.homePersonSofia},
+        {'id': 'person_2', 'name': 'Leo', 'photo': AppImages.homePersonLeo},
+        {'id': 'person_3', 'name': 'Amin', 'photo': AppImages.homePersonAmin},
+      ],
+      'trending': [
+        trending(
+          'trend_1',
+          AppImages.homeTrendUtilityChic,
+          177 / 264,
+          'Utility chic',
+          'leo',
+        ),
+        trending(
+          'trend_2',
+          AppImages.homeTrendSoftNeutrals,
+          177 / 228,
+          'Soft neutrals',
+          'bob',
+        ),
+        trending(
+          'trend_3',
+          AppImages.homeTrendNoWords,
+          177 / 238,
+          'No words',
+          'zokir',
+        ),
+        trending(
+          'trend_4',
+          AppImages.homeTrendLikeMyOutfit,
+          180 / 197,
+          'I like my Outfit',
+          'fozil',
+        ),
+      ],
+    };
   }
 }

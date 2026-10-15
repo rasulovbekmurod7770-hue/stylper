@@ -3355,4 +3355,14 @@
       </frame>
     </frame>
   </frame>
-</canvas>IMPORTANT: After you call this tool, you MUST call get_design_context if trying to implement the design, since this tool only returns metadata. If you do not call get_design_context, the agent will not be able to implement the design.
+  <rounded-rectangle id="2918:655" name="image 51" x="-2752.60009765625" y="9781.56640625" width="626.2000122070312" height="939.2999877929688" />
+  <rounded-rectangle id="2918:656" name="image 52" x="-2126.39990234375" y="9781.56640625" width="626.2000122070312" height="939.2999877929688" />
+  <rounded-rectangle id="2918:657" name="image 53" x="-2126.39990234375" y="9251.25390625" width="626.2000122070312" height="579.2349853515625" />
+  <rounded-rectangle id="2918:658" name="image 54" x="-1500.2001953125" y="9781.56640625" width="626.2000122070312" height="939.2999877929688" />
+  <rounded-rectangle id="2918:659" name="image 55" x="-1500" y="9216" width="626.2000122070312" height="649.6824951171875" />
+  <rounded-rectangle id="2918:660" name="image 56" x="-2752.60009765625" y="9288.43359375" width="626.2000122070312" height="542.0543823242188" />
+  <rounded-rectangle id="2918:661" name="image 57" x="-3378.7998046875" y="9229.23828125" width="626.2000122070312" height="660.4453125" />
+  <rounded-rectangle id="2918:662" name="image 58" x="-4005" y="9172" width="626.2000122070312" height="693.712158203125" />
+  <rounded-rectangle id="2918:663" name="image 59" x="-4005" y="9807.984375" width="626.2000122070312" height="939.2999877929688" />
+  <rounded-rectangle id="2918:664" name="image 60" x="-3378.7998046875" y="9807.984375" width="626.2000122070312" height="939.2999877929688" />
+</canvas>

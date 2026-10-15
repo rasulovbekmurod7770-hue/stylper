@@ -24,6 +24,7 @@ PAIRS = {
     'profile_setup': '04_profile_setup.png',
     'style_quiz': '05_intro_dress_like_you.png',
     'forgot_password': '06_forgot_password.png',
+    'home': '07_home.png',  # Figma render is 311×1024 (scaled)
 }
 
 

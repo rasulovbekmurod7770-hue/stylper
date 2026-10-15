@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/l10n/l10n.dart';
+import '../../../../core/presentation/image_source.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/theme/css_gradient.dart';
@@ -27,12 +28,28 @@ class StyleQuizPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
 
-    return BlocListener<StyleQuizCubit, StyleQuizState>(
-      listenWhen: (previous, current) =>
-          current.status == StyleQuizStatus.failure &&
-          previous.status != current.status,
-      listener: (context, state) =>
-          context.showMessage(state.failure!.message(l10n)),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<StyleQuizCubit, StyleQuizState>(
+          listenWhen: (previous, current) =>
+              current.status == StyleQuizStatus.failure &&
+              previous.status != current.status,
+          listener: (context, state) =>
+              context.showMessage(state.failure!.message(l10n)),
+        ),
+        // Decode every item up front so flipping through them never shows
+        // an empty slot.
+        BlocListener<StyleQuizCubit, StyleQuizState>(
+          listenWhen: (previous, current) =>
+              current.quiz != null && previous.quiz != current.quiz,
+          listener: (context, state) {
+            final quiz = state.quiz!;
+            for (final item in [...quiz.tops, ...quiz.bottoms]) {
+              precacheImage(imageFromPath(item.imagePath), context);
+            }
+          },
+        ),
+      ],
       child: Scaffold(
         body: SafeArea(
           child: Center(
@@ -74,6 +91,7 @@ class _QuizCanvas extends StatelessWidget {
           _ItemImage(
             item: top,
             rect: const Rect.fromLTWH(79.52, 153, 225.128, 185.832),
+            alignment: Alignment.bottomCenter,
           ),
         _ChevronButton(
           asset: AppIcons.chevronLeftTall,
@@ -105,6 +123,7 @@ class _QuizCanvas extends StatelessWidget {
           _ItemImage(
             item: bottom,
             rect: const Rect.fromLTWH(106.55, 362.84, 174.995, 309.158),
+            alignment: Alignment.topCenter,
           ),
         Positioned(
           left: 97,
@@ -173,22 +192,34 @@ class _QuizTitle extends StatelessWidget {
   }
 }
 
+/// Items come in different proportions, so each one is fitted whole inside
+/// [rect] and pinned to [alignment] — tops sit on the bottoms' waistline.
 class _ItemImage extends StatelessWidget {
-  const _ItemImage({required this.item, required this.rect});
+  const _ItemImage({
+    required this.item,
+    required this.rect,
+    required this.alignment,
+  });
 
   final OutfitItem item;
   final Rect rect;
+  final Alignment alignment;
 
   @override
   Widget build(BuildContext context) {
-    final path = item.imagePath;
     return Positioned.fromRect(
       rect: rect,
       child: AnimatedSwitcher(
         duration: const Duration(milliseconds: 220),
-        child: path.startsWith('http')
-            ? Image.network(path, key: ValueKey(item.id), fit: BoxFit.cover)
-            : Image.asset(path, key: ValueKey(item.id), fit: BoxFit.cover),
+        // Fill the rect so [alignment] applies, even mid-transition.
+        layoutBuilder: (current, previous) =>
+            Stack(fit: StackFit.expand, children: [...previous, ?current]),
+        child: Image(
+          key: ValueKey(item.id),
+          image: imageFromPath(item.imagePath),
+          fit: BoxFit.contain,
+          alignment: alignment,
+        ),
       ),
     );
   }

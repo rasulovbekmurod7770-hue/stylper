@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../helpers/screen_fixtures.dart';
 import '../helpers/screen_harness.dart';
 
-/// Every auth / onboarding screen must lay out without overflow in each
+/// Every designed screen must lay out without overflow in each
 /// language, on the Figma frame and on a small Android phone.
 void main() {
   const devices = {
@@ -17,7 +17,7 @@ void main() {
 
   for (final locale in const [Locale('en'), Locale('ru'), Locale('uz')]) {
     for (final MapEntry(key: device, value: spec) in devices.entries) {
-      for (final fixture in authScreenFixtures()) {
+      for (final fixture in screenFixtures()) {
         testWidgets('${fixture.name} · ${locale.languageCode} · $device', (
           tester,
         ) async {

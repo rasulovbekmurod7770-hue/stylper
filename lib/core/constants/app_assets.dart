@@ -15,6 +15,17 @@ abstract final class AppIcons {
   static const googleLogo = '$_dir/google_logo.svg';
   static const appleLogo = '$_dir/apple_logo.svg';
   static const stylperWordmark = '$_dir/stylper_wordmark.svg';
+
+  // Home (Figma 2775:2563)
+  static const stylperLogoGradient = '$_dir/stylper_logo_gradient.svg';
+  static const heart = '$_dir/heart.svg';
+  static const messageCircle = '$_dir/message_circle.svg';
+  static const mapPin = '$_dir/map_pin.svg';
+  static const tabHome = '$_dir/tab_home.svg';
+  static const tabSearch = '$_dir/tab_search.svg';
+  static const tabCreate = '$_dir/tab_create.svg';
+  static const tabExplore = '$_dir/tab_explore.svg';
+  static const tabProfile = '$_dir/tab_profile.svg';
 }
 
 abstract final class AppImages {
@@ -23,8 +34,41 @@ abstract final class AppImages {
   static const welcomeOutfit3 = 'assets/images/welcome/outfit_3.webp';
   static const welcomeOutfit4 = 'assets/images/welcome/outfit_4.webp';
 
-  static const quizWhiteTShirt =
-      'assets/images/style_quiz/white_tshirt_terra_pro.webp';
-  static const quizBaggyJeans =
-      'assets/images/style_quiz/baggy_jeans_kink.webp';
+  static const _quiz = 'assets/images/style_quiz';
+
+  // Tops
+  static const quizWhiteTShirt = '$_quiz/white_tshirt_terra_pro.webp';
+  static const quizStripedLongSleeve = '$_quiz/striped_long_sleeve_uniqlo.webp';
+  static const quizCottonCardigan = '$_quiz/cotton_cardigan_cos.webp';
+  static const quizOversizedWhiteTShirt =
+      '$_quiz/oversized_white_tshirt_zara.webp';
+  static const quizRugbyPoloSweater = '$_quiz/rugby_polo_sweater_arket.webp';
+  static const quizWaffleLongSleeve = '$_quiz/waffle_long_sleeve_uniqlo.webp';
+
+  // Bottoms
+  static const quizBaggyJeans = '$_quiz/baggy_jeans_kink.webp';
+  static const quizBarrelLooseFitJeans =
+      '$_quiz/barrel_loose_fit_jeans_cos.webp';
+  static const quizColoredDenimJeans = '$_quiz/colored_denim_jeans_arket.webp';
+  static const quizEcruLooseFitJeans =
+      '$_quiz/loose_fit_jeans_ecru_uniqlo.webp';
+  static const quizVintageJeans = '$_quiz/vintage_jeans_zara.webp';
+  static const quizWideLegTrousers =
+      '$_quiz/wide_leg_tailored_trousers_zara.webp';
+
+  // Home feed seed content (fake backend), pre-cropped as in Figma 2775:2563.
+  static const _home = 'assets/images/home';
+  static const homeHeroMina = '$_home/hero_mina.webp';
+  static const homeAvatarMina = '$_home/avatar_mina.webp';
+  static const homeHeroFozil = '$_home/hero_fozil.webp';
+  static const homeAvatarFozil = '$_home/avatar_fozil.webp';
+  static const homeHeroBob = '$_home/hero_bob.webp';
+  static const homeAvatarBob = '$_home/avatar_bob.webp';
+  static const homePersonSofia = '$_home/person_sofia.webp';
+  static const homePersonLeo = '$_home/person_leo.webp';
+  static const homePersonAmin = '$_home/person_amin.webp';
+  static const homeTrendUtilityChic = '$_home/trend_utility_chic.webp';
+  static const homeTrendSoftNeutrals = '$_home/trend_soft_neutrals.webp';
+  static const homeTrendNoWords = '$_home/trend_no_words.webp';
+  static const homeTrendLikeMyOutfit = '$_home/trend_like_my_outfit.webp';
 }

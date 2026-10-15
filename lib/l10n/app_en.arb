@@ -99,10 +99,27 @@
   "topsCategory": "top",
   "bottomsCategory": "bottom",
 
-  "homePlaceholderTitle": "Your style feed is coming soon",
-  "homeGuestMessage": "You're browsing as a guest.",
-  "homeSignedInMessage": "Signed in as {name}",
-  "@homeSignedInMessage": {
+  "homeForYou": "For you",
+  "homeFollowing": "Following",
+  "homeForYouTitle": "Today's style inspiration",
+  "homePeopleWearing": "People wearing",
+  "homeTrendingIn": "Trending in {city}",
+  "@homeTrendingIn": {
+    "placeholders": { "city": { "type": "String" } }
+  },
+  "retry": "Try again",
+  "comingSoon": "Coming soon",
+
+  "tabHome": "Home",
+  "tabSearch": "Search",
+  "tabCreate": "New post",
+  "tabExplore": "Explore",
+  "tabProfile": "Profile",
+
+  "profilePlaceholderTitle": "Your profile is coming soon",
+  "profileGuestMessage": "You're browsing as a guest.",
+  "profileSignedInMessage": "Signed in as {name}",
+  "@profileSignedInMessage": {
     "placeholders": { "name": { "type": "String" } }
   },
   "signOut": "Sign out",

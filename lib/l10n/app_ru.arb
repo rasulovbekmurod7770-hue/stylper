@@ -66,9 +66,23 @@
   "topsCategory": "верх",
   "bottomsCategory": "низ",
 
-  "homePlaceholderTitle": "Ваша лента стилей скоро появится",
-  "homeGuestMessage": "Вы просматриваете как гость.",
-  "homeSignedInMessage": "Вы вошли как {name}",
+  "homeForYou": "Для вас",
+  "homeFollowing": "Подписки",
+  "homeForYouTitle": "Вдохновение на сегодня",
+  "homePeopleWearing": "Что носят",
+  "homeTrendingIn": "В тренде: {city}",
+  "retry": "Повторить",
+  "comingSoon": "Скоро",
+
+  "tabHome": "Главная",
+  "tabSearch": "Поиск",
+  "tabCreate": "Новый пост",
+  "tabExplore": "Обзор",
+  "tabProfile": "Профиль",
+
+  "profilePlaceholderTitle": "Ваш профиль скоро появится",
+  "profileGuestMessage": "Вы просматриваете как гость.",
+  "profileSignedInMessage": "Вы вошли как {name}",
   "signOut": "Выйти",
 
   "errorInvalidCredentials": "Неверная почта или пароль.",

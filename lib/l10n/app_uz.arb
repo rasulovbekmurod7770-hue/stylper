@@ -66,9 +66,23 @@
   "topsCategory": "ustki kiyim",
   "bottomsCategory": "pastki kiyim",
 
-  "homePlaceholderTitle": "Uslublar lentangiz tez orada paydo boʻladi",
-  "homeGuestMessage": "Siz mehmon sifatida koʻrib chiqyapsiz.",
-  "homeSignedInMessage": "{name} sifatida kirdingiz",
+  "homeForYou": "Siz uchun",
+  "homeFollowing": "Obunalar",
+  "homeForYouTitle": "Bugungi uslub ilhomi",
+  "homePeopleWearing": "Odamlar nima kiyyapti",
+  "homeTrendingIn": "Trendda: {city}",
+  "retry": "Qayta urinish",
+  "comingSoon": "Tez kunda",
+
+  "tabHome": "Bosh sahifa",
+  "tabSearch": "Qidiruv",
+  "tabCreate": "Yangi post",
+  "tabExplore": "Kashf qilish",
+  "tabProfile": "Profil",
+
+  "profilePlaceholderTitle": "Profilingiz tez orada paydo boʻladi",
+  "profileGuestMessage": "Siz mehmon sifatida koʻrib chiqyapsiz.",
+  "profileSignedInMessage": "{name} sifatida kirdingiz",
   "signOut": "Chiqish",
 
   "errorInvalidCredentials": "Elektron pochta yoki parol notoʻgʻri.",

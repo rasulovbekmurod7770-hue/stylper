@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/l10n/l10n.dart';
 import '../../core/router/app_routes.dart';
 import '../../features/auth/presentation/cubits/forgot_password_cubit.dart';
 import '../../features/auth/presentation/cubits/sign_in_cubit.dart';
@@ -13,13 +14,17 @@ import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/pages/sign_in_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
 import '../../features/auth/presentation/pages/welcome_page.dart';
+import '../../features/home/presentation/cubits/home_feed_cubit.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/onboarding/presentation/cubits/profile_setup_cubit.dart';
 import '../../features/onboarding/presentation/cubits/style_quiz_cubit.dart';
 import '../../features/onboarding/presentation/pages/profile_setup_page.dart';
 import '../../features/onboarding/presentation/pages/style_quiz_page.dart';
+import '../../features/profile/presentation/pages/profile_page.dart';
 import '../di/injection.dart';
 import '../session/session_cubit.dart';
+import '../shell/app_shell.dart';
+import '../shell/tab_placeholder_page.dart';
 import 'splash_page.dart';
 
 GoRouter createRouter(SessionCubit session) => GoRouter(
@@ -82,10 +87,59 @@ GoRouter createRouter(SessionCubit session) => GoRouter(
         child: const StyleQuizPage(),
       ),
     ),
-    GoRoute(
-      path: AppRoutes.home,
-      builder: (context, state) =>
-          BlocProvider.value(value: session, child: const HomePage()),
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, shell) => AppShell(
+        currentTab: MainTab.values[shell.currentIndex],
+        onTabSelected: (tab) => shell.goBranch(
+          tab.index,
+          // Tapping the current tab again returns to its first screen.
+          initialLocation: tab.index == shell.currentIndex,
+        ),
+        child: shell,
+      ),
+      // One branch per MainTab, in the same order.
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.home,
+              builder: (context, state) => BlocProvider(
+                create: (_) => sl<HomeFeedCubit>()..load(),
+                child: const HomePage(),
+              ),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.search,
+              builder: (context, state) =>
+                  TabPlaceholderPage(title: context.l10n.tabSearch),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.explore,
+              builder: (context, state) =>
+                  TabPlaceholderPage(title: context.l10n.tabExplore),
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: AppRoutes.profile,
+              builder: (context, state) => BlocProvider.value(
+                value: session,
+                child: const ProfilePage(),
+              ),
+            ),
+          ],
+        ),
+      ],
     ),
   ],
 );
@@ -100,7 +154,7 @@ String? redirectFor(SessionState session, String location) {
     SessionUnknown() => at(AppRoutes.splash) ? null : AppRoutes.splash,
     SessionUnauthenticated() =>
       AppRoutes.isAuthRoute(location) ? null : AppRoutes.welcome,
-    SessionGuest() => at(AppRoutes.home) ? null : AppRoutes.home,
+    SessionGuest() => AppRoutes.isMainRoute(location) ? null : AppRoutes.home,
     SessionAuthenticated(:final user) when !user.onboardingCompleted =>
       AppRoutes.isOnboardingRoute(location)
           ? null

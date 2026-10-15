@@ -207,14 +207,51 @@ class AppLocalizationsUz extends AppLocalizations {
   String get bottomsCategory => 'pastki kiyim';
 
   @override
-  String get homePlaceholderTitle =>
-      'Uslublar lentangiz tez orada paydo boʻladi';
+  String get homeForYou => 'Siz uchun';
 
   @override
-  String get homeGuestMessage => 'Siz mehmon sifatida koʻrib chiqyapsiz.';
+  String get homeFollowing => 'Obunalar';
 
   @override
-  String homeSignedInMessage(String name) {
+  String get homeForYouTitle => 'Bugungi uslub ilhomi';
+
+  @override
+  String get homePeopleWearing => 'Odamlar nima kiyyapti';
+
+  @override
+  String homeTrendingIn(String city) {
+    return 'Trendda: $city';
+  }
+
+  @override
+  String get retry => 'Qayta urinish';
+
+  @override
+  String get comingSoon => 'Tez kunda';
+
+  @override
+  String get tabHome => 'Bosh sahifa';
+
+  @override
+  String get tabSearch => 'Qidiruv';
+
+  @override
+  String get tabCreate => 'Yangi post';
+
+  @override
+  String get tabExplore => 'Kashf qilish';
+
+  @override
+  String get tabProfile => 'Profil';
+
+  @override
+  String get profilePlaceholderTitle => 'Profilingiz tez orada paydo boʻladi';
+
+  @override
+  String get profileGuestMessage => 'Siz mehmon sifatida koʻrib chiqyapsiz.';
+
+  @override
+  String profileSignedInMessage(String name) {
     return '$name sifatida kirdingiz';
   }
 

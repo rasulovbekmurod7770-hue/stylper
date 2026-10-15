@@ -206,13 +206,51 @@ class AppLocalizationsRu extends AppLocalizations {
   String get bottomsCategory => 'низ';
 
   @override
-  String get homePlaceholderTitle => 'Ваша лента стилей скоро появится';
+  String get homeForYou => 'Для вас';
 
   @override
-  String get homeGuestMessage => 'Вы просматриваете как гость.';
+  String get homeFollowing => 'Подписки';
 
   @override
-  String homeSignedInMessage(String name) {
+  String get homeForYouTitle => 'Вдохновение на сегодня';
+
+  @override
+  String get homePeopleWearing => 'Что носят';
+
+  @override
+  String homeTrendingIn(String city) {
+    return 'В тренде: $city';
+  }
+
+  @override
+  String get retry => 'Повторить';
+
+  @override
+  String get comingSoon => 'Скоро';
+
+  @override
+  String get tabHome => 'Главная';
+
+  @override
+  String get tabSearch => 'Поиск';
+
+  @override
+  String get tabCreate => 'Новый пост';
+
+  @override
+  String get tabExplore => 'Обзор';
+
+  @override
+  String get tabProfile => 'Профиль';
+
+  @override
+  String get profilePlaceholderTitle => 'Ваш профиль скоро появится';
+
+  @override
+  String get profileGuestMessage => 'Вы просматриваете как гость.';
+
+  @override
+  String profileSignedInMessage(String name) {
     return 'Вы вошли как $name';
   }
 

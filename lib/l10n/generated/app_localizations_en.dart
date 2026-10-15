@@ -206,13 +206,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get bottomsCategory => 'bottom';
 
   @override
-  String get homePlaceholderTitle => 'Your style feed is coming soon';
+  String get homeForYou => 'For you';
 
   @override
-  String get homeGuestMessage => 'You\'re browsing as a guest.';
+  String get homeFollowing => 'Following';
 
   @override
-  String homeSignedInMessage(String name) {
+  String get homeForYouTitle => 'Today\'s style inspiration';
+
+  @override
+  String get homePeopleWearing => 'People wearing';
+
+  @override
+  String homeTrendingIn(String city) {
+    return 'Trending in $city';
+  }
+
+  @override
+  String get retry => 'Try again';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get tabHome => 'Home';
+
+  @override
+  String get tabSearch => 'Search';
+
+  @override
+  String get tabCreate => 'New post';
+
+  @override
+  String get tabExplore => 'Explore';
+
+  @override
+  String get tabProfile => 'Profile';
+
+  @override
+  String get profilePlaceholderTitle => 'Your profile is coming soon';
+
+  @override
+  String get profileGuestMessage => 'You\'re browsing as a guest.';
+
+  @override
+  String profileSignedInMessage(String name) {
     return 'Signed in as $name';
   }
 

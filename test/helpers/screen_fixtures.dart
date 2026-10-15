@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:stylper/app/shell/app_shell.dart';
 import 'package:stylper/core/constants/app_assets.dart';
+import 'package:stylper/core/fake_backend/fake_backend.dart';
 import 'package:stylper/core/usecase/usecase.dart';
 import 'package:stylper/features/auth/domain/usecases/email_auth.dart';
 import 'package:stylper/features/auth/domain/usecases/social_auth.dart';
@@ -15,6 +17,10 @@ import 'package:stylper/features/auth/presentation/pages/forgot_password_page.da
 import 'package:stylper/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:stylper/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:stylper/features/auth/presentation/pages/welcome_page.dart';
+import 'package:stylper/features/home/data/models/home_feed_json.dart';
+import 'package:stylper/features/home/domain/usecases/get_home_feed.dart';
+import 'package:stylper/features/home/presentation/cubits/home_feed_cubit.dart';
+import 'package:stylper/features/home/presentation/pages/home_page.dart';
 import 'package:stylper/features/onboarding/data/datasources/style_quiz_local_data_source.dart';
 import 'package:stylper/features/onboarding/domain/entities/profile_details.dart';
 import 'package:stylper/features/onboarding/domain/entities/style_quiz.dart';
@@ -42,7 +48,9 @@ class _MockGetStyleQuiz extends Mock implements GetStyleQuiz {}
 
 class _MockCompleteStyleQuiz extends Mock implements CompleteStyleQuiz {}
 
-/// One auth/onboarding screen with its cubits (backed by unused mock use
+class _MockGetHomeFeed extends Mock implements GetHomeFeed {}
+
+/// One app screen with its cubits (backed by unused mock use
 /// cases) and the sample content from the Figma frame.
 class ScreenFixture {
   const ScreenFixture({
@@ -50,6 +58,7 @@ class ScreenFixture {
     required this.build,
     this.images = const [],
     this.fillIn,
+    this.goldenSize = figmaFrameSize,
   });
 
   /// Also the golden file name: `goldens/screens/<name>.png`.
@@ -59,6 +68,9 @@ class ScreenFixture {
 
   /// Enters the design's sample content after the screen is pumped.
   final Future<void> Function(WidgetTester tester)? fillIn;
+
+  /// Viewport for the golden: the Figma frame size, so they can be compared.
+  final Size goldenSize;
 }
 
 StyleQuiz _bundledQuiz() {
@@ -82,7 +94,7 @@ Widget _withSocialSignIn(Widget page, BlocProvider<Object?> primary) =>
       child: page,
     );
 
-List<ScreenFixture> authScreenFixtures() {
+List<ScreenFixture> screenFixtures() {
   registerFallbackValue(const NoParams());
   late SignUpCubit signUp;
   late ProfileSetupCubit profileSetup;
@@ -149,7 +161,8 @@ List<ScreenFixture> authScreenFixtures() {
       name: 'style_quiz',
       build: () {
         final getQuiz = _MockGetStyleQuiz();
-        when(() => getQuiz(any())).thenAnswer((_) async => Right(_bundledQuiz()));
+        when(() => getQuiz(any()))
+            .thenAnswer((_) async => Right(_bundledQuiz()));
         return BlocProvider(
           create: (_) =>
               StyleQuizCubit(getQuiz, _MockCompleteStyleQuiz())..load(),
@@ -157,6 +170,39 @@ List<ScreenFixture> authScreenFixtures() {
         );
       },
       images: const [AppImages.quizWhiteTShirt, AppImages.quizBaggyJeans],
+    ),
+    ScreenFixture(
+      name: 'home',
+      goldenSize: const Size(390, 1287),
+      build: () {
+        final getFeed = _MockGetHomeFeed();
+        when(() => getFeed(any())).thenAnswer(
+          (_) async => Right(
+            HomeFeedJson.parse(
+              await FakeBackend(latency: Duration.zero).homeFeed(),
+            ),
+          ),
+        );
+        return AppShell(
+          currentTab: MainTab.home,
+          onTabSelected: (_) {},
+          child: BlocProvider(
+            create: (_) => HomeFeedCubit(getFeed)..load(),
+            child: const HomePage(),
+          ),
+        );
+      },
+      images: const [
+        AppImages.homeHeroMina,
+        AppImages.homeAvatarMina,
+        AppImages.homePersonSofia,
+        AppImages.homePersonLeo,
+        AppImages.homePersonAmin,
+        AppImages.homeTrendUtilityChic,
+        AppImages.homeTrendSoftNeutrals,
+        AppImages.homeTrendNoWords,
+        AppImages.homeTrendLikeMyOutfit,
+      ],
     ),
   ];
 }

@@ -42,6 +42,11 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  Future<void> openTab(WidgetTester tester, String label) async {
+    await tester.tap(find.bySemanticsLabel(label));
+    await tester.pumpAndSettle();
+  }
+
   Future<void> type(WidgetTester tester, int index, String text) async {
     await tester.enterText(find.byType(TextField).at(index), text);
     await tester.pump();
@@ -75,6 +80,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(HomePage), findsOneWidget);
+    await openTab(tester, 'Profile');
     expect(find.text('Signed in as new_user'), findsOneWidget);
   });
 
@@ -90,6 +96,7 @@ void main() {
     await tapText(tester, 'Sign In');
 
     expect(find.byType(HomePage), findsOneWidget);
+    await openTab(tester, 'Profile');
     await tapText(tester, 'Sign out');
     expect(find.byType(WelcomePage), findsOneWidget);
   });
@@ -112,6 +119,8 @@ void main() {
     await tapText(tester, 'Skip for now');
 
     expect(find.byType(HomePage), findsOneWidget);
+    expect(find.text('Mina Cho'), findsOneWidget, reason: 'feed is public');
+    await openTab(tester, 'Profile');
     expect(find.text("You're browsing as a guest."), findsOneWidget);
   });
 }

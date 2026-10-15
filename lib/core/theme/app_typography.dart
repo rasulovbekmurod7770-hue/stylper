@@ -255,4 +255,133 @@ abstract final class AppTypography {
     letterSpacing: 0.38,
     color: Color(0xFFFFFFFF),
   );
+
+  // Home feed (Figma 2775:2563). Figma's "normal" Poppins line height is
+  // 1.5em rounded to whole pixels (11→17, 12→18, 13→20); Flutter leaves the
+  // font's line gap out, so it's set explicitly, split evenly as in CSS.
+  static const feedTab = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 13.511,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textPrimary,
+  );
+
+  /// Upper-case the text where it's used; Figma sets it with text-transform.
+  static const feedSectionLabel = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 1.32,
+    height: 17 / 11,
+    leadingDistribution: TextLeadingDistribution.even,
+    color: AppColors.textMuted,
+  );
+
+  static const feedSectionTitle = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 22,
+    fontWeight: FontWeight.w600,
+    height: 28 / 22,
+    leadingDistribution: TextLeadingDistribution.even,
+    color: AppColors.textPrimary,
+  );
+
+  static const heroTag = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 11,
+    fontWeight: FontWeight.w500,
+    height: 17 / 11,
+    leadingDistribution: TextLeadingDistribution.even,
+    color: Color(0xFFFFFFFF),
+  );
+
+  static const feedAuthorName = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 13,
+    fontWeight: FontWeight.w600,
+    height: 20 / 13,
+    leadingDistribution: TextLeadingDistribution.even,
+    color: AppColors.textPrimary,
+  );
+
+  static const feedHandle = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 11,
+    fontWeight: FontWeight.w400,
+    height: 17 / 11,
+    leadingDistribution: TextLeadingDistribution.even,
+    color: AppColors.textMuted,
+  );
+
+  static const feedCount = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    height: 18 / 12,
+    leadingDistribution: TextLeadingDistribution.even,
+    color: AppColors.textMuted,
+  );
+
+  static const feedPersonName = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    height: 18 / 12,
+    leadingDistribution: TextLeadingDistribution.even,
+    color: AppColors.textPrimary,
+  );
+
+  static const _cardTextShadow = [
+    Shadow(color: Color(0x5E000000), offset: Offset(0, 1), blurRadius: 0.8),
+  ];
+
+  static const feedCardCaption = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    height: 18 / 12,
+    leadingDistribution: TextLeadingDistribution.even,
+    color: Color(0xFFFFFFFF),
+    shadows: _cardTextShadow,
+  );
+
+  static const feedCardHandle = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 11,
+    fontWeight: FontWeight.w400,
+    height: 17 / 11,
+    leadingDistribution: TextLeadingDistribution.even,
+    color: Color(0xCCFFFFFF),
+    shadows: _cardTextShadow,
+  );
 }
