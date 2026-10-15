@@ -108,9 +108,10 @@ class _Header extends StatelessWidget {
         clipBehavior: Clip.none,
         alignment: Alignment.topCenter,
         children: [
-          // Figma puts the logo 2px above the status bar's bottom edge.
+          // Figma starts the logo 2px higher, under the status bar; the
+          // scroll view would clip that, so it starts at the safe-area top.
           Positioned(
-            top: -2,
+            top: 0,
             child: SvgPicture.asset(
               AppIcons.stylperLogoGradient,
               width: 95,

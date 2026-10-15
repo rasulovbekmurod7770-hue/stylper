@@ -41,7 +41,8 @@ lib/
   features/
     auth/               welcome, sign in, sign up, forgot password
     onboarding/         profile setup, "Dress like you." style quiz
-    home/               placeholder
+    home/               home feed (For you, People wearing, Trending)
+    profile/            placeholder Profile tab (sign in / sign out)
   l10n/                 app_en.arb, app_ru.arb, app_uz.arb
 ```
 
@@ -67,10 +68,10 @@ session changes and the router redirects:
 
 ### Connecting the real backend
 
-Every remote call goes through `AuthRemoteDataSource` and
-`OnboardingRemoteDataSource`. To switch to the API:
+Every remote call goes through `AuthRemoteDataSource`,
+`OnboardingRemoteDataSource` and `HomeRemoteDataSource`. To switch to the API:
 
-1. Implement both interfaces over HTTP. Throw `ServerException(statusCode, code)`
+1. Implement these interfaces over HTTP. Throw `ServerException(statusCode, code)`
    using the codes in `ApiErrorCodes`, and `NetworkException` when offline.
 2. Register them in `lib/app/di/injection.dart`, in the marked **Backend** block.
 3. Replace `InMemoryAuthTokenStore` with secure storage.
@@ -95,6 +96,7 @@ python3 tool/compare_to_figma.py               # golden vs Figma diff sheets →
 
 - `test/app/app_flow_test.dart` drives the real app (DI, router, fake backend)
   through sign-up → onboarding → home, sign-in/out, and guest mode.
-- `test/goldens/` renders each screen at the Figma frame size (390×844).
+- `test/goldens/` renders each screen at its Figma frame size (390×844;
+  Home 390×1287).
   Goldens depend on the platform's font rendering, so regenerate them on the
   machine that checks them.
