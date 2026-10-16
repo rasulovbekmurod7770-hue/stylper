@@ -46,8 +46,15 @@ it", local brands first, and trust (nothing that misleads).
 - Detail screens (post, product, product looks, user profile) open **inside
   the current tab** with `context.openPost / openProduct / openUser`
   (`lib/core/router/tab_navigation.dart`), so each tab keeps its own back
-  stack; the tab bar hides only on the post screen, as in Figma. Wardrobe
-  lives in the Profile tab (`context.openWardrobe`).
+  stack. Wardrobe lives in the Profile tab (`context.openWardrobe`).
+- The bottom navigation is one widget, `AppTabBar`
+  (`lib/app/shell/app_tab_bar.dart`), mounted once by `AppShell` under
+  **every in-app screen** (the user's decision — including the post screen,
+  which Figma draws without it). Screens never add their own; they keep
+  `MediaQuery.paddingOf(context).bottom` free so content clears it.
+  Full-screen flows that must hide it — **posting** (Figma `2849:1017`,
+  started by the bar's "+") — are top-level routes next to the
+  `StatefulShellRoute`, not inside it, so they cover the bar.
 - **No backend yet, and no Firebase.** The real API will be a custom REST
   backend (likely Node.js). Every remote call goes through a
   `*RemoteDataSource` interface; until the API exists, a `Fake…` data source

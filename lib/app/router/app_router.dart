@@ -101,9 +101,9 @@ GoRouter createRouter(SessionCubit session) {
         ),
       ),
       StatefulShellRoute.indexedStack(
+        // Every in-app screen shows the tab bar. Full-screen flows (posting)
+        // go next to this route, outside the shell, so they cover it.
         builder: (context, state, shell) => AppShell(
-          // The Figma post screen has no tab bar; every other screen does.
-          showTabBar: !state.uri.path.contains('/post/'),
           currentTab: MainTab.values[shell.currentIndex],
           onTabSelected: (tab) => shell.goBranch(
             tab.index,

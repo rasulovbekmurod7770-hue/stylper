@@ -24,7 +24,8 @@ import '../widgets/tagged_photo.dart';
 
 /// Figma: "home-feed-2" (2775:2840) — one outfit post: author, the photo
 /// with its tagged items, like / comment / share / save, the items as
-/// product cards, and similar posts. Opened over the tab bar.
+/// product cards, and similar posts. Figma draws it without the tab bar; the
+/// app shows the bar on every in-app screen, so it keeps room for it.
 ///
 /// Layout follows the frame's cached metadata; finer styling is
 /// PROVISIONAL until its design context is fetched.
@@ -94,12 +95,7 @@ class _PostView extends StatelessWidget {
           ),
         if (post.similar.isNotEmpty)
           SliverPadding(
-            padding: EdgeInsets.fromLTRB(
-              12,
-              20,
-              12,
-              MediaQuery.paddingOf(context).bottom + 24,
-            ),
+            padding: const EdgeInsets.fromLTRB(12, 20, 12, 0),
             sliver: SliverList.list(
               children: [
                 Padding(
@@ -114,6 +110,10 @@ class _PostView extends StatelessWidget {
               ],
             ),
           ),
+        SliverToBoxAdapter(
+          // Room to scroll the last cards above the floating tab bar.
+          child: SizedBox(height: MediaQuery.paddingOf(context).bottom + 24),
+        ),
       ],
     );
   }

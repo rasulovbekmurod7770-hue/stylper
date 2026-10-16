@@ -339,7 +339,7 @@ List<ScreenFixture> screenFixtures() {
             ),
           ),
         );
-        return _withAppState(
+        return _inShell(
           BlocProvider(
             create: (_) =>
                 PostDetailCubit(getPost, postId: 'post_utility_chic')..load(),

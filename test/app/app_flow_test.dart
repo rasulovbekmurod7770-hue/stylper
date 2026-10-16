@@ -165,8 +165,8 @@ void main() {
     expect(likedHearts(), findsNothing);
     expect(
       find.bySemanticsLabel('Home'),
-      findsNothing,
-      reason: 'the post screen has no tab bar',
+      findsOneWidget,
+      reason: 'the tab bar shows on posts too',
     );
 
     await tester.tap(find.bySemanticsLabel('Like'));
@@ -221,7 +221,7 @@ void main() {
     await tester.tap(find.bySemanticsLabel('Back'));
     await tester.pumpAndSettle();
     expect(find.byType(PostDetailPage), findsOneWidget);
-    expect(find.bySemanticsLabel('Home'), findsNothing);
+    expect(find.bySemanticsLabel('Home'), findsOneWidget);
   });
 
   testWidgets('an item saved from a post shows up in My Wardrobe', (
@@ -235,15 +235,20 @@ void main() {
 
     await openTab(tester, 'Home');
     await tapText(tester, 'Sofia');
-    await tester.tap(find.text('Add to wardrobe').first);
+    // Scroll the card's pill out from under the floating tab bar.
+    final addToWardrobe = find.text('Add to wardrobe').first.hitTestable();
+    await tester.scrollUntilVisible(
+      addToWardrobe,
+      100,
+      scrollable: find.byType(Scrollable).hitTestable().first,
+    );
+    await tester.tap(addToWardrobe);
     await tester.pumpAndSettle();
     expect(find.text('Added to your wardrobe'), findsOneWidget);
     expect(find.text('In wardrobe'), findsOneWidget);
 
-    // The post has no tab bar; back to Home first.
-    await tester.tap(find.bySemanticsLabel('Back'));
-    await tester.pumpAndSettle();
-    // My Wardrobe stayed open in the Profile tab; it has caught up.
+    // Straight from the post to the Profile tab, where My Wardrobe stayed
+    // open; it has caught up.
     await openTab(tester, 'Profile');
     expect(find.byType(WardrobePage), findsOneWidget);
     expect(find.text('4 items'), findsOneWidget, reason: 'Tops');
@@ -289,5 +294,24 @@ void main() {
     await tester.pumpAndSettle();
     await openTab(tester, 'Profile');
     expect(find.text('@amin'), findsWidgets);
+  });
+
+  testWidgets('each tab keeps its own stack; tapping it again goes back up', (
+    tester,
+  ) async {
+    await launch(tester);
+    await tapText(tester, 'Skip for now');
+    await tapText(tester, 'Sofia');
+    expect(find.byType(PostDetailPage), findsOneWidget);
+
+    await openTab(tester, 'Profile');
+    expect(find.byType(PostDetailPage), findsNothing);
+
+    await openTab(tester, 'Home');
+    expect(find.byType(PostDetailPage), findsOneWidget, reason: 'kept');
+
+    await openTab(tester, 'Home');
+    expect(find.byType(PostDetailPage), findsNothing);
+    expect(find.byType(HomePage), findsOneWidget);
   });
 }
