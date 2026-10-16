@@ -106,7 +106,7 @@ class _PostView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                   child: Text(
                     l10n.postSimilar.toUpperCase(),
-                    style: AppTypography.feedSectionLabel,
+                    style: AppTypography.overline,
                   ),
                 ),
                 const SizedBox(height: 14),
@@ -150,7 +150,7 @@ class _AuthorRow extends StatelessWidget {
                     Flexible(
                       child: Text(
                         author.name,
-                        style: AppTypography.postAuthorName,
+                        style: AppTypography.label,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -219,7 +219,7 @@ class _SocialActions extends StatelessWidget {
               postId: post.id,
               loaded: post.engagement,
               iconSize: 18,
-              countStyle: AppTypography.postCount,
+              countStyle: AppTypography.label,
             ),
             const SizedBox(width: 20),
             _IconAction(
@@ -238,7 +238,7 @@ class _SocialActions extends StatelessWidget {
                   ExcludeSemantics(
                     child: Text(
                       compactCount(post.commentCount),
-                      style: AppTypography.postCount,
+                      style: AppTypography.label,
                     ),
                   ),
                 ],

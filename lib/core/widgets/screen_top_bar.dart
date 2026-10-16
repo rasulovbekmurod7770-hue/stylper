@@ -31,7 +31,7 @@ class ScreenTopBar extends StatelessWidget {
                   ? const SizedBox.shrink()
                   : Text(
                       title,
-                      style: AppTypography.screenTitle,
+                      style: AppTypography.subheading,
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

@@ -85,11 +85,18 @@ it", local brands first, and trust (nothing that misleads).
   posting `2849:1017`.
 - Controls whose screens don't exist yet show "Coming soon" — never leave a
   tappable-looking control dead.
-- Fonts: Poppins on most screens (it has no Cyrillic, so styles fall back to
-  Inter); Inter on the auth forms; Figma's unlicensed "Canela Trial" is
-  replaced by Playfair Display Black Italic. Figma's "normal" Poppins line
-  height is 1.5 × size rounded to whole pixels (11→17, 12→18, 13→20); set it
-  explicitly with `TextLeadingDistribution.even`.
+- Fonts (the user's decision): **Poppins everywhere**, through the shared
+  scale in `AppTypography` (`display`, `headline`, `heading`, `subheading`,
+  `bodyStrong`, `body`, `label`, `labelMuted`, `caption`, `captionStrong`,
+  `captionMuted`, `meta`, `overline`, `micro`, `onPhoto*`) — use those, don't
+  add per-screen styles; tweak with `copyWith` (colour, decoration) only.
+  Exceptions: the sign-in / sign-up / forgot-password / profile-setup forms
+  keep Inter (as their Figma frames), and the welcome / style-quiz screens
+  keep a few exact Figma one-offs. Poppins has no Cyrillic, so it falls back
+  to Inter for Russian. Figma's "Canela Trial" → Playfair Display Black
+  Italic. Figma's "normal" Poppins line height is 1.5 × size rounded to
+  whole pixels (11→17, 12→18, 13→20), set explicitly with
+  `TextLeadingDistribution.even`.
 - Assets: photos are pre-cropped to their Figma frame at 3× and saved as WebP
   (Pillow) in `assets/images/<feature>/`, with originals in
   `design/figma/raw/<feature>/`. Icons are SVGs in `assets/icons/` with the

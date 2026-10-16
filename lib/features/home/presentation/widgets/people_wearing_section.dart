@@ -26,7 +26,7 @@ class PeopleWearingSection extends StatelessWidget {
           children: [
             Text(
               context.l10n.homePeopleWearing.toUpperCase(),
-              style: AppTypography.feedSectionLabel,
+              style: AppTypography.overline,
             ),
             const SizedBox(width: 8),
             const SizedBox(
@@ -62,7 +62,7 @@ class PeopleWearingSection extends StatelessWidget {
                       const SizedBox(height: 8),
                       Text(
                         person.name,
-                        style: AppTypography.feedPersonName,
+                        style: AppTypography.caption,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

@@ -72,7 +72,7 @@ class _ProductLooksPageState extends State<ProductLooksPage> {
             padding: const EdgeInsets.fromLTRB(24, 0, 24, 4),
             child: Text(
               detail.product.name,
-              style: AppTypography.productSectionSubtitle,
+              style: AppTypography.body,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
@@ -115,7 +115,7 @@ class _ProductLooksPageState extends State<ProductLooksPage> {
                     padding: const EdgeInsets.only(top: 48),
                     child: Text(
                       l10n.productNoLooks,
-                      style: AppTypography.subtitle,
+                      style: AppTypography.body,
                       textAlign: TextAlign.center,
                     ),
                   )
@@ -156,7 +156,7 @@ class _FilterChip extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: AppTypography.profileDnaTag.copyWith(
+            style: AppTypography.captionStrong.copyWith(
               color: selected ? Colors.white : null,
             ),
           ),

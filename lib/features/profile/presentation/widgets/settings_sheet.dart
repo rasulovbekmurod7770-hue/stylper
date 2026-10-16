@@ -24,7 +24,7 @@ Future<void> showSettingsSheet(BuildContext context) {
               padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
               child: Text(
                 l10n.profileSettings,
-                style: AppTypography.screenTitle,
+                style: AppTypography.subheading,
               ),
             ),
             ListTile(
@@ -32,7 +32,9 @@ Future<void> showSettingsSheet(BuildContext context) {
               leading: const Icon(Icons.logout, color: AppColors.accent),
               title: Text(
                 l10n.signOut,
-                style: AppTypography.button.copyWith(color: AppColors.accent),
+                style: AppTypography.bodyStrong.copyWith(
+                  color: AppColors.accent,
+                ),
               ),
               onTap: () {
                 Navigator.of(sheetContext).pop();

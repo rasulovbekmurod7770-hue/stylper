@@ -97,12 +97,9 @@ class _ProductView extends StatelessWidget {
             children: [
               _ProductImage(path: product.imagePath),
               const SizedBox(height: 16),
-              Text(
-                product.brand.toUpperCase(),
-                style: AppTypography.productBrand,
-              ),
+              Text(product.brand.toUpperCase(), style: AppTypography.overline),
               const SizedBox(height: 8),
-              Text(product.name, style: AppTypography.productName),
+              Text(product.name, style: AppTypography.headline),
               const SizedBox(height: 8),
               _PriceRow(detail: detail),
               const SizedBox(height: 16),
@@ -169,7 +166,7 @@ class _PriceRow extends StatelessWidget {
       children: [
         Text(
           formatPrice(detail.product.price, l10n.localeName),
-          style: AppTypography.productPrice,
+          style: AppTypography.heading,
         ),
         const Spacer(),
         if (store != null)
@@ -183,11 +180,13 @@ class _PriceRow extends StatelessWidget {
                     children: [
                       TextSpan(
                         text: '${l10n.productAvailableAt} ',
-                        style: AppTypography.productStoreLabel,
+                        style: AppTypography.labelMuted,
                       ),
                       TextSpan(
                         text: store.name,
-                        style: AppTypography.productStoreLink,
+                        style: AppTypography.label.copyWith(
+                          decoration: TextDecoration.underline,
+                        ),
                       ),
                     ],
                   ),
@@ -301,11 +300,14 @@ class _ActionButton extends StatelessWidget {
               ),
               const SizedBox(width: 6),
               Flexible(
-                child: Text(
-                  label,
-                  style: AppTypography.productButton.copyWith(color: color),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                // Longer translations shrink to fit the half-width button.
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    label,
+                    style: AppTypography.label.copyWith(color: color),
+                    maxLines: 1,
+                  ),
                 ),
               ),
             ],
@@ -334,17 +336,14 @@ class _SeeItOnPeople extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            l10n.productSeeItOnPeople,
-            style: AppTypography.productSectionTitle,
-          ),
+          Text(l10n.productSeeItOnPeople, style: AppTypography.headline),
           const SizedBox(height: 4),
           Text(
             l10n.productStyledBy(
               detail.styledCount,
               product.shortName.toLowerCase(),
             ),
-            style: AppTypography.productSectionSubtitle,
+            style: AppTypography.body,
           ),
           const SizedBox(height: 20),
           GridView.count(
@@ -374,7 +373,9 @@ class _SeeItOnPeople extends StatelessWidget {
                 children: [
                   Text(
                     l10n.productSeeAllLooks,
-                    style: AppTypography.productLink,
+                    style: AppTypography.bodyStrong.copyWith(
+                      color: AppColors.brandRed,
+                    ),
                   ),
                   const SizedBox(width: 4),
                   // PROVISIONAL icon until the frame's "arrow-right" is
@@ -411,7 +412,7 @@ class _HowPeopleStyleIt extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Text(
               context.l10n.productHowPeopleStyleIt,
-              style: AppTypography.productSubsectionTitle,
+              style: AppTypography.heading,
             ),
           ),
           const SizedBox(height: 16),
@@ -447,10 +448,7 @@ class _HowPeopleStyleIt extends StatelessWidget {
                             child: FeedPhoto(path: style.imagePath, radius: 18),
                           ),
                           const SizedBox(width: 12),
-                          Text(
-                            style.name,
-                            style: AppTypography.productStylePill,
-                          ),
+                          Text(style.name, style: AppTypography.bodyStrong),
                         ],
                       ),
                     ),
@@ -482,13 +480,13 @@ class _SimilarStyle extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Text(
               context.l10n.productSimilarStyle,
-              style: AppTypography.productSubsectionTitle,
+              style: AppTypography.heading,
             ),
           ),
           const SizedBox(height: 16),
           SizedBox(
-            // Figma's 194px card plus room for the text's line heights.
-            height: 196,
+            // Figma's card is 194px; the shared scale's lines need 12px more.
+            height: 206,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 24),

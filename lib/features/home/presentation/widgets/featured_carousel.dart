@@ -120,7 +120,7 @@ class _StyleChip extends StatelessWidget {
           child: Padding(
             // The border is drawn inside the padding, as Figma does.
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-            child: Text(label, style: AppTypography.heroTag),
+            child: Text(label, style: AppTypography.onPhotoLabel),
           ),
         ),
       ),
@@ -157,14 +157,14 @@ class _PostMeta extends StatelessWidget {
                     children: [
                       Text(
                         author.name,
-                        style: AppTypography.feedAuthorName,
+                        style: AppTypography.label,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 2),
                       Text(
                         '@${author.handle}',
-                        style: AppTypography.feedHandle,
+                        style: AppTypography.meta,
                         maxLines: 1,
                       ),
                     ],
@@ -178,7 +178,7 @@ class _PostMeta extends StatelessWidget {
           postId: post.id,
           loaded: post.engagement,
           iconSize: 16,
-          countStyle: AppTypography.feedCount,
+          countStyle: AppTypography.captionMuted,
         ),
         const SizedBox(width: 16),
         Semantics(
@@ -196,7 +196,7 @@ class _PostMeta extends StatelessWidget {
                 ExcludeSemantics(
                   child: Text(
                     compactCount(post.commentCount),
-                    style: AppTypography.feedCount,
+                    style: AppTypography.captionMuted,
                   ),
                 ),
               ],

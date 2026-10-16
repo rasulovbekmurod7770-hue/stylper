@@ -38,7 +38,7 @@ class WardrobeCategoryPage extends StatelessWidget {
                       padding: const EdgeInsets.all(32),
                       child: Text(
                         l10n.wardrobeEmpty,
-                        style: AppTypography.subtitle,
+                        style: AppTypography.body,
                         textAlign: TextAlign.center,
                       ),
                     ),
@@ -155,13 +155,13 @@ class _ItemCard extends StatelessWidget {
             const SizedBox(height: 10),
             Text(
               item.name,
-              style: AppTypography.wardrobeItemName,
+              style: AppTypography.captionStrong,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             if (brand != null) ...[
               const SizedBox(height: 2),
-              Text(brand, style: AppTypography.wardrobeCount),
+              Text(brand, style: AppTypography.captionMuted),
             ],
           ],
         ),

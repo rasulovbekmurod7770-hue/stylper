@@ -24,7 +24,7 @@ class StyleDnaSection extends StatelessWidget {
       children: [
         Text(
           context.l10n.profileStyleDna.toUpperCase(),
-          style: AppTypography.feedSectionLabel,
+          style: AppTypography.overline,
         ),
         const SizedBox(height: 14),
         Wrap(
@@ -53,7 +53,7 @@ class StyleDnaSection extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(style, style: AppTypography.profileDnaTag),
+                    Text(style, style: AppTypography.captionStrong),
                   ],
                 ),
               ),
@@ -87,7 +87,7 @@ class MyStyleSection extends StatelessWidget {
         Text(
           (profile.isMe ? l10n.profileMyStyle : l10n.profileStyle)
               .toUpperCase(),
-          style: AppTypography.feedSectionLabel,
+          style: AppTypography.overline,
         ),
         const SizedBox(height: 14),
         SizedBox(
@@ -165,8 +165,8 @@ class ProfileTabBar extends StatelessWidget {
                               l10n.profileTabStyleBoards,
                           },
                           style: tab == selected
-                              ? AppTypography.profileTab
-                              : AppTypography.profileTabInactive,
+                              ? AppTypography.bodyStrong
+                              : AppTypography.body,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -325,7 +325,7 @@ class _SavedCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         '@${author.handle}',
-                        style: AppTypography.savedCardHandle,
+                        style: AppTypography.caption,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),

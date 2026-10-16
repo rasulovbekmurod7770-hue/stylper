@@ -26,7 +26,7 @@ class TrendingSection extends StatelessWidget {
             Expanded(
               child: Text(
                 context.l10n.homeTrendingIn(city).toUpperCase(),
-                style: AppTypography.feedSectionLabel,
+                style: AppTypography.overline,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),

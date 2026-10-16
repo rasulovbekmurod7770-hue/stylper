@@ -197,12 +197,9 @@ class _ForYouHeading extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.homeForYou.toUpperCase(),
-          style: AppTypography.feedSectionLabel,
-        ),
+        Text(l10n.homeForYou.toUpperCase(), style: AppTypography.overline),
         const SizedBox(height: 6),
-        Text(l10n.homeForYouTitle, style: AppTypography.feedSectionTitle),
+        Text(l10n.homeForYouTitle, style: AppTypography.headline),
       ],
     );
   }

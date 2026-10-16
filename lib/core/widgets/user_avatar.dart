@@ -40,8 +40,10 @@ class UserAvatar extends StatelessWidget {
               child: Center(
                 child: Text(
                   initials(name),
-                  style: AppTypography.avatarInitials.copyWith(
+                  style: AppTypography.bodyStrong.copyWith(
                     fontSize: size * 0.36,
+                    height: 1,
+                    color: const Color(0xFFFFFFFF),
                   ),
                 ),
               ),

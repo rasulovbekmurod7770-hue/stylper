@@ -163,7 +163,7 @@ class _TagLabel extends StatelessWidget {
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        child: Text(text, style: AppTypography.productTagLabel),
+        child: Text(text, style: AppTypography.onPhotoLabel),
       ),
     );
   }
@@ -203,23 +203,23 @@ class _TagCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(product.brand, style: AppTypography.tagCardBrand),
+            Text(product.brand, style: AppTypography.captionMuted),
             const SizedBox(height: 4),
             Text(
               product.name,
-              style: AppTypography.tagCardName,
+              style: AppTypography.bodyStrong,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
             Text(
               formatPrice(product.price, l10n.localeName),
-              style: AppTypography.tagCardPrice,
+              style: AppTypography.label,
             ),
             const SizedBox(height: 4),
             Text(
               l10n.postStyledCount(product.styledCount),
-              style: AppTypography.tagCardMeta,
+              style: AppTypography.meta,
             ),
             const SizedBox(height: 12),
             Row(
@@ -282,7 +282,7 @@ class _CardButton extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: AppTypography.tagCardButton.copyWith(
+            style: AppTypography.captionStrong.copyWith(
               color: filled ? Colors.white : null,
             ),
             maxLines: 1,

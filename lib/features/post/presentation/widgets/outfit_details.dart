@@ -20,6 +20,10 @@ class OutfitDetails extends StatelessWidget {
 
   static const _cardWidth = 110.0;
 
+  /// The name and "Brand price" lines under the photo, in the shared scale
+  /// (Figma's text here is smaller: 39px).
+  static const _infoHeight = 5 + 18 + 2 + 17 + 6.0;
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -30,12 +34,13 @@ class OutfitDetails extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 24),
           child: Text(
             l10n.postOutfitDetails.toUpperCase(),
-            style: AppTypography.feedSectionLabel,
+            style: AppTypography.overline,
           ),
         ),
         const SizedBox(height: 12),
         SizedBox(
-          height: 129 + 6 + 19,
+          // Card (photo 90 + border 2 + name / brand line) + gap + pills.
+          height: 92 + _infoHeight + 6 + 19,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -99,7 +104,7 @@ class _ProductCard extends StatelessWidget {
                   ),
                 ),
                 SizedBox(
-                  height: 39 - 2, // minus the 1px border, top and bottom
+                  height: OutfitDetails._infoHeight,
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(8, 5, 8, 0),
                     child: Column(
@@ -107,15 +112,15 @@ class _ProductCard extends StatelessWidget {
                       children: [
                         Text(
                           product.shortName,
-                          style: AppTypography.productCardName,
+                          style: AppTypography.caption,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 2),
                         Text(
                           '${product.brand} '
                           '${formatPrice(product.price, l10n.localeName)}',
-                          style: AppTypography.productCardMeta,
+                          style: AppTypography.meta,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -197,7 +202,7 @@ class _Pill extends StatelessWidget {
             fit: BoxFit.scaleDown,
             child: Text(
               label,
-              style: AppTypography.productPill.copyWith(
+              style: AppTypography.micro.copyWith(
                 color: filled ? Colors.white : null,
               ),
               maxLines: 1,

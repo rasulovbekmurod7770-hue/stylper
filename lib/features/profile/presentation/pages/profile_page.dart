@@ -6,7 +6,6 @@ import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/load_error_view.dart';
-import '../../../../core/widgets/primary_button.dart';
 import '../../../../core/widgets/screen_top_bar.dart';
 import '../../../../core/widgets/snackbars.dart';
 import '../../../../core/widgets/stylper_wordmark.dart';
@@ -222,7 +221,7 @@ class _EmptyTab extends StatelessWidget {
         padding: const EdgeInsets.symmetric(vertical: 40),
         child: Text(
           message,
-          style: AppTypography.subtitle,
+          style: AppTypography.body,
           textAlign: TextAlign.center,
         ),
       ),
@@ -274,19 +273,25 @@ class GuestProfileView extends StatelessWidget {
               const SizedBox(height: 32),
               Text(
                 l10n.profileGuestTitle,
-                style: AppTypography.title.copyWith(fontSize: 22),
+                style: AppTypography.headline,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               Text(
                 l10n.profileGuestMessage,
-                style: AppTypography.subtitle,
+                style: AppTypography.body,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
-              PrimaryButton(
-                label: l10n.signIn,
-                onPressed: session.leaveGuestMode,
+              Center(
+                child: SizedBox(
+                  width: 200,
+                  child: ProfileButton(
+                    label: l10n.signIn,
+                    filled: true,
+                    onTap: session.leaveGuestMode,
+                  ),
+                ),
               ),
             ],
           ),

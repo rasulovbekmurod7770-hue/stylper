@@ -16,9 +16,9 @@ class TabPlaceholderPage extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(title, style: AppTypography.title.copyWith(fontSize: 22)),
+            Text(title, style: AppTypography.headline),
             const SizedBox(height: 8),
-            Text(context.l10n.comingSoon, style: AppTypography.subtitle),
+            Text(context.l10n.comingSoon, style: AppTypography.body),
           ],
         ),
       ),

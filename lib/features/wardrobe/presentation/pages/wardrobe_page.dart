@@ -54,7 +54,7 @@ class WardrobePage extends StatelessWidget {
                           Expanded(
                             child: Text(
                               l10n.wardrobeTitle,
-                              style: AppTypography.wardrobeTitle,
+                              style: AppTypography.heading,
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -164,7 +164,7 @@ class _QuickAddButton extends StatelessWidget {
               const SizedBox(width: 4),
               Text(
                 context.l10n.wardrobeAddItem,
-                style: AppTypography.wardrobeQuickAdd,
+                style: AppTypography.captionStrong,
               ),
             ],
           ),
@@ -223,14 +223,14 @@ class _CategoryCard extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 wardrobeCategoryLabel(l10n, category.id),
-                style: AppTypography.wardrobeCategory,
+                style: AppTypography.bodyStrong,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 2),
               Text(
                 l10n.wardrobeItemCount(category.itemCount),
-                style: AppTypography.wardrobeCount,
+                style: AppTypography.captionMuted,
               ),
             ],
           ),
@@ -274,7 +274,7 @@ class _AddItemCard extends StatelessWidget {
               const SizedBox(width: 12),
               Text(
                 context.l10n.wardrobeAddNewItem,
-                style: AppTypography.wardrobeCategory,
+                style: AppTypography.bodyStrong,
               ),
             ],
           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../l10n/l10n.dart';
+import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 
 /// A centred error [message] with a "Try again" button, for screens whose
@@ -25,13 +26,18 @@ class LoadErrorView extends StatelessWidget {
           children: [
             Text(
               message,
-              style: AppTypography.subtitle,
+              style: AppTypography.body,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 12),
             TextButton(
               onPressed: onRetry,
-              child: Text(context.l10n.retry, style: AppTypography.link),
+              child: Text(
+                context.l10n.retry,
+                style: AppTypography.bodyStrong.copyWith(
+                  color: AppColors.accent,
+                ),
+              ),
             ),
           ],
         ),

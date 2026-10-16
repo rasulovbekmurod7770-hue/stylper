@@ -114,13 +114,13 @@ class _CompactIdentity extends StatelessWidget {
             children: [
               Text(
                 profile.name,
-                style: AppTypography.profileCompactName,
+                style: AppTypography.subheading,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
               Text(
                 '@${profile.handle}',
-                style: AppTypography.profileCompactHandle,
+                style: AppTypography.captionMuted,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -172,18 +172,18 @@ class ProfileHero extends StatelessWidget {
           const SizedBox(height: 14),
           Text(
             profile.name,
-            style: AppTypography.profileName,
+            style: AppTypography.display,
             textAlign: TextAlign.center,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 6),
-          Text('@${profile.handle}', style: AppTypography.profileHandle),
+          Text('@${profile.handle}', style: AppTypography.body),
           if (profile.bio.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text(
               profile.bio,
-              style: AppTypography.profileBio,
+              style: AppTypography.labelMuted,
               textAlign: TextAlign.center,
             ),
           ],
@@ -215,14 +215,8 @@ class _Stats extends StatelessWidget {
           child: Text.rich(
             TextSpan(
               children: [
-                TextSpan(
-                  text: compactCount(count),
-                  style: AppTypography.profileStatCount,
-                ),
-                TextSpan(
-                  text: ' $label',
-                  style: AppTypography.profileStatLabel,
-                ),
+                TextSpan(text: compactCount(count), style: AppTypography.label),
+                TextSpan(text: ' $label', style: AppTypography.labelMuted),
               ],
             ),
           ),
@@ -348,7 +342,7 @@ class ProfileButton extends StatelessWidget {
           ),
           child: Text(
             label,
-            style: AppTypography.profileButton.copyWith(
+            style: AppTypography.captionStrong.copyWith(
               color: filled ? Colors.white : null,
             ),
             maxLines: 1,

@@ -101,13 +101,13 @@ class _PostCard extends StatelessWidget {
                 if (caption != null)
                   Text(
                     caption,
-                    style: AppTypography.feedCardCaption,
+                    style: AppTypography.onPhotoTitle,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 if (handle != null) ...[
                   const SizedBox(height: 2),
-                  Text('@$handle', style: AppTypography.feedCardHandle),
+                  Text('@$handle', style: AppTypography.onPhotoMeta),
                 ],
               ],
             ),
