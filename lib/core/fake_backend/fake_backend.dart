@@ -29,20 +29,44 @@ class FakeBackend {
   final _outfitLikes = <String, List<Map<String, Object?>>>{};
   final _postLikes = <String, int>{}; // postId → like count
   final _likedBy = <String, Set<String>>{}; // postId → userIds
-  final _savedBy = <String, Set<String>>{}; // postId → userIds
+  final _saves = <String, List<String>>{}; // userId → postIds, newest first
+  final _profiles = <String, Map<String, Object?>>{}; // userId → profile
+  final _followers = <String, Set<String>>{}; // userId → follower ids
+  final _wardrobes =
+      <String, List<String>>{}; // userId → item ids, newest first
   var _nextId = 1;
 
   void _seed() {
     for (final MapEntry(key: id, value: post) in FakeContent.posts.entries) {
       _postLikes[id] = post['likes']! as int;
     }
+    for (final MapEntry(key: id, value: profile)
+        in FakeContent.profiles.entries) {
+      _profiles[id] = Map.of(profile);
+    }
+    for (final MapEntry(key: user, value: posts) in FakeContent.saved.entries) {
+      _saves[user] = [...posts];
+    }
+    for (final MapEntry(key: follower, value: followed)
+        in FakeContent.follows.entries) {
+      for (final id in followed) {
+        _followers.putIfAbsent(id, () => {}).add(follower);
+      }
+    }
+    for (final MapEntry(key: user, value: items)
+        in FakeContent.wardrobes.entries) {
+      _wardrobes[user] = [...items];
+    }
+    // The demo accounts own the seeded profiles `a_john` / `a_katty`.
     _createUser(
+      id: 'a_john',
       email: demoEmail,
       password: demoPassword,
-      username: 'developer',
+      username: 'john',
       onboardingCompleted: true,
     );
     _createUser(
+      id: 'a_katty',
       email: 'katty.miller@stylper.ai',
       password: demoPassword,
       username: 'katty_miller',
@@ -53,10 +77,11 @@ class FakeBackend {
   Map<String, Object?> _createUser({
     required String email,
     required String password,
+    String? id,
     String? username,
     bool onboardingCompleted = false,
   }) {
-    final id = 'user_${_nextId++}';
+    id ??= 'user_${_nextId++}';
     final user = <String, Object?>{
       'id': id,
       'email': email,
@@ -222,11 +247,12 @@ class FakeBackend {
   Future<Map<String, Object?>> post(String id, {String? token}) async {
     await _delay();
     final post = _postOr404(id);
+    final viewer = _tokens[token];
     return {
-      ..._postSummary(id, _tokens[token]),
+      ..._postSummary(id, viewer),
       'products': [
         for (final tag in post['products']! as List<Object?>)
-          _taggedProduct(tag! as Map<String, Object?>),
+          _taggedProduct(tag! as Map<String, Object?>, viewer),
       ],
       'similar': [
         for (final similar in post['similar']! as List<Object?>)
@@ -261,8 +287,9 @@ class FakeBackend {
     await _delay();
     final userId = _userIdFor(token ?? '');
     _postOr404(id);
-    final savers = _savedBy.putIfAbsent(id, () => {});
-    saved ? savers.add(userId) : savers.remove(userId);
+    final saves = _saves.putIfAbsent(userId, () => []);
+    if (saved && !saves.contains(id)) saves.insert(0, id);
+    if (!saved) saves.remove(id);
     return _engagement(id, userId);
   }
 
@@ -276,13 +303,37 @@ class FakeBackend {
   Map<String, Object?> _engagement(String postId, String? userId) => {
     'likes': _postLikes[postId],
     'likedByMe': _likedBy[postId]?.contains(userId) ?? false,
-    'savedByMe': _savedBy[postId]?.contains(userId) ?? false,
+    'savedByMe': _saves[userId]?.contains(postId) ?? false,
   };
 
-  Map<String, Object?> _author(String id) => {
-    'id': id,
-    ...FakeContent.authors[id]!,
-  };
+  Map<String, Object?> _author(String id) {
+    final profile = _profileOf(id)!;
+    return {
+      'id': id,
+      'name': profile['name'],
+      'handle': profile['handle'],
+      'avatar': profile['avatar'],
+    };
+  }
+
+  /// A user's public profile; accounts without a seeded one get a default.
+  /// An account's handle is always its current username.
+  Map<String, Object?>? _profileOf(String id) {
+    final user = _users[id];
+    final profile = _profiles[id];
+    if (user == null && profile == null) return null;
+    final username = user?['username'] as String?;
+    return {
+      'name': username ?? (user?['email'] as String?)?.split('@').first,
+      'avatar': null,
+      'bio': '',
+      'styles': const <String>[],
+      'followers': 0,
+      'following': 0,
+      ...?profile,
+      'handle': username ?? profile?['handle'],
+    };
+  }
 
   Map<String, Object?> _postSummary(String id, String? userId) {
     final post = FakeContent.posts[id]!;
@@ -304,22 +355,236 @@ class FakeBackend {
       'image': thumbnail?.image ?? post['image'],
       'aspectRatio': thumbnail?.aspectRatio ?? 390 / 516,
       'caption': post['caption'],
-      'authorHandle': FakeContent.authors[post['author']]!['handle'],
+      'authorHandle': _profileOf(post['author']! as String)!['handle'],
+      'styles': post['styles'],
     };
   }
 
-  Map<String, Object?> _taggedProduct(Map<String, Object?> tag) {
+  Map<String, Object?> _taggedProduct(
+    Map<String, Object?> tag,
+    String? viewer,
+  ) {
     final id = tag['product']! as String;
+    return {
+      ..._productSummary(id),
+      'styledCount': FakeContent.products[id]!['styledCount'],
+      'inWardrobe': _wardrobes[viewer]?.contains(id) ?? false,
+      'tag': {'x': tag['x'], 'y': tag['y']},
+    };
+  }
+
+  Map<String, Object?> _productSummary(String id) {
     final product = FakeContent.products[id]!;
     return {
       'id': id,
       'name': product['name'],
       'shortName': product['shortName'],
       'brand': product['brand'],
+      'category': product['category'],
       'price': {'amount': product['price'], 'currency': 'USD'},
       'image': product['image'],
-      'styledCount': product['styledCount'],
-      'tag': {'x': tag['x'], 'y': tag['y']},
     };
   }
+
+  /// GET /products/:id → `{id, name, shortName, brand, category, price,
+  /// image, store: {name, url}?, styledCount, inWardrobe, looks, styles,
+  /// similar}`. Public. `looks` are the posts that tag the product, `styles`
+  /// the styles of those looks (`{name, image}`), `similar` other products
+  /// in the same category.
+  Future<Map<String, Object?>> product(String id, {String? token}) async {
+    await _delay();
+    final product =
+        FakeContent.products[id] ??
+        (throw const ServerException(
+          statusCode: 404,
+          code: ApiErrorCodes.notFound,
+        ));
+    final looks = [
+      for (final MapEntry(key: postId, value: post)
+          in FakeContent.posts.entries)
+        if ((post['products']! as List<Object?>).any(
+          (tag) => (tag! as Map<String, Object?>)['product'] == id,
+        ))
+          postId,
+    ];
+    final styles = <String, String>{}; // style → first look's image
+    for (final postId in looks) {
+      final post = FakeContent.posts[postId]!;
+      for (final style in post['styles']! as List<Object?>) {
+        styles.putIfAbsent(style! as String, () => post['image']! as String);
+      }
+    }
+    return {
+      ..._productSummary(id),
+      'store': FakeContent.stores[product['brand']],
+      'styledCount': product['styledCount'],
+      'inWardrobe': _wardrobes[_tokens[token]]?.contains(id) ?? false,
+      'looks': [for (final postId in looks) _postPreview(postId)],
+      'styles': [
+        for (final MapEntry(key: name, value: image) in styles.entries)
+          {'name': name, 'image': image},
+      ],
+      'similar': [
+        for (final MapEntry(key: other, value: candidate)
+            in FakeContent.products.entries)
+          if (other != id && candidate['category'] == product['category'])
+            _productSummary(other),
+      ],
+    };
+  }
+
+  /// GET /users/:id (`me` for the signed-in user) → `{id, name, handle,
+  /// avatar?, bio, styles, posts, followers, following, isMe, followedByMe,
+  /// recentPosts}`. Public, except `me`. `posts` is a count; `recentPosts`
+  /// are post previews, newest first.
+  Future<Map<String, Object?>> userProfile(String id, {String? token}) async {
+    await _delay();
+    final viewer = _tokens[token];
+    final userId = id == 'me' ? _userIdFor(token ?? '') : id;
+    final profile =
+        _profileOf(userId) ??
+        (throw const ServerException(
+          statusCode: 404,
+          code: ApiErrorCodes.notFound,
+        ));
+    final posts = [
+      for (final MapEntry(key: postId, value: post)
+          in FakeContent.posts.entries)
+        if (post['author'] == userId) postId,
+    ];
+    return {
+      'id': userId,
+      'name': profile['name'],
+      'handle': profile['handle'],
+      'avatar': profile['avatar'],
+      'bio': profile['bio'],
+      'styles': profile['styles'],
+      'posts': posts.length,
+      ..._followCounts(userId, viewer),
+      'following': (profile['following']! as int) + _followingCount(userId),
+      'isMe': viewer == userId,
+      'recentPosts': [for (final postId in posts) _postPreview(postId)],
+    };
+  }
+
+  /// POST /users/:id/follow (following) / DELETE /users/:id/follow →
+  /// `{followers, followedByMe}`. Signed-in users only; not yourself.
+  Future<Map<String, Object?>> setFollowing(
+    String? token,
+    String id, {
+    required bool following,
+  }) async {
+    await _delay();
+    final viewer = _userIdFor(token ?? '');
+    if (_profileOf(id) == null) {
+      throw const ServerException(
+        statusCode: 404,
+        code: ApiErrorCodes.notFound,
+      );
+    }
+    if (id == viewer) {
+      throw const ServerException(
+        statusCode: 422,
+        code: ApiErrorCodes.validation,
+      );
+    }
+    final followers = _followers.putIfAbsent(id, () => {});
+    following ? followers.add(viewer) : followers.remove(viewer);
+    return _followCounts(id, viewer);
+  }
+
+  Map<String, Object?> _followCounts(String userId, String? viewer) => {
+    'followers':
+        (_profileOf(userId)!['followers']! as int) +
+        (_followers[userId]?.length ?? 0),
+    'followedByMe': _followers[userId]?.contains(viewer) ?? false,
+  };
+
+  int _followingCount(String userId) =>
+      _followers.values.where((followers) => followers.contains(userId)).length;
+
+  /// GET /me/saved → `{posts}`: saved post previews, newest first, each
+  /// with `author: {id, name, handle, avatar}` and `{likes, likedByMe,
+  /// savedByMe}`.
+  Future<Map<String, Object?>> savedPosts(String? token) async {
+    await _delay();
+    final userId = _userIdFor(token ?? '');
+    return {
+      'posts': [
+        for (final postId in _saves[userId] ?? const <String>[])
+          {
+            ..._postPreview(postId),
+            ..._engagement(postId, userId),
+            'author': _author(FakeContent.posts[postId]!['author']! as String),
+          },
+      ],
+    };
+  }
+
+  /// GET /me/wardrobe → `{categories: [{id, count, image?}]}`, in display
+  /// order; `image` is the newest item's.
+  Future<Map<String, Object?>> wardrobe(String? token) async {
+    await _delay();
+    final items = _wardrobeItems(_userIdFor(token ?? ''));
+    return {
+      'categories': [
+        for (final category in FakeContent.wardrobeCategories)
+          {
+            'id': category,
+            'count': items.where((i) => i['category'] == category).length,
+            'image': items
+                .where((i) => i['category'] == category)
+                .firstOrNull?['image'],
+          },
+      ],
+    };
+  }
+
+  /// GET /me/wardrobe/:category → `{items: [{id, name, brand?, category,
+  /// image, productId?}]}`, newest first.
+  Future<Map<String, Object?>> wardrobeCategory(
+    String? token,
+    String category,
+  ) async {
+    await _delay();
+    return {
+      'items': [
+        for (final item in _wardrobeItems(_userIdFor(token ?? '')))
+          if (item['category'] == category) item,
+      ],
+    };
+  }
+
+  /// PUT /me/wardrobe/items/:id (saved) / DELETE /me/wardrobe/items/:id →
+  /// `{inWardrobe}`. Only catalog products can be added this way; any item
+  /// can be removed.
+  Future<Map<String, Object?>> setInWardrobe(
+    String? token,
+    String itemId, {
+    required bool saved,
+  }) async {
+    await _delay();
+    final userId = _userIdFor(token ?? '');
+    final items = _wardrobes.putIfAbsent(userId, () => []);
+    if (saved) {
+      if (!FakeContent.products.containsKey(itemId)) {
+        throw const ServerException(
+          statusCode: 404,
+          code: ApiErrorCodes.notFound,
+        );
+      }
+      if (!items.contains(itemId)) items.insert(0, itemId);
+    } else {
+      items.remove(itemId);
+    }
+    return {'inWardrobe': saved};
+  }
+
+  List<Map<String, Object?>> _wardrobeItems(String userId) => [
+    for (final id in _wardrobes[userId] ?? const <String>[])
+      if (FakeContent.products.containsKey(id))
+        {..._productSummary(id), 'productId': id}
+      else
+        {'id': id, ...FakeContent.ownItems[id]!},
+  ];
 }

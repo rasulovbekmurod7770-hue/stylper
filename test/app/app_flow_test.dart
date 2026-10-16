@@ -14,6 +14,9 @@ import 'package:stylper/features/home/presentation/pages/home_page.dart';
 import 'package:stylper/features/onboarding/presentation/pages/profile_setup_page.dart';
 import 'package:stylper/features/onboarding/presentation/pages/style_quiz_page.dart';
 import 'package:stylper/features/post/presentation/pages/post_detail_page.dart';
+import 'package:stylper/features/product/presentation/pages/product_detail_page.dart';
+import 'package:stylper/features/profile/presentation/pages/profile_page.dart';
+import 'package:stylper/features/wardrobe/presentation/pages/wardrobe_page.dart';
 
 import '../helpers/screen_harness.dart';
 
@@ -102,7 +105,8 @@ void main() {
 
     expect(find.byType(HomePage), findsOneWidget);
     await openTab(tester, 'Profile');
-    expect(find.text('Signed in as new_user'), findsOneWidget);
+    // The hero, and the compact header that appears on scroll.
+    expect(find.text('@new_user'), findsWidgets);
   });
 
   testWidgets('existing user signs in straight to home, then signs out', (
@@ -118,6 +122,9 @@ void main() {
 
     expect(find.byType(HomePage), findsOneWidget);
     await openTab(tester, 'Profile');
+    expect(find.text('John. B'), findsWidgets);
+    await tester.tap(find.bySemanticsLabel('Settings'));
+    await tester.pumpAndSettle();
     await tapText(tester, 'Sign out');
     expect(find.byType(WelcomePage), findsOneWidget);
   });
@@ -156,6 +163,11 @@ void main() {
     expect(find.byType(PostDetailPage), findsOneWidget);
     expect(find.text('ZARA · Trousers'), findsOneWidget);
     expect(likedHearts(), findsNothing);
+    expect(
+      find.bySemanticsLabel('Home'),
+      findsNothing,
+      reason: 'the post screen has no tab bar',
+    );
 
     await tester.tap(find.bySemanticsLabel('Like'));
     await tester.pumpAndSettle();
@@ -165,6 +177,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(PostDetailPage), findsNothing);
     expect(likedHearts(), findsOneWidget, reason: 'home agrees');
+    expect(find.bySemanticsLabel('Home'), findsOneWidget);
   });
 
   testWidgets('style chips switch the For you posts without opening one', (
@@ -189,5 +202,92 @@ void main() {
 
     expect(find.text('Sign in to like and save posts.'), findsOneWidget);
     expect(likedHearts(), findsNothing);
+  });
+
+  testWidgets('a product opens from a post, with the tab bar; back returns', (
+    tester,
+  ) async {
+    await launch(tester);
+    await tapText(tester, 'Skip for now');
+    await tapText(tester, 'Sofia');
+    expect(find.byType(PostDetailPage), findsOneWidget);
+
+    await tester.tap(find.text('Shop').first);
+    await tester.pumpAndSettle();
+    expect(find.byType(ProductDetailPage), findsOneWidget);
+    expect(find.text('Oversized White T-Shirt'), findsOneWidget);
+    expect(find.bySemanticsLabel('Home'), findsOneWidget, reason: 'tab bar');
+
+    await tester.tap(find.bySemanticsLabel('Back'));
+    await tester.pumpAndSettle();
+    expect(find.byType(PostDetailPage), findsOneWidget);
+    expect(find.bySemanticsLabel('Home'), findsNothing);
+  });
+
+  testWidgets('an item saved from a post shows up in My Wardrobe', (
+    tester,
+  ) async {
+    await signInAsDemo(tester);
+    await openTab(tester, 'Profile');
+    await tapText(tester, 'My Wardrobe');
+    expect(find.byType(WardrobePage), findsOneWidget);
+    expect(find.text('3 items'), findsOneWidget, reason: 'Tops');
+
+    await openTab(tester, 'Home');
+    await tapText(tester, 'Sofia');
+    await tester.tap(find.text('Add to wardrobe').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Added to your wardrobe'), findsOneWidget);
+    expect(find.text('In wardrobe'), findsOneWidget);
+
+    // The post has no tab bar; back to Home first.
+    await tester.tap(find.bySemanticsLabel('Back'));
+    await tester.pumpAndSettle();
+    // My Wardrobe stayed open in the Profile tab; it has caught up.
+    await openTab(tester, 'Profile');
+    expect(find.byType(WardrobePage), findsOneWidget);
+    expect(find.text('4 items'), findsOneWidget, reason: 'Tops');
+  });
+
+  testWidgets('following someone updates their follower count', (tester) async {
+    await signInAsDemo(tester);
+    await tapText(tester, 'Amin');
+    await tester.tap(find.bySemanticsLabel('Back').hitTestable().first);
+    await tester.pumpAndSettle();
+    await tapText(tester, 'Amin');
+    // The post's author row opens Amin's profile.
+    await tester.tap(find.text('Amin').hitTestable().first);
+    await tester.pumpAndSettle();
+    expect(find.byType(ProfilePage), findsOneWidget);
+    expect(find.text('720 Followers', findRichText: true), findsOneWidget);
+
+    await tapText(tester, 'Follow');
+    expect(find.text('721 Followers', findRichText: true), findsOneWidget);
+    expect(find.text('Following'), findsOneWidget);
+  });
+
+  testWidgets('your Saved tab lists the posts you saved', (tester) async {
+    await signInAsDemo(tester);
+    await openTab(tester, 'Profile');
+
+    // The tabs sit below the profile's header.
+    await tester.dragUntilVisible(
+      find.text('Saved'),
+      find.byType(CustomScrollView).hitTestable().first,
+      const Offset(0, -300),
+    );
+    await tapText(tester, 'Saved');
+    expect(find.text('@leo'), findsWidgets, reason: 'Utility chic, by Leo');
+    expect(find.text('@amin'), findsNothing);
+
+    // Save Amin's post from Home; the open Saved tab catches up.
+    await openTab(tester, 'Home');
+    await tapText(tester, 'Amin');
+    await tester.tap(find.bySemanticsLabel('Save'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.bySemanticsLabel('Back'));
+    await tester.pumpAndSettle();
+    await openTab(tester, 'Profile');
+    expect(find.text('@amin'), findsWidgets);
   });
 }

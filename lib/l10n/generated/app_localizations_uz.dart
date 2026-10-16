@@ -291,15 +291,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get errorPostNotFound => 'Bu post endi mavjud emas.';
 
   @override
-  String get profilePlaceholderTitle => 'Profilingiz tez orada paydo boʻladi';
-
-  @override
   String get profileGuestMessage => 'Siz mehmon sifatida koʻrib chiqyapsiz.';
-
-  @override
-  String profileSignedInMessage(String name) {
-    return '$name sifatida kirdingiz';
-  }
 
   @override
   String get signOut => 'Chiqish';
@@ -365,4 +357,188 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get validationTerms =>
       'Foydalanish shartlari va Maxfiylik siyosatini qabul qiling.';
+
+  @override
+  String get productTitle => 'Mahsulot';
+
+  @override
+  String get productAvailableAt => 'Sotuvda:';
+
+  @override
+  String get productSaveToWardrobe => 'Garderobga';
+
+  @override
+  String get inWardrobe => 'Garderobda';
+
+  @override
+  String get productBuyNow => 'Sotib olish';
+
+  @override
+  String get productSeeItOnPeople => 'Odamlarda koʻring';
+
+  @override
+  String get productSeeAllLooks => 'Barcha obrazlar';
+
+  @override
+  String get productHowPeopleStyleIt => 'Qanday kiyishadi';
+
+  @override
+  String get productSimilarStyle => 'Oʻxshash uslub';
+
+  @override
+  String get productLooksTitle => 'Obrazlar';
+
+  @override
+  String get productNoLooks => 'Hozircha obrazlar yoʻq';
+
+  @override
+  String get errorProductNotFound => 'Bu mahsulot endi mavjud emas.';
+
+  @override
+  String get errorOpenStore => 'Doʻkonni ochib boʻlmadi.';
+
+  @override
+  String get postSaved => 'Saqlangan';
+
+  @override
+  String get wardrobeAdded => 'Garderobingizga qoʻshildi';
+
+  @override
+  String get wardrobeRemoved => 'Garderobingizdan olib tashlandi';
+
+  @override
+  String get wardrobeTitle => 'Mening garderobim';
+
+  @override
+  String get wardrobeAddItem => 'Qoʻshish';
+
+  @override
+  String get wardrobeAddNewItem => 'Yangi narsa qoʻshish';
+
+  @override
+  String get wardrobeTops => 'Ustki kiyim';
+
+  @override
+  String get wardrobeBottoms => 'Pastki kiyim';
+
+  @override
+  String get wardrobeShoes => 'Poyabzal';
+
+  @override
+  String get wardrobeAccessories => 'Aksessuarlar';
+
+  @override
+  String get wardrobeEmpty =>
+      'Bu yerda hozircha hech narsa yoʻq. Post va mahsulotlardan narsalarni saqlang.';
+
+  @override
+  String get wardrobeRemove => 'Olib tashlash';
+
+  @override
+  String get profileEdit => 'Tahrirlash';
+
+  @override
+  String get profileMyWardrobe => 'Garderobim';
+
+  @override
+  String get profileFollow => 'Obuna boʻlish';
+
+  @override
+  String get profileFollowingButton => 'Obunadasiz';
+
+  @override
+  String get profileMessage => 'Xabar';
+
+  @override
+  String get profileStyleDna => 'Uslub DNKsi';
+
+  @override
+  String get profileMyStyle => 'Mening uslubim';
+
+  @override
+  String get profileStyle => 'Uslub';
+
+  @override
+  String get profileTabPosts => 'Postlar';
+
+  @override
+  String get profileTabSaved => 'Saqlanganlar';
+
+  @override
+  String get profileTabStyleBoards => 'Uslub doskalari';
+
+  @override
+  String get profileNoPosts => 'Hozircha postlar yoʻq';
+
+  @override
+  String get profileNoSaved => 'Saqlangan postlar shu yerda chiqadi';
+
+  @override
+  String get profileStyleBoardsSoon => 'Uslub doskalari tez orada';
+
+  @override
+  String get profileSettings => 'Sozlamalar';
+
+  @override
+  String get profileShare => 'Profilni ulashish';
+
+  @override
+  String get profileGuestTitle => 'Profilingizni koʻrish uchun kiring';
+
+  @override
+  String get errorProfileNotFound => 'Bu profil mavjud emas.';
+
+  @override
+  String productStyledBy(int count, String item) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count xaridor buni kiygan: $item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String wardrobeItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ta narsa',
+      zero: 'Narsa yoʻq',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profilePostsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'post',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileFollowersLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'obunachi',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileFollowingLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'obuna',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get filterAll => 'Hammasi';
 }

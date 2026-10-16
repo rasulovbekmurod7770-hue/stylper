@@ -1,6 +1,6 @@
 import 'package:intl/intl.dart';
 
-import '../domain/entities/post.dart';
+import '../domain/money.dart';
 
 /// Localized price, without decimals for whole amounts: `$89` (en),
 /// `89 $` (ru).

@@ -58,7 +58,7 @@ void main() {
       final paths = {
         for (final post in feed.featured) ...[
           post.imagePath,
-          post.author.avatarPath,
+          ?post.author.avatarPath,
         ],
         for (final person in feed.peopleWearing) person.photoPath,
         for (final post in feed.trending) post.imagePath,

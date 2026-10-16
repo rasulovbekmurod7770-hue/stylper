@@ -9,7 +9,8 @@ import '../../../../core/presentation/compact_count.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/widgets/feed_photo.dart';
+import '../../../../core/router/tab_navigation.dart';
+import '../../../../core/widgets/user_avatar.dart';
 import '../../../../core/widgets/load_error_view.dart';
 import '../../../../core/widgets/snackbars.dart';
 import '../../domain/entities/post.dart';
@@ -133,17 +134,29 @@ class _AuthorRow extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Row(
           children: [
-            SizedBox.square(
-              dimension: 30,
-              child: FeedPhoto.circle(path: author.avatarPath),
-            ),
-            const SizedBox(width: 8),
             Expanded(
-              child: Text(
-                author.name,
-                style: AppTypography.postAuthorName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
+              // The author opens their profile.
+              child: GestureDetector(
+                behavior: HitTestBehavior.opaque,
+                onTap: () => context.openUser(author.id),
+                child: Row(
+                  children: [
+                    UserAvatar(
+                      name: author.name,
+                      imagePath: author.avatarPath,
+                      size: 30,
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        author.name,
+                        style: AppTypography.postAuthorName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
             Semantics(

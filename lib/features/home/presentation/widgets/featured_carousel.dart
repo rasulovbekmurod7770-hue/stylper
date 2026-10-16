@@ -1,13 +1,14 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../core/router/tab_navigation.dart';
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/presentation/compact_count.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/feed_photo.dart';
-import '../../../post/presentation/open_post.dart';
+import '../../../../core/widgets/user_avatar.dart';
 import '../../../post/presentation/widgets/engagement_buttons.dart';
 import '../../domain/entities/home_feed.dart';
 
@@ -54,7 +55,7 @@ class _FeaturedCarouselState extends State<FeaturedCarousel> {
                 itemCount: posts.length,
                 onPageChanged: (page) => setState(() => _page = page),
                 itemBuilder: (context, index) => GestureDetector(
-                  onTap: () => openPost(context, posts[index].id),
+                  onTap: () => context.openPost(posts[index].id),
                   child: FeedPhoto(path: posts[index].imagePath, radius: 24),
                 ),
               ),
@@ -137,28 +138,40 @@ class _PostMeta extends StatelessWidget {
     final author = post.author;
     return Row(
       children: [
-        SizedBox.square(
-          dimension: 36,
-          child: FeedPhoto.circle(path: author.avatarPath),
-        ),
-        const SizedBox(width: 10),
+        // The author opens their profile.
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                author.name,
-                style: AppTypography.feedAuthorName,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 2),
-              Text(
-                '@${author.handle}',
-                style: AppTypography.feedHandle,
-                maxLines: 1,
-              ),
-            ],
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => context.openUser(author.id),
+            child: Row(
+              children: [
+                UserAvatar(
+                  name: author.name,
+                  imagePath: author.avatarPath,
+                  size: 36,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        author.name,
+                        style: AppTypography.feedAuthorName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '@${author.handle}',
+                        style: AppTypography.feedHandle,
+                        maxLines: 1,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
         LikeButton(
@@ -174,7 +187,7 @@ class _PostMeta extends StatelessWidget {
           value: compactCount(post.commentCount),
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: () => openPost(context, post.id),
+            onTap: () => context.openPost(post.id),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [

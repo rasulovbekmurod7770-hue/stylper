@@ -1,5 +1,9 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../../core/domain/money.dart';
+
+export '../../../../core/domain/money.dart';
+
 // Image fields hold a bundled asset path for now; an image URL once posts
 // come from the API.
 
@@ -8,7 +12,7 @@ class PostAuthor extends Equatable {
     required this.id,
     required this.name,
     required this.handle,
-    required this.avatarPath,
+    this.avatarPath,
   });
 
   final String id;
@@ -16,7 +20,9 @@ class PostAuthor extends Equatable {
 
   /// Username without the leading `@`.
   final String handle;
-  final String avatarPath;
+
+  /// Null when the user has no photo; the app shows initials.
+  final String? avatarPath;
 
   @override
   List<Object?> get props => [id, name, handle, avatarPath];
@@ -45,18 +51,6 @@ class PostEngagement extends Equatable {
   List<Object?> get props => [likeCount, liked, saved];
 }
 
-class Money extends Equatable {
-  const Money({required this.amount, required this.currency});
-
-  final num amount;
-
-  /// ISO 4217 code, e.g. `USD`, `UZS`.
-  final String currency;
-
-  @override
-  List<Object?> get props => [amount, currency];
-}
-
 /// A clothing item tagged on a post photo — "what is it and where to get it".
 class TaggedProduct extends Equatable {
   const TaggedProduct({
@@ -69,6 +63,7 @@ class TaggedProduct extends Equatable {
     required this.styledCount,
     required this.tagX,
     required this.tagY,
+    this.inWardrobe = false,
   });
 
   final String id;
@@ -89,6 +84,9 @@ class TaggedProduct extends Equatable {
   final double tagX;
   final double tagY;
 
+  /// Whether it's in the signed-in user's wardrobe.
+  final bool inWardrobe;
+
   @override
   List<Object?> get props => [
     id,
@@ -100,6 +98,7 @@ class TaggedProduct extends Equatable {
     styledCount,
     tagX,
     tagY,
+    inWardrobe,
   ];
 }
 
@@ -111,6 +110,7 @@ class PostPreview extends Equatable {
     required this.aspectRatio,
     this.caption,
     this.authorHandle,
+    this.styles = const [],
   });
 
   /// The post's id.
@@ -124,6 +124,9 @@ class PostPreview extends Equatable {
   /// Username without the leading `@`.
   final String? authorHandle;
 
+  /// Styles the post belongs to, e.g. "Casual".
+  final List<String> styles;
+
   @override
   List<Object?> get props => [
     id,
@@ -131,6 +134,7 @@ class PostPreview extends Equatable {
     aspectRatio,
     caption,
     authorHandle,
+    styles,
   ];
 }
 

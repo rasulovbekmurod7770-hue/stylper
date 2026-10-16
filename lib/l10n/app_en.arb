@@ -1,13 +1,10 @@
 {
   "@@locale": "en",
-
   "appName": "Stylper",
-
   "welcomeTagline": "We help people to find their style",
   "signIn": "Sign In",
   "createAccount": "Create Account",
   "skipForNow": "Skip for now",
-
   "signInTitle": "Welcome back",
   "signInSubtitle": "Sign in to your account to find your style",
   "emailLabel": "Email Address",
@@ -23,17 +20,27 @@
   "noAccountPrompt": "Don't have an account? {link}",
   "@noAccountPrompt": {
     "description": "Footer on the sign-in screen. {link} is replaced by the tappable signUpLink text.",
-    "placeholders": { "link": { "type": "String" } }
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
   },
   "signUpLink": "Sign up",
-
   "signUpSubtitle": "Sign up to discover and customize your unique style",
   "confirmPasswordLabel": "Confirm Password",
   "confirmPasswordHint": "Repeat your password",
   "termsAcceptance": "I accept the {terms} & {privacy}",
   "@termsAcceptance": {
     "description": "Terms switch label. {terms} and {privacy} are replaced by the tappable termsOfService and privacyPolicy texts.",
-    "placeholders": { "terms": { "type": "String" }, "privacy": { "type": "String" } }
+    "placeholders": {
+      "terms": {
+        "type": "String"
+      },
+      "privacy": {
+        "type": "String"
+      }
+    }
   },
   "termsOfService": "Terms of Service",
   "privacyPolicy": "Privacy Policy",
@@ -41,26 +48,36 @@
   "haveAccountPrompt": "Already have an account? {link}",
   "@haveAccountPrompt": {
     "description": "Footer on the sign-up screen. {link} is replaced by the tappable signInLink text.",
-    "placeholders": { "link": { "type": "String" } }
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
   },
   "signInLink": "Sign in",
-
   "forgotPasswordTitle": "Forgot password?",
   "forgotPasswordSubtitle": "Enter your email address below and we'll send you a link to reset your password and regain access to your account.",
   "resetLinkHint": "A secure password reset verification link will be active for 60 minutes.",
   "sendResetLink": "Send Reset Link",
   "resetLinkSent": "We've sent a reset link to {email}. Check your inbox.",
   "@resetLinkSent": {
-    "placeholders": { "email": { "type": "String" } }
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   },
   "backToSignIn": "Back to {link}",
   "@backToSignIn": {
     "description": "Footer on the forgot-password screen. {link} is replaced by the tappable backToSignInLink text.",
-    "placeholders": { "link": { "type": "String" } }
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
   },
   "backToSignInLink": "Sign In",
   "back": "Back",
-
   "profileSetupTitle": "Set Up Your Profile",
   "profileSetupSubtitle": "Help us personalize your style recommendations and fits",
   "usernameLabel": "Username",
@@ -75,47 +92,63 @@
   "weightLabel": "Weight",
   "weightHint": "Weight in kg",
   "continueButton": "Continue",
-
   "styleQuizTitle": "Dress like {you}.",
   "@styleQuizTitle": {
     "description": "Style quiz heading. {you} is replaced by styleQuizTitleEmphasis, drawn in an italic serif.",
-    "placeholders": { "you": { "type": "String" } }
+    "placeholders": {
+      "you": {
+        "type": "String"
+      }
+    }
   },
   "styleQuizTitleEmphasis": "you",
   "likeThisOutfit": "I like this {outfit}",
   "@likeThisOutfit": {
     "description": "Style quiz button. {outfit} is replaced by likeThisOutfitEmphasis, drawn in semibold.",
-    "placeholders": { "outfit": { "type": "String" } }
+    "placeholders": {
+      "outfit": {
+        "type": "String"
+      }
+    }
   },
   "likeThisOutfitEmphasis": "outfit...",
   "previousItem": "Previous {item}",
   "@previousItem": {
-    "placeholders": { "item": { "type": "String" } }
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
   },
   "nextItem": "Next {item}",
   "@nextItem": {
-    "placeholders": { "item": { "type": "String" } }
+    "placeholders": {
+      "item": {
+        "type": "String"
+      }
+    }
   },
   "topsCategory": "top",
   "bottomsCategory": "bottom",
-
   "homeForYou": "For you",
   "homeFollowing": "Following",
   "homeForYouTitle": "Today's style inspiration",
   "homePeopleWearing": "People wearing",
   "homeTrendingIn": "Trending in {city}",
   "@homeTrendingIn": {
-    "placeholders": { "city": { "type": "String" } }
+    "placeholders": {
+      "city": {
+        "type": "String"
+      }
+    }
   },
   "retry": "Try again",
   "comingSoon": "Coming soon",
-
   "tabHome": "Home",
   "tabSearch": "Search",
   "tabCreate": "New post",
   "tabExplore": "Explore",
   "tabProfile": "Profile",
-
   "postOutfitDetails": "Outfit details",
   "postSimilar": "Similar",
   "postShop": "Shop",
@@ -124,7 +157,11 @@
   "postSave": "Save",
   "postStyledCount": "{count, plural, =1{1 person styled this} other{{count} people styled this}}",
   "@postStyledCount": {
-    "placeholders": { "count": { "type": "int" } }
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "postLike": "Like",
   "postComments": "Comments",
@@ -132,15 +169,8 @@
   "postMore": "More",
   "signInToInteract": "Sign in to like and save posts.",
   "errorPostNotFound": "This post is no longer available.",
-
-  "profilePlaceholderTitle": "Your profile is coming soon",
   "profileGuestMessage": "You're browsing as a guest.",
-  "profileSignedInMessage": "Signed in as {name}",
-  "@profileSignedInMessage": {
-    "placeholders": { "name": { "type": "String" } }
-  },
   "signOut": "Sign out",
-
   "errorInvalidCredentials": "Incorrect email or password.",
   "errorEmailInUse": "An account with this email already exists.",
   "errorWeakPassword": "This password is too weak. Use at least 8 characters.",
@@ -150,19 +180,116 @@
   "errorProviderUnavailable": "This sign-in method isn't available yet.",
   "errorUsernameTaken": "This username is already taken.",
   "errorUnknown": "Something went wrong. Please try again.",
-
   "validationRequired": "This field is required.",
   "validationEmail": "Enter a valid email address.",
   "validationPasswordLength": "Use at least {min} characters.",
   "@validationPasswordLength": {
-    "placeholders": { "min": { "type": "int" } }
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
   },
   "validationPasswordsMismatch": "Passwords don't match.",
   "validationUsername": "Use 3–20 characters: letters, numbers, _ or .",
   "validationNumberRange": "Enter a number from {min} to {max}.",
   "@validationNumberRange": {
-    "placeholders": { "min": { "type": "int" }, "max": { "type": "int" } }
+    "placeholders": {
+      "min": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
   },
   "validationGender": "Please choose an option.",
-  "validationTerms": "Please accept the Terms of Service and Privacy Policy."
+  "validationTerms": "Please accept the Terms of Service and Privacy Policy.",
+  "productTitle": "Product",
+  "productAvailableAt": "Available at",
+  "productSaveToWardrobe": "Save to Wardrobe",
+  "inWardrobe": "In wardrobe",
+  "productBuyNow": "Buy Now",
+  "productSeeItOnPeople": "See It On People",
+  "productSeeAllLooks": "See all looks",
+  "productHowPeopleStyleIt": "How people style it",
+  "productSimilarStyle": "Similar Style",
+  "productLooksTitle": "Looks",
+  "productNoLooks": "No looks yet",
+  "errorProductNotFound": "This product is no longer available.",
+  "errorOpenStore": "Couldn't open the store.",
+  "postSaved": "Saved",
+  "wardrobeAdded": "Added to your wardrobe",
+  "wardrobeRemoved": "Removed from your wardrobe",
+  "wardrobeTitle": "My Wardrobe",
+  "wardrobeAddItem": "Add item",
+  "wardrobeAddNewItem": "Add new item",
+  "wardrobeTops": "Tops",
+  "wardrobeBottoms": "Bottoms",
+  "wardrobeShoes": "Shoes",
+  "wardrobeAccessories": "Accessories",
+  "wardrobeEmpty": "Nothing here yet. Save items from posts and products.",
+  "wardrobeRemove": "Remove",
+  "profileEdit": "Edit Profile",
+  "profileMyWardrobe": "My Wardrobe",
+  "profileFollow": "Follow",
+  "profileFollowingButton": "Following",
+  "profileMessage": "Message",
+  "profileStyleDna": "Style DNA",
+  "profileMyStyle": "My style",
+  "profileStyle": "Style",
+  "profileTabPosts": "Posts",
+  "profileTabSaved": "Saved",
+  "profileTabStyleBoards": "Style Boards",
+  "profileNoPosts": "No posts yet",
+  "profileNoSaved": "Posts you save appear here",
+  "profileStyleBoardsSoon": "Style boards are coming soon",
+  "profileSettings": "Settings",
+  "profileShare": "Share profile",
+  "profileGuestTitle": "Sign in to see your profile",
+  "errorProfileNotFound": "This profile isn't available.",
+  "productStyledBy": "{count, plural, =1{1 real customer styled this {item}} other{{count} real customers styled this {item}}}",
+  "@productStyledBy": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "item": {
+        "type": "String"
+      }
+    }
+  },
+  "wardrobeItemCount": "{count, plural, =0{No items} =1{1 item} other{{count} items}}",
+  "@wardrobeItemCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profilePostsLabel": "{count, plural, =1{Post} other{Posts}}",
+  "@profilePostsLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFollowersLabel": "{count, plural, =1{Follower} other{Followers}}",
+  "@profileFollowersLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "profileFollowingLabel": "{count, plural, other{Following}}",
+  "@profileFollowingLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterAll": "All"
 }

@@ -256,6 +256,16 @@ abstract final class AppTypography {
     color: Color(0xFFFFFFFF),
   );
 
+  static const avatarInitials = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: Color(0xFFFFFFFF),
+  );
+
   // Home feed (Figma 2775:2563). Figma's "normal" Poppins line height is
   // 1.5em rounded to whole pixels (11→17, 12→18, 13→20); Flutter leaves the
   // font's line gap out, so it's set explicitly, split evenly as in CSS.
@@ -484,6 +494,316 @@ abstract final class AppTypography {
     fontFamily: poppins,
     fontFamilyFallback: _poppinsFallback,
     fontSize: 7.3,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  // Product, profile and wardrobe screens (Figma 2775:3077, 2775:3285,
+  // 2775:3374, 2789:226). PROVISIONAL: their design context isn't cached;
+  // families and sizes are inferred from the text boxes in the cached
+  // metadata (Inter on the product page, Poppins on profile / wardrobe).
+  static const screenTitle = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 16,
+    fontWeight: FontWeight.w700,
+    color: AppColors.textPrimary,
+  );
+
+  static const productBrand = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 1.2,
+    color: AppColors.textMuted,
+  );
+
+  static const productName = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 26,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.4,
+    color: AppColors.textPrimary,
+  );
+
+  static const productPrice = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 24,
+    fontWeight: FontWeight.w800,
+    color: AppColors.textPrimary,
+  );
+
+  static const productStoreLabel = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textMuted,
+  );
+
+  static const productStoreLink = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 13,
+    fontWeight: FontWeight.w600,
+    decoration: TextDecoration.underline,
+    color: AppColors.textPrimary,
+  );
+
+  static const productButton = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const productSectionTitle = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 22,
+    fontWeight: FontWeight.w600,
+    letterSpacing: -0.3,
+    color: AppColors.textPrimary,
+  );
+
+  static const productSectionSubtitle = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 14,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textMuted,
+  );
+
+  static const productLink = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: AppColors.brandRed,
+  );
+
+  static const productSubsectionTitle = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 20,
+    fontWeight: FontWeight.w700,
+    letterSpacing: -0.3,
+    color: AppColors.textPrimary,
+  );
+
+  static const productStylePill = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const productCardBrand = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 10,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textMuted,
+  );
+
+  static const productCardTitle = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const productCardPrice = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 13,
+    fontWeight: FontWeight.w800,
+    color: AppColors.textPrimary,
+  );
+
+  static const profileName = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 30,
+    fontWeight: FontWeight.w600,
+    height: 45 / 30,
+    color: AppColors.textPrimary,
+  );
+
+  static const profileHandle = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 15,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textMuted,
+  );
+
+  static const profileBio = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textMuted,
+  );
+
+  static const profileStatCount = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 13,
+    fontWeight: FontWeight.w700,
+    color: AppColors.textPrimary,
+  );
+
+  static const profileStatLabel = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 13,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textMuted,
+  );
+
+  static const profileButton = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const profileDnaTag = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 12,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const profileTab = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const profileTabInactive = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textMuted,
+  );
+
+  static const profileCompactName = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 16,
+    fontWeight: FontWeight.w700,
+    color: AppColors.textPrimary,
+  );
+
+  static const profileCompactHandle = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textMuted,
+  );
+
+  static const savedCardHandle = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 12,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textPrimary,
+  );
+
+  static const wardrobeTitle = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 20,
+    fontWeight: FontWeight.w700,
+    color: AppColors.textPrimary,
+  );
+
+  static const wardrobeQuickAdd = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 11,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const wardrobeCategory = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: poppins,
+    fontFamilyFallback: _poppinsFallback,
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
+  static const wardrobeCount = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 12,
+    fontWeight: FontWeight.w400,
+    color: AppColors.textMuted,
+  );
+
+  static const wardrobeItemName = TextStyle(
+    inherit: false,
+    textBaseline: TextBaseline.alphabetic,
+    fontFamily: inter,
+    fontSize: 12,
     fontWeight: FontWeight.w600,
     color: AppColors.textPrimary,
   );

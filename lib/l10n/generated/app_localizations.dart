@@ -598,23 +598,11 @@ abstract class AppLocalizations {
   /// **'This post is no longer available.'**
   String get errorPostNotFound;
 
-  /// No description provided for @profilePlaceholderTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Your profile is coming soon'**
-  String get profilePlaceholderTitle;
-
   /// No description provided for @profileGuestMessage.
   ///
   /// In en, this message translates to:
   /// **'You\'re browsing as a guest.'**
   String get profileGuestMessage;
-
-  /// No description provided for @profileSignedInMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Signed in as {name}'**
-  String profileSignedInMessage(String name);
 
   /// No description provided for @signOut.
   ///
@@ -723,6 +711,300 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please accept the Terms of Service and Privacy Policy.'**
   String get validationTerms;
+
+  /// No description provided for @productTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Product'**
+  String get productTitle;
+
+  /// No description provided for @productAvailableAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Available at'**
+  String get productAvailableAt;
+
+  /// No description provided for @productSaveToWardrobe.
+  ///
+  /// In en, this message translates to:
+  /// **'Save to Wardrobe'**
+  String get productSaveToWardrobe;
+
+  /// No description provided for @inWardrobe.
+  ///
+  /// In en, this message translates to:
+  /// **'In wardrobe'**
+  String get inWardrobe;
+
+  /// No description provided for @productBuyNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Buy Now'**
+  String get productBuyNow;
+
+  /// No description provided for @productSeeItOnPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'See It On People'**
+  String get productSeeItOnPeople;
+
+  /// No description provided for @productSeeAllLooks.
+  ///
+  /// In en, this message translates to:
+  /// **'See all looks'**
+  String get productSeeAllLooks;
+
+  /// No description provided for @productHowPeopleStyleIt.
+  ///
+  /// In en, this message translates to:
+  /// **'How people style it'**
+  String get productHowPeopleStyleIt;
+
+  /// No description provided for @productSimilarStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Similar Style'**
+  String get productSimilarStyle;
+
+  /// No description provided for @productLooksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Looks'**
+  String get productLooksTitle;
+
+  /// No description provided for @productNoLooks.
+  ///
+  /// In en, this message translates to:
+  /// **'No looks yet'**
+  String get productNoLooks;
+
+  /// No description provided for @errorProductNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This product is no longer available.'**
+  String get errorProductNotFound;
+
+  /// No description provided for @errorOpenStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t open the store.'**
+  String get errorOpenStore;
+
+  /// No description provided for @postSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get postSaved;
+
+  /// No description provided for @wardrobeAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Added to your wardrobe'**
+  String get wardrobeAdded;
+
+  /// No description provided for @wardrobeRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Removed from your wardrobe'**
+  String get wardrobeRemoved;
+
+  /// No description provided for @wardrobeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Wardrobe'**
+  String get wardrobeTitle;
+
+  /// No description provided for @wardrobeAddItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add item'**
+  String get wardrobeAddItem;
+
+  /// No description provided for @wardrobeAddNewItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Add new item'**
+  String get wardrobeAddNewItem;
+
+  /// No description provided for @wardrobeTops.
+  ///
+  /// In en, this message translates to:
+  /// **'Tops'**
+  String get wardrobeTops;
+
+  /// No description provided for @wardrobeBottoms.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottoms'**
+  String get wardrobeBottoms;
+
+  /// No description provided for @wardrobeShoes.
+  ///
+  /// In en, this message translates to:
+  /// **'Shoes'**
+  String get wardrobeShoes;
+
+  /// No description provided for @wardrobeAccessories.
+  ///
+  /// In en, this message translates to:
+  /// **'Accessories'**
+  String get wardrobeAccessories;
+
+  /// No description provided for @wardrobeEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing here yet. Save items from posts and products.'**
+  String get wardrobeEmpty;
+
+  /// No description provided for @wardrobeRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get wardrobeRemove;
+
+  /// No description provided for @profileEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get profileEdit;
+
+  /// No description provided for @profileMyWardrobe.
+  ///
+  /// In en, this message translates to:
+  /// **'My Wardrobe'**
+  String get profileMyWardrobe;
+
+  /// No description provided for @profileFollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow'**
+  String get profileFollow;
+
+  /// No description provided for @profileFollowingButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get profileFollowingButton;
+
+  /// No description provided for @profileMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get profileMessage;
+
+  /// No description provided for @profileStyleDna.
+  ///
+  /// In en, this message translates to:
+  /// **'Style DNA'**
+  String get profileStyleDna;
+
+  /// No description provided for @profileMyStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'My style'**
+  String get profileMyStyle;
+
+  /// No description provided for @profileStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Style'**
+  String get profileStyle;
+
+  /// No description provided for @profileTabPosts.
+  ///
+  /// In en, this message translates to:
+  /// **'Posts'**
+  String get profileTabPosts;
+
+  /// No description provided for @profileTabSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get profileTabSaved;
+
+  /// No description provided for @profileTabStyleBoards.
+  ///
+  /// In en, this message translates to:
+  /// **'Style Boards'**
+  String get profileTabStyleBoards;
+
+  /// No description provided for @profileNoPosts.
+  ///
+  /// In en, this message translates to:
+  /// **'No posts yet'**
+  String get profileNoPosts;
+
+  /// No description provided for @profileNoSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Posts you save appear here'**
+  String get profileNoSaved;
+
+  /// No description provided for @profileStyleBoardsSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Style boards are coming soon'**
+  String get profileStyleBoardsSoon;
+
+  /// No description provided for @profileSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get profileSettings;
+
+  /// No description provided for @profileShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share profile'**
+  String get profileShare;
+
+  /// No description provided for @profileGuestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to see your profile'**
+  String get profileGuestTitle;
+
+  /// No description provided for @errorProfileNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'This profile isn\'t available.'**
+  String get errorProfileNotFound;
+
+  /// No description provided for @productStyledBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 real customer styled this {item}} other{{count} real customers styled this {item}}}'**
+  String productStyledBy(int count, String item);
+
+  /// No description provided for @wardrobeItemCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No items} =1{1 item} other{{count} items}}'**
+  String wardrobeItemCount(int count);
+
+  /// No description provided for @profilePostsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Post} other{Posts}}'**
+  String profilePostsLabel(int count);
+
+  /// No description provided for @profileFollowersLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Follower} other{Followers}}'**
+  String profileFollowersLabel(int count);
+
+  /// No description provided for @profileFollowingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, other{Following}}'**
+  String profileFollowingLabel(int count);
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
 }
 
 class _AppLocalizationsDelegate

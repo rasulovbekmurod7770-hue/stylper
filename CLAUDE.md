@@ -38,10 +38,16 @@ it", local brands first, and trust (nothing that misleads).
   `features/onboarding`, `features/home` and `features/post` as the
   reference patterns.
 - Posts are shared across features: `features/post` owns `Post`,
-  `PostPreview`, `PostAuthor`, `PostGrid`, `openPost`. Likes and saves go
-  through the app-wide `PostEngagementCubit` (optimistic, rolled back on
-  failure, reset when the user changes) so every screen agrees; guests get a
-  sign-in prompt instead.
+  `PostPreview`, `PostAuthor`, `PostGrid`. Likes and saves go through the
+  app-wide `PostEngagementCubit`, and "save to wardrobe" through the app-wide
+  `WardrobeMembershipCubit` — both optimistic, rolled back on failure, reset
+  when the user changes — so every screen agrees; guests get the sign-in
+  prompt (`runSignedIn`) instead.
+- Detail screens (post, product, product looks, user profile) open **inside
+  the current tab** with `context.openPost / openProduct / openUser`
+  (`lib/core/router/tab_navigation.dart`), so each tab keeps its own back
+  stack; the tab bar hides only on the post screen, as in Figma. Wardrobe
+  lives in the Profile tab (`context.openWardrobe`).
 - **No backend yet, and no Firebase.** The real API will be a custom REST
   backend (likely Node.js). Every remote call goes through a
   `*RemoteDataSource` interface; until the API exists, a `Fake…` data source
@@ -69,11 +75,14 @@ it", local brands first, and trust (nothing that misleads).
   there. When many assets are needed, ask the user to export them instead.
 - Implemented: welcome `2775:2369`, sign in `2775:2318`, sign up `2775:2441`,
   forgot password `2775:2408`, profile setup `2775:2501`, style quiz
-  `2775:2389`, home `2775:2563`, outfit post "home-feed-2" `2775:2840`
-  (layout from cached metadata only; styling marked PROVISIONAL until its
-  design context or an SVG export is cached — variant `2775:2953` is the
-  tapped-tag state). Next in the flow: product detail `2775:3077`, profile
-  `2775:3285`, brand profile `2856:1809`, brand showroom `2856:1919`.
+  `2775:2389`, home `2775:2563`. Built from cached metadata only, styling
+  marked PROVISIONAL until their design context or SVG exports are cached:
+  outfit post "home-feed-2" `2775:2840` (variant `2775:2953` = tapped tag),
+  product detail `2775:3077`, profile `2775:3285`, profile Saved tab
+  "Profile 4" `2775:3374`, wardrobe `2789:226`. Not in Figma, built from the
+  same pieces: product "See all looks", wardrobe category, settings sheet.
+  Next in the flow: brand profile `2856:1809`, brand showroom `2856:1919`,
+  posting `2849:1017`.
 - Controls whose screens don't exist yet show "Coming soon" — never leave a
   tappable-looking control dead.
 - Fonts: Poppins on most screens (it has no Cyrillic, so styles fall back to

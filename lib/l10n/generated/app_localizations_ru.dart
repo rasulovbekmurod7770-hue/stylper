@@ -293,15 +293,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get errorPostNotFound => 'Этот пост больше недоступен.';
 
   @override
-  String get profilePlaceholderTitle => 'Ваш профиль скоро появится';
-
-  @override
   String get profileGuestMessage => 'Вы просматриваете как гость.';
-
-  @override
-  String profileSignedInMessage(String name) {
-    return 'Вы вошли как $name';
-  }
 
   @override
   String get signOut => 'Выйти';
@@ -364,4 +356,198 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get validationTerms =>
       'Примите Условия использования и Политику конфиденциальности.';
+
+  @override
+  String get productTitle => 'Товар';
+
+  @override
+  String get productAvailableAt => 'Доступно на';
+
+  @override
+  String get productSaveToWardrobe => 'В гардероб';
+
+  @override
+  String get inWardrobe => 'В гардеробе';
+
+  @override
+  String get productBuyNow => 'Купить';
+
+  @override
+  String get productSeeItOnPeople => 'Как это носят';
+
+  @override
+  String get productSeeAllLooks => 'Все образы';
+
+  @override
+  String get productHowPeopleStyleIt => 'Как это сочетают';
+
+  @override
+  String get productSimilarStyle => 'Похожий стиль';
+
+  @override
+  String get productLooksTitle => 'Образы';
+
+  @override
+  String get productNoLooks => 'Пока нет образов';
+
+  @override
+  String get errorProductNotFound => 'Этот товар больше недоступен.';
+
+  @override
+  String get errorOpenStore => 'Не удалось открыть магазин.';
+
+  @override
+  String get postSaved => 'Сохранено';
+
+  @override
+  String get wardrobeAdded => 'Добавлено в гардероб';
+
+  @override
+  String get wardrobeRemoved => 'Удалено из гардероба';
+
+  @override
+  String get wardrobeTitle => 'Мой гардероб';
+
+  @override
+  String get wardrobeAddItem => 'Добавить';
+
+  @override
+  String get wardrobeAddNewItem => 'Добавить вещь';
+
+  @override
+  String get wardrobeTops => 'Верх';
+
+  @override
+  String get wardrobeBottoms => 'Низ';
+
+  @override
+  String get wardrobeShoes => 'Обувь';
+
+  @override
+  String get wardrobeAccessories => 'Аксессуары';
+
+  @override
+  String get wardrobeEmpty =>
+      'Здесь пока пусто. Сохраняйте вещи из постов и товаров.';
+
+  @override
+  String get wardrobeRemove => 'Удалить';
+
+  @override
+  String get profileEdit => 'Редактировать';
+
+  @override
+  String get profileMyWardrobe => 'Мой гардероб';
+
+  @override
+  String get profileFollow => 'Подписаться';
+
+  @override
+  String get profileFollowingButton => 'Вы подписаны';
+
+  @override
+  String get profileMessage => 'Написать';
+
+  @override
+  String get profileStyleDna => 'ДНК стиля';
+
+  @override
+  String get profileMyStyle => 'Мой стиль';
+
+  @override
+  String get profileStyle => 'Стиль';
+
+  @override
+  String get profileTabPosts => 'Посты';
+
+  @override
+  String get profileTabSaved => 'Сохранённое';
+
+  @override
+  String get profileTabStyleBoards => 'Доски стиля';
+
+  @override
+  String get profileNoPosts => 'Пока нет постов';
+
+  @override
+  String get profileNoSaved => 'Здесь появятся сохранённые посты';
+
+  @override
+  String get profileStyleBoardsSoon => 'Доски стиля скоро появятся';
+
+  @override
+  String get profileSettings => 'Настройки';
+
+  @override
+  String get profileShare => 'Поделиться профилем';
+
+  @override
+  String get profileGuestTitle => 'Войдите, чтобы увидеть свой профиль';
+
+  @override
+  String get errorProfileNotFound => 'Этот профиль недоступен.';
+
+  @override
+  String productStyledBy(int count, String item) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count покупателей примерили: $item',
+      few: '$count покупателя примерили: $item',
+      one: '$count покупатель примерил: $item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String wardrobeItemCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count вещей',
+      few: '$count вещи',
+      one: '$count вещь',
+      zero: 'Нет вещей',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profilePostsLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'постов',
+      few: 'поста',
+      one: 'пост',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileFollowersLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'подписчиков',
+      few: 'подписчика',
+      one: 'подписчик',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String profileFollowingLabel(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'подписок',
+      few: 'подписки',
+      one: 'подписка',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get filterAll => 'Все';
 }

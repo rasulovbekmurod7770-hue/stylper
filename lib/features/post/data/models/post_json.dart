@@ -19,7 +19,7 @@ abstract final class PostJson {
     id: json['id']! as String,
     name: json['name']! as String,
     handle: json['handle']! as String,
-    avatarPath: json['avatar']! as String,
+    avatarPath: json['avatar'] as String?,
   );
 
   /// Reads `{likes, likedByMe?, savedByMe?}` (missing flags mean "no").
@@ -35,7 +35,13 @@ abstract final class PostJson {
     aspectRatio: (json['aspectRatio']! as num).toDouble(),
     caption: json['caption'] as String?,
     authorHandle: json['authorHandle'] as String?,
+    styles: strings(json['styles']),
   );
+
+  /// A JSON array of strings; null or missing reads as empty.
+  static List<String> strings(Object? json) => [
+    ...?(json as List<Object?>?)?.cast<String>(),
+  ];
 
   /// A JSON array of objects; null or missing reads as empty.
   static List<T> list<T>(Object? json, T Function(JsonMap) parse) => [
@@ -59,6 +65,7 @@ abstract final class PostJson {
       styledCount: json['styledCount']! as int,
       tagX: (tag['x']! as num).toDouble(),
       tagY: (tag['y']! as num).toDouble(),
+      inWardrobe: json['inWardrobe'] as bool? ?? false,
     );
   }
 }

@@ -16,8 +16,17 @@ abstract final class AppRoutes {
   static const profile = '/profile';
   static const mainTabs = [home, search, explore, profile];
 
-  /// An outfit post, shown over the tab bar.
-  static String post(String id) => '$home/post/$id';
+  // Detail screens open inside a main tab, e.g. `/home/post/1`, so each tab
+  // keeps its own back stack.
+  static String post(String id, {String tab = home}) => '$tab/post/$id';
+
+  static String product(String id, {String tab = home}) => '$tab/product/$id';
+
+  static String user(String id, {String tab = home}) => '$tab/user/$id';
+
+  static const wardrobe = '$profile/wardrobe';
+
+  static String wardrobeCategory(String category) => '$wardrobe/$category';
 
   static bool isAuthRoute(String location) => location.startsWith(welcome);
 

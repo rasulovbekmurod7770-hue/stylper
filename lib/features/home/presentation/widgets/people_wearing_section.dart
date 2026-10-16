@@ -1,10 +1,10 @@
 import 'package:flutter/widgets.dart';
 
+import '../../../../core/router/tab_navigation.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/feed_photo.dart';
-import '../../../post/presentation/open_post.dart';
 import '../../domain/entities/home_feed.dart';
 
 /// "People Wearing Section" (2775:2605): a label with a short rule, then a
@@ -49,7 +49,7 @@ class PeopleWearingSection extends StatelessWidget {
               final person = people[index];
               return GestureDetector(
                 behavior: HitTestBehavior.opaque,
-                onTap: () => openPost(context, person.postId),
+                onTap: () => context.openPost(person.postId),
                 child: SizedBox(
                   width: _cardSize,
                   child: Column(

@@ -88,13 +88,29 @@ Future<void> pumpScreen(
 }
 
 /// SVG and raster decoding happens off the fake clock, so let real time pass.
+///
+/// [precacheImages] are asset paths, or folders ending in `/` meaning every
+/// raster image bundled under them.
 Future<void> settleAssets(
   WidgetTester tester, {
   List<String> precacheImages = const [],
 }) async {
   await tester.runAsync(() async {
     final context = tester.element(find.byKey(screenKey));
-    for (final asset in precacheImages) {
+    final manifest = precacheImages.any((path) => path.endsWith('/'))
+        ? await AssetManifest.loadFromAssetBundle(rootBundle)
+        : null;
+    final assets = [
+      for (final path in precacheImages)
+        if (path.endsWith('/'))
+          ...manifest!.listAssets().where(
+            (asset) => asset.startsWith(path) && !asset.endsWith('.svg'),
+          )
+        else
+          path,
+    ];
+    if (!context.mounted) return;
+    for (final asset in assets) {
       await precacheImage(AssetImage(asset), context);
     }
     await Future<void>.delayed(const Duration(milliseconds: 300));

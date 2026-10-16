@@ -26,6 +26,24 @@ import '../../features/onboarding/domain/usecases/onboarding_usecases.dart';
 import '../../features/onboarding/presentation/cubits/profile_setup_cubit.dart';
 import '../../features/onboarding/presentation/cubits/style_quiz_cubit.dart';
 import '../../features/post/data/datasources/post_remote_data_source.dart';
+import '../../features/product/data/datasources/product_remote_data_source.dart';
+import '../../features/product/data/repositories/product_repository_impl.dart';
+import '../../features/product/domain/repositories/product_repository.dart';
+import '../../features/product/domain/usecases/get_product.dart';
+import '../../features/product/presentation/cubits/product_detail_cubit.dart';
+import '../../features/profile/data/datasources/profile_remote_data_source.dart';
+import '../../features/profile/data/repositories/profile_repository_impl.dart';
+import '../../features/profile/domain/repositories/profile_repository.dart';
+import '../../features/profile/domain/usecases/profile_usecases.dart';
+import '../../features/profile/presentation/cubits/profile_cubit.dart';
+import '../../features/profile/presentation/cubits/saved_posts_cubit.dart';
+import '../../features/wardrobe/data/datasources/wardrobe_remote_data_source.dart';
+import '../../features/wardrobe/data/repositories/wardrobe_repository_impl.dart';
+import '../../features/wardrobe/domain/repositories/wardrobe_repository.dart';
+import '../../features/wardrobe/domain/usecases/wardrobe_usecases.dart';
+import '../../features/wardrobe/presentation/cubits/wardrobe_cubit.dart';
+import '../../features/wardrobe/presentation/cubits/wardrobe_items_cubit.dart';
+import '../../features/wardrobe/presentation/cubits/wardrobe_membership_cubit.dart';
 import '../../features/post/data/repositories/post_repository_impl.dart';
 import '../../features/post/domain/repositories/post_repository.dart';
 import '../../features/post/domain/usecases/post_usecases.dart';
@@ -43,8 +61,8 @@ void configureDependencies({FakeBackend? backend}) {
     // ── Backend ────────────────────────────────────────────────────────────
     // Until the Stylper API exists, remote data sources talk to an in-memory
     // FakeBackend. When it's ready, register HTTP implementations of
-    // AuthRemoteDataSource, OnboardingRemoteDataSource, HomeRemoteDataSource
-    // and PostRemoteDataSource here instead;
+    // every *RemoteDataSource (auth, onboarding, home, post, product,
+    // profile, wardrobe) here instead;
     // nothing outside this block needs to change.
     ..registerLazySingleton(() => backend ?? FakeBackend())
     ..registerLazySingleton<AuthRemoteDataSource>(
@@ -58,6 +76,15 @@ void configureDependencies({FakeBackend? backend}) {
     )
     ..registerLazySingleton<PostRemoteDataSource>(
       () => FakePostRemoteDataSource(sl(), sl()),
+    )
+    ..registerLazySingleton<ProductRemoteDataSource>(
+      () => FakeProductRemoteDataSource(sl(), sl()),
+    )
+    ..registerLazySingleton<ProfileRemoteDataSource>(
+      () => FakeProfileRemoteDataSource(sl(), sl()),
+    )
+    ..registerLazySingleton<WardrobeRemoteDataSource>(
+      () => FakeWardrobeRemoteDataSource(sl(), sl()),
     )
     // ───────────────────────────────────────────────────────────────────────
     ..registerLazySingleton(StyleQuizLocalDataSource.new)
@@ -74,6 +101,15 @@ void configureDependencies({FakeBackend? backend}) {
     ..registerLazySingleton<PostRepository>(
       () => PostRepositoryImpl(remote: sl()),
     )
+    ..registerLazySingleton<ProductRepository>(
+      () => ProductRepositoryImpl(remote: sl()),
+    )
+    ..registerLazySingleton<ProfileRepository>(
+      () => ProfileRepositoryImpl(remote: sl()),
+    )
+    ..registerLazySingleton<WardrobeRepository>(
+      () => WardrobeRepositoryImpl(remote: sl()),
+    )
     // Use cases
     ..registerFactory(() => RestoreSession(sl()))
     ..registerFactory(() => WatchCurrentUser(sl()))
@@ -89,6 +125,13 @@ void configureDependencies({FakeBackend? backend}) {
     ..registerFactory(() => GetPost(sl()))
     ..registerFactory(() => SetPostLiked(sl()))
     ..registerFactory(() => SetPostSaved(sl()))
+    ..registerFactory(() => GetProduct(sl()))
+    ..registerFactory(() => GetProfile(sl()))
+    ..registerFactory(() => SetFollowing(sl()))
+    ..registerFactory(() => GetSavedPosts(sl()))
+    ..registerFactory(() => GetWardrobe(sl()))
+    ..registerFactory(() => GetWardrobeItems(sl()))
+    ..registerFactory(() => SetInWardrobe(sl()))
     // Presentation
     ..registerLazySingleton(
       () => SessionCubit(
@@ -108,5 +151,18 @@ void configureDependencies({FakeBackend? backend}) {
     ..registerLazySingleton(() => PostEngagementCubit(sl(), sl()))
     ..registerFactoryParam<PostDetailCubit, String, void>(
       (postId, _) => PostDetailCubit(sl(), postId: postId),
+    )
+    ..registerFactoryParam<ProductDetailCubit, String, void>(
+      (productId, _) => ProductDetailCubit(sl(), productId: productId),
+    )
+    ..registerFactoryParam<ProfileCubit, String, void>(
+      (userId, _) => ProfileCubit(sl(), sl(), userId: userId),
+    )
+    ..registerFactory(() => SavedPostsCubit(sl()))
+    // App-wide, so every "save to wardrobe" control agrees.
+    ..registerLazySingleton(() => WardrobeMembershipCubit(sl()))
+    ..registerFactory(() => WardrobeCubit(sl()))
+    ..registerFactoryParam<WardrobeItemsCubit, String, void>(
+      (category, _) => WardrobeItemsCubit(sl(), category: category),
     );
 }

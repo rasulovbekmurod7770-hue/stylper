@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../core/l10n/l10n.dart';
 import '../core/theme/app_theme.dart';
 import '../features/post/presentation/cubits/post_engagement_cubit.dart';
+import '../features/wardrobe/presentation/cubits/wardrobe_membership_cubit.dart';
 import 'di/injection.dart';
 import 'router/app_router.dart';
 import 'session/session_cubit.dart';
@@ -23,6 +24,7 @@ class StylperApp extends StatefulWidget {
 class _StylperAppState extends State<StylperApp> {
   late final GoRouter _router = createRouter(widget.session);
   late final PostEngagementCubit _engagement = sl<PostEngagementCubit>();
+  late final WardrobeMembershipCubit _wardrobe = sl<WardrobeMembershipCubit>();
 
   @override
   void dispose() {
@@ -38,12 +40,16 @@ class _StylperAppState extends State<StylperApp> {
       providers: [
         BlocProvider.value(value: widget.session),
         BlocProvider.value(value: _engagement),
+        BlocProvider.value(value: _wardrobe),
       ],
       child: BlocListener<SessionCubit, SessionState>(
-        // Likes and saves belong to the user who made them.
+        // Likes, saves and wardrobes belong to the user who made them.
         listenWhen: (previous, current) =>
             _userId(previous) != _userId(current),
-        listener: (_, _) => _engagement.reset(),
+        listener: (_, _) {
+          _engagement.reset();
+          _wardrobe.reset();
+        },
         child: AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle.dark,
           child: MaterialApp.router(

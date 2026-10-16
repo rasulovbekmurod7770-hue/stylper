@@ -10,6 +10,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/widgets/snackbars.dart';
 import '../../features/post/presentation/cubits/post_engagement_cubit.dart';
 import '../../features/post/presentation/post_failure_message.dart';
+import '../../features/wardrobe/presentation/cubits/wardrobe_membership_cubit.dart';
+import '../../features/wardrobe/presentation/wardrobe_failure_message.dart';
 
 /// The main tabs, in branch order of the router's shell route.
 enum MainTab { home, search, explore, profile }
@@ -23,27 +25,43 @@ class AppShell extends StatelessWidget {
     required this.currentTab,
     required this.onTabSelected,
     required this.child,
+    this.showTabBar = true,
   });
 
   final MainTab currentTab;
+
+  /// False on screens designed without the bar (the outfit post).
+  final bool showTabBar;
   final ValueChanged<MainTab> onTabSelected;
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<PostEngagementCubit, PostEngagementState>(
-      // A like / save that the API refused (it was rolled back).
-      listenWhen: (previous, current) =>
-          current.failureCount != previous.failureCount,
-      listener: (context, state) =>
-          context.showMessage(state.failure!.message(context.l10n)),
+    // Likes, saves and wardrobe changes the API refused (rolled back).
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<PostEngagementCubit, PostEngagementState>(
+          listenWhen: (previous, current) =>
+              current.failureCount != previous.failureCount,
+          listener: (context, state) =>
+              context.showMessage(state.failure!.message(context.l10n)),
+        ),
+        BlocListener<WardrobeMembershipCubit, WardrobeMembershipState>(
+          listenWhen: (previous, current) =>
+              current.failureCount != previous.failureCount,
+          listener: (context, state) =>
+              context.showMessage(state.failure!.message(context.l10n)),
+        ),
+      ],
       child: Scaffold(
         extendBody: true,
         body: child,
-        bottomNavigationBar: _FloatingTabBar(
-          currentTab: currentTab,
-          onTabSelected: onTabSelected,
-        ),
+        bottomNavigationBar: showTabBar
+            ? _FloatingTabBar(
+                currentTab: currentTab,
+                onTabSelected: onTabSelected,
+              )
+            : null,
       ),
     );
   }

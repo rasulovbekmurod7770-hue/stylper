@@ -91,4 +91,13 @@ abstract final class AppImages {
   static const postSoftNeutrals = '$_posts/soft_neutrals.webp';
   static const postNoWords = '$_posts/no_words.webp';
   static const postLikeMyOutfit = '$_posts/like_my_outfit.webp';
+  static const postJohnCoat = '$_posts/john_coat.webp';
+  static const postJohnSuit = '$_posts/john_suit.webp';
+  static const postJohnKnit = '$_posts/john_knit.webp';
+
+  // The demo user's own wardrobe items (not catalog products).
+  static const _wardrobe = 'assets/images/wardrobe';
+  static const wardrobeSneakers = '$_wardrobe/sneakers.webp';
+  static const wardrobeSunglasses = '$_wardrobe/sunglasses.webp';
+  static const wardrobeWatches = '$_wardrobe/watches.webp';
 }

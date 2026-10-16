@@ -22,7 +22,17 @@ import '../../features/onboarding/presentation/pages/profile_setup_page.dart';
 import '../../features/onboarding/presentation/pages/style_quiz_page.dart';
 import '../../features/post/presentation/cubits/post_detail_cubit.dart';
 import '../../features/post/presentation/pages/post_detail_page.dart';
+import '../../features/product/presentation/cubits/product_detail_cubit.dart';
+import '../../features/product/presentation/pages/product_detail_page.dart';
+import '../../features/product/presentation/pages/product_looks_page.dart';
+import '../../features/profile/domain/repositories/profile_repository.dart';
+import '../../features/profile/presentation/cubits/profile_cubit.dart';
+import '../../features/profile/presentation/cubits/saved_posts_cubit.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/wardrobe/presentation/cubits/wardrobe_cubit.dart';
+import '../../features/wardrobe/presentation/cubits/wardrobe_items_cubit.dart';
+import '../../features/wardrobe/presentation/pages/wardrobe_category_page.dart';
+import '../../features/wardrobe/presentation/pages/wardrobe_page.dart';
 import '../di/injection.dart';
 import '../session/session_cubit.dart';
 import '../shell/app_shell.dart';
@@ -30,9 +40,7 @@ import '../shell/tab_placeholder_page.dart';
 import 'splash_page.dart';
 
 GoRouter createRouter(SessionCubit session) {
-  final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
   return GoRouter(
-    navigatorKey: rootNavigatorKey,
     initialLocation: AppRoutes.splash,
     refreshListenable: _StreamListenable(session.stream),
     redirect: (context, state) =>
@@ -94,6 +102,8 @@ GoRouter createRouter(SessionCubit session) {
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, shell) => AppShell(
+          // The Figma post screen has no tab bar; every other screen does.
+          showTabBar: !state.uri.path.contains('/post/'),
           currentTab: MainTab.values[shell.currentIndex],
           onTabSelected: (tab) => shell.goBranch(
             tab.index,
@@ -112,20 +122,7 @@ GoRouter createRouter(SessionCubit session) {
                   create: (_) => sl<HomeFeedCubit>()..load(),
                   child: const HomePage(),
                 ),
-                routes: [
-                  // Under /home so guests may open posts; on the root navigator
-                  // so it covers the tab bar, as in the Figma frame.
-                  GoRoute(
-                    path: 'post/:postId',
-                    parentNavigatorKey: rootNavigatorKey,
-                    builder: (context, state) => BlocProvider(
-                      create: (_) => sl<PostDetailCubit>(
-                        param1: state.pathParameters['postId'],
-                      )..load(),
-                      child: const PostDetailPage(),
-                    ),
-                  ),
-                ],
+                routes: _detailRoutes(),
               ),
             ],
           ),
@@ -151,7 +148,28 @@ GoRouter createRouter(SessionCubit session) {
             routes: [
               GoRoute(
                 path: AppRoutes.profile,
-                builder: (context, state) => const ProfilePage(),
+                builder: (context, state) => const _OwnProfile(),
+                routes: [
+                  GoRoute(
+                    path: 'wardrobe',
+                    builder: (context, state) => BlocProvider(
+                      create: (_) => sl<WardrobeCubit>()..load(),
+                      child: const WardrobePage(),
+                    ),
+                    routes: [
+                      GoRoute(
+                        path: ':category',
+                        builder: (context, state) => BlocProvider(
+                          create: (_) => sl<WardrobeItemsCubit>(
+                            param1: state.pathParameters['category'],
+                          )..load(),
+                          child: const WardrobeCategoryPage(),
+                        ),
+                      ),
+                    ],
+                  ),
+                  ..._detailRoutes(),
+                ],
               ),
             ],
           ),
@@ -159,6 +177,74 @@ GoRouter createRouter(SessionCubit session) {
       ),
     ],
   );
+}
+
+/// Posts, products and people open inside the current tab, so each tab keeps
+/// its own back stack (see `pushInTab`).
+List<RouteBase> _detailRoutes() => [
+  GoRoute(
+    path: 'post/:postId',
+    builder: (context, state) => BlocProvider(
+      create: (_) =>
+          sl<PostDetailCubit>(param1: state.pathParameters['postId'])..load(),
+      child: const PostDetailPage(),
+    ),
+  ),
+  GoRoute(
+    path: 'product/:productId',
+    builder: (context, state) => BlocProvider(
+      create: (_) =>
+          sl<ProductDetailCubit>(param1: state.pathParameters['productId'])
+            ..load(),
+      child: const ProductDetailPage(),
+    ),
+    routes: [
+      GoRoute(
+        path: 'looks',
+        builder: (context, state) => BlocProvider(
+          create: (_) =>
+              sl<ProductDetailCubit>(param1: state.pathParameters['productId'])
+                ..load(),
+          child: ProductLooksPage(
+            initialStyle: state.uri.queryParameters['style'],
+          ),
+        ),
+      ),
+    ],
+  ),
+  GoRoute(
+    path: 'user/:userId',
+    builder: (context, state) => _profile(state.pathParameters['userId']!),
+  ),
+];
+
+/// A profile with its cubits; the saved posts load when that tab opens.
+Widget _profile(String userId, {Key? key}) => MultiBlocProvider(
+  key: key,
+  providers: [
+    BlocProvider(create: (_) => sl<ProfileCubit>(param1: userId)..load()),
+    BlocProvider(create: (_) => sl<SavedPostsCubit>()),
+  ],
+  child: const ProfilePage(),
+);
+
+/// The Profile tab: your own profile, or a sign-in screen for guests.
+class _OwnProfile extends StatelessWidget {
+  const _OwnProfile();
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<SessionCubit, SessionState>(
+      buildWhen: (previous, current) => _userId(previous) != _userId(current),
+      builder: (context, session) => switch (_userId(session)) {
+        final userId? => _profile(ProfileRepository.me, key: ValueKey(userId)),
+        null => const GuestProfileView(),
+      },
+    );
+  }
+
+  static String? _userId(SessionState state) =>
+      state is SessionAuthenticated ? state.user.id : null;
 }
 
 /// Where a user in [session] may be when trying to open [location]; null

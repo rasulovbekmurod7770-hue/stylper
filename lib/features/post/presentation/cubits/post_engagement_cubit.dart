@@ -48,8 +48,11 @@ class PostEngagementCubit extends Cubit<PostEngagementState> {
       apply: (e) =>
           e.copyWith(liked: liked, likeCount: e.likeCount + (liked ? 1 : -1)),
       request: () => _setLiked(PostToggle(postId, on: liked)),
-      confirm: (e, server) =>
-          e.copyWith(liked: server.liked, likeCount: server.likeCount),
+      confirm: (e, server) => e.copyWith(
+        liked: server.liked,
+        likeCount: server.likeCount,
+        saved: _inFlight.contains('save:$postId') ? null : server.saved,
+      ),
       revert: (e) =>
           e.copyWith(liked: current.liked, likeCount: current.likeCount),
       current: current,
@@ -63,7 +66,14 @@ class PostEngagementCubit extends Cubit<PostEngagementState> {
       postId: postId,
       apply: (e) => e.copyWith(saved: saved),
       request: () => _setSaved(PostToggle(postId, on: saved)),
-      confirm: (e, server) => e.copyWith(saved: server.saved),
+      confirm: (e, server) {
+        final liking = _inFlight.contains('like:$postId');
+        return e.copyWith(
+          saved: server.saved,
+          liked: liking ? null : server.liked,
+          likeCount: liking ? null : server.likeCount,
+        );
+      },
       revert: (e) => e.copyWith(saved: current.saved),
       current: current,
     );
@@ -76,7 +86,8 @@ class PostEngagementCubit extends Cubit<PostEngagementState> {
   }
 
   /// Like and save requests for one post can overlap, so each one only
-  /// confirms or reverts its own fields.
+  /// reverts its own fields, and takes the server's other fields only when
+  /// no request for them is pending.
   Future<void> _toggle({
     required String key,
     required String postId,

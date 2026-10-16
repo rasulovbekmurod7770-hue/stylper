@@ -1,0 +1,51 @@
+import 'package:flutter/widgets.dart';
+
+import '../theme/app_colors.dart';
+import '../theme/app_typography.dart';
+import 'feed_photo.dart';
+
+/// A round profile photo, or the person's initials when they have none.
+class UserAvatar extends StatelessWidget {
+  const UserAvatar({
+    super.key,
+    required this.name,
+    required this.imagePath,
+    required this.size,
+  });
+
+  final String name;
+  final String? imagePath;
+  final double size;
+
+  /// Up to two initials, e.g. "John. B" → "JB".
+  static String initials(String name) => name
+      .split(RegExp(r'[\s._-]+'))
+      .where((part) => part.isNotEmpty)
+      .take(2)
+      .map((part) => part.characters.first.toUpperCase())
+      .join();
+
+  @override
+  Widget build(BuildContext context) {
+    final path = imagePath;
+    return SizedBox.square(
+      dimension: size,
+      child: path != null
+          ? FeedPhoto.circle(path: path)
+          : DecoratedBox(
+              decoration: const BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: AppColors.brandGradient,
+              ),
+              child: Center(
+                child: Text(
+                  initials(name),
+                  style: AppTypography.avatarInitials.copyWith(
+                    fontSize: size * 0.36,
+                  ),
+                ),
+              ),
+            ),
+    );
+  }
+}

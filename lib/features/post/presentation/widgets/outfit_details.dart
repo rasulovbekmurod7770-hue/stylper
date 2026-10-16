@@ -4,13 +4,15 @@ import '../../../../core/l10n/l10n.dart';
 import '../../../../core/presentation/image_source.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../../core/widgets/snackbars.dart';
+import '../../../../core/router/tab_navigation.dart';
+import '../../../wardrobe/presentation/wardrobe_actions.dart';
 import '../../domain/entities/post.dart';
-import '../price_format.dart';
+import '../../../../core/presentation/price_format.dart';
 
 /// "Outfit-Details-Section" (2775:2897): a 110px card per tagged product —
 /// cut-out photo, item and "Brand price" — with "Shop" and "Add to wardrobe"
-/// under it. Scrolls sideways when there are more than fit.
+/// under it. Scrolls sideways when there are more than fit. A card and "Shop"
+/// open the product; "Add to wardrobe" saves it.
 class OutfitDetails extends StatelessWidget {
   const OutfitDetails({super.key, required this.products});
 
@@ -58,7 +60,12 @@ class _ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    void comingSoon() => context.showMessage(l10n.comingSoon);
+    void open() => context.openProduct(product.id);
+    final inWardrobe = watchInWardrobe(
+      context,
+      product.id,
+      loaded: product.inWardrobe,
+    );
 
     // PROVISIONAL look (fills, radii, pill styles) until the post frame is
     // exported; sizes are from Figma.
@@ -66,7 +73,7 @@ class _ProductCard extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         GestureDetector(
-          onTap: comingSoon,
+          onTap: open,
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: Colors.white,
@@ -125,13 +132,19 @@ class _ProductCard extends StatelessWidget {
           height: 19,
           child: Row(
             children: [
-              _Pill(label: l10n.postShop, filled: true, onTap: comingSoon),
+              _Pill(label: l10n.postShop, filled: true, onTap: open),
               const SizedBox(width: 2),
               Expanded(
                 child: _Pill(
-                  label: l10n.postAddToWardrobe,
+                  label: inWardrobe ? l10n.inWardrobe : l10n.postAddToWardrobe,
                   filled: false,
-                  onTap: comingSoon,
+                  selected: inWardrobe,
+                  onTap: () => toggleInWardrobe(
+                    context,
+                    product.id,
+                    inWardrobe: inWardrobe,
+                    announce: true,
+                  ),
                 ),
               ),
             ],
@@ -143,11 +156,19 @@ class _ProductCard extends StatelessWidget {
 }
 
 class _Pill extends StatelessWidget {
-  const _Pill({required this.label, required this.filled, required this.onTap});
+  const _Pill({
+    required this.label,
+    required this.filled,
+    required this.onTap,
+    this.selected = false,
+  });
 
   final String label;
   final bool filled;
   final VoidCallback onTap;
+
+  /// An outlined pill in its "on" state (e.g. already in the wardrobe).
+  final bool selected;
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +183,13 @@ class _Pill extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             gradient: filled ? AppColors.brandGradient : null,
-            border: filled ? null : Border.all(color: AppColors.outlineStrong),
+            border: filled
+                ? null
+                : Border.all(
+                    color: selected
+                        ? AppColors.brandRed
+                        : AppColors.outlineStrong,
+                  ),
             borderRadius: const BorderRadius.all(Radius.circular(999)),
           ),
           // Longer translations shrink to fit the 19px pill.

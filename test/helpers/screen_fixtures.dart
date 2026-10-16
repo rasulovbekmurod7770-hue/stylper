@@ -36,6 +36,22 @@ import 'package:stylper/features/post/domain/usecases/post_usecases.dart';
 import 'package:stylper/features/post/presentation/cubits/post_detail_cubit.dart';
 import 'package:stylper/features/post/presentation/cubits/post_engagement_cubit.dart';
 import 'package:stylper/features/post/presentation/pages/post_detail_page.dart';
+import 'package:stylper/features/product/data/models/product_json.dart';
+import 'package:stylper/features/product/domain/usecases/get_product.dart';
+import 'package:stylper/features/product/presentation/cubits/product_detail_cubit.dart';
+import 'package:stylper/features/product/presentation/pages/product_detail_page.dart';
+import 'package:stylper/features/profile/data/models/profile_json.dart';
+import 'package:stylper/features/profile/domain/repositories/profile_repository.dart';
+import 'package:stylper/features/profile/domain/usecases/profile_usecases.dart';
+import 'package:stylper/features/profile/presentation/cubits/profile_cubit.dart';
+import 'package:stylper/features/profile/presentation/cubits/saved_posts_cubit.dart';
+import 'package:stylper/features/profile/presentation/pages/profile_page.dart';
+import 'package:stylper/features/profile/presentation/widgets/profile_sections.dart';
+import 'package:stylper/features/wardrobe/data/models/wardrobe_json.dart';
+import 'package:stylper/features/wardrobe/domain/usecases/wardrobe_usecases.dart';
+import 'package:stylper/features/wardrobe/presentation/cubits/wardrobe_cubit.dart';
+import 'package:stylper/features/wardrobe/presentation/pages/wardrobe_page.dart';
+import 'package:stylper/features/wardrobe/presentation/cubits/wardrobe_membership_cubit.dart';
 
 import 'screen_harness.dart';
 
@@ -63,11 +79,75 @@ class _MockSetPostLiked extends Mock implements SetPostLiked {}
 
 class _MockSetPostSaved extends Mock implements SetPostSaved {}
 
+class _MockSetInWardrobe extends Mock implements SetInWardrobe {}
+
+class _MockGetProduct extends Mock implements GetProduct {}
+
+class _MockGetProfile extends Mock implements GetProfile {}
+
+class _MockSetFollowing extends Mock implements SetFollowing {}
+
+class _MockGetSavedPosts extends Mock implements GetSavedPosts {}
+
+class _MockGetWardrobe extends Mock implements GetWardrobe {}
+
+/// The fake backend with the demo account (John) signed in.
+Future<(FakeBackend, String)> _signedInBackend() async {
+  final backend = FakeBackend(latency: Duration.zero);
+  final session = await backend.login(
+    FakeBackend.demoEmail,
+    FakeBackend.demoPassword,
+  );
+  return (backend, session['accessToken']! as String);
+}
+
+/// A screen inside the tab shell, as in the Figma frames with a tab bar.
+Widget _inShell(Widget page, {MainTab tab = MainTab.home}) => _withAppState(
+  AppShell(currentTab: tab, onTabSelected: (_) {}, child: page),
+);
+
+/// John's own profile, with his saved posts.
+Widget _ownProfile() {
+  final getProfile = _MockGetProfile();
+  when(() => getProfile(any())).thenAnswer((_) async {
+    final (backend, token) = await _signedInBackend();
+    return Right(
+      ProfileJson.profile(
+        await backend.userProfile(ProfileRepository.me, token: token),
+      ),
+    );
+  });
+  final getSaved = _MockGetSavedPosts();
+  when(() => getSaved(any())).thenAnswer((_) async {
+    final (backend, token) = await _signedInBackend();
+    return Right(ProfileJson.saved(await backend.savedPosts(token)));
+  });
+  return _inShell(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (_) => ProfileCubit(
+            getProfile,
+            _MockSetFollowing(),
+            userId: ProfileRepository.me,
+          )..load(),
+        ),
+        BlocProvider(create: (_) => SavedPostsCubit(getSaved)),
+      ],
+      child: const ProfilePage(),
+    ),
+    tab: MainTab.profile,
+  );
+}
+
+/// Every content photo, for screens that show many.
+const _allContentImages = ['assets/images/'];
+
 class _MockSessionCubit extends MockCubit<SessionState>
     implements SessionCubit {}
 
-/// The app-wide cubits that post widgets read (provided above the router in
-/// the app): a guest session and the like / save state.
+/// The app-wide cubits that screens read (provided above the router in the
+/// app): a guest session, the like / save state and wardrobe membership.
 Widget _withAppState(Widget child) {
   final session = _MockSessionCubit();
   whenListen(
@@ -81,6 +161,9 @@ Widget _withAppState(Widget child) {
       BlocProvider(
         create: (_) =>
             PostEngagementCubit(_MockSetPostLiked(), _MockSetPostSaved()),
+      ),
+      BlocProvider(
+        create: (_) => WardrobeMembershipCubit(_MockSetInWardrobe()),
       ),
     ],
     child: child,
@@ -275,6 +358,74 @@ List<ScreenFixture> screenFixtures() {
         AppImages.homeTrendNoWords,
         AppImages.homeTrendLikeMyOutfit,
       ],
+    ),
+    ScreenFixture(
+      name: 'product',
+      goldenSize: const Size(390, 1611),
+      build: () {
+        final getProduct = _MockGetProduct();
+        when(() => getProduct(any())).thenAnswer(
+          (_) async => Right(
+            ProductJson.detail(
+              await FakeBackend(latency: Duration.zero)
+                  .product('p_cardigan_cos'),
+            ),
+          ),
+        );
+        return _inShell(
+          BlocProvider(
+            create: (_) =>
+                ProductDetailCubit(getProduct, productId: 'p_cardigan_cos')
+                  ..load(),
+            child: const ProductDetailPage(),
+          ),
+        );
+      },
+      images: _allContentImages,
+    ),
+    ScreenFixture(
+      name: 'profile',
+      goldenSize: const Size(390, 1322),
+      build: _ownProfile,
+      images: _allContentImages,
+    ),
+    // Figma "Profile 4": the Saved tab, scrolled to the compact header.
+    ScreenFixture(
+      name: 'profile_saved',
+      build: _ownProfile,
+      images: _allContentImages,
+      fillIn: (tester) async {
+        final scroll = find.byType(CustomScrollView).first;
+        const savedTab = ValueKey(ProfileTab.saved);
+        await tester.dragUntilVisible(
+          find.byKey(savedTab),
+          scroll,
+          const Offset(0, -300),
+        );
+        await tester.tap(find.byKey(savedTab));
+        await settleState(tester);
+        await tester.drag(scroll, const Offset(0, -400));
+        await settleState(tester);
+        await settleAssets(tester, precacheImages: _allContentImages);
+      },
+    ),
+    ScreenFixture(
+      name: 'wardrobe',
+      build: () {
+        final getWardrobe = _MockGetWardrobe();
+        when(() => getWardrobe(any())).thenAnswer((_) async {
+          final (backend, token) = await _signedInBackend();
+          return Right(WardrobeJson.categories(await backend.wardrobe(token)));
+        });
+        return _inShell(
+          BlocProvider(
+            create: (_) => WardrobeCubit(getWardrobe)..load(),
+            child: const WardrobePage(),
+          ),
+          tab: MainTab.profile,
+        );
+      },
+      images: _allContentImages,
     ),
   ];
 }

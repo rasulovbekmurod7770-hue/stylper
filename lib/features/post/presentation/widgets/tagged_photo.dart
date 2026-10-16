@@ -6,9 +6,10 @@ import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/feed_photo.dart';
-import '../../../../core/widgets/snackbars.dart';
+import '../../../../core/router/tab_navigation.dart';
+import '../../../wardrobe/presentation/wardrobe_actions.dart';
 import '../../domain/entities/post.dart';
-import '../price_format.dart';
+import '../../../../core/presentation/price_format.dart';
 
 /// "Image-Frame" (2775:2861): the outfit photo with a back button, a dot and
 /// "Brand · Item" label per tagged product, and a fade into the page. Tapping
@@ -169,7 +170,7 @@ class _TagLabel extends StatelessWidget {
 }
 
 /// "expanded-tag-card": brand, full name, price, how many people styled it,
-/// and "See looks" / "Save".
+/// "See looks" (the product's looks) and "Save" (to the wardrobe).
 class _TagCard extends StatelessWidget {
   const _TagCard({required this.product});
 
@@ -178,7 +179,11 @@ class _TagCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    void comingSoon() => context.showMessage(l10n.comingSoon);
+    final inWardrobe = watchInWardrobe(
+      context,
+      product.id,
+      loaded: product.inWardrobe,
+    );
 
     return DecoratedBox(
       decoration: const BoxDecoration(
@@ -224,14 +229,20 @@ class _TagCard extends StatelessWidget {
                   child: _CardButton(
                     label: l10n.postSeeLooks,
                     filled: true,
-                    onTap: comingSoon,
+                    onTap: () => context.openProductLooks(product.id),
                   ),
                 ),
                 Expanded(
+                  // Saves the item to the wardrobe.
                   child: _CardButton(
-                    label: l10n.postSave,
+                    label: inWardrobe ? l10n.postSaved : l10n.postSave,
                     filled: false,
-                    onTap: comingSoon,
+                    onTap: () => toggleInWardrobe(
+                      context,
+                      product.id,
+                      inWardrobe: inWardrobe,
+                      announce: true,
+                    ),
                   ),
                 ),
               ],

@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
 
+import '../../../../core/router/tab_navigation.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/feed_photo.dart';
 import '../../domain/entities/post.dart';
-import '../open_post.dart';
 
 /// Two-column staggered grid of "Trending Card"s (Figma 2775:2625); each card
 /// opens its post. Each post goes into the currently shorter column, which
@@ -86,7 +86,7 @@ class _PostCard extends StatelessWidget {
     final (caption, handle) = (post.caption, post.authorHandle);
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
-      onTap: () => openPost(context, post.id),
+      onTap: () => context.openPost(post.id),
       child: Stack(
         fit: StackFit.expand,
         children: [

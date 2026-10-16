@@ -66,6 +66,9 @@ void main() {
 
     test('every post and product image is bundled', () async {
       final ids = [
+        'post_john_coat',
+        'post_john_suit',
+        'post_john_knit',
         'post_mina',
         'post_fozil',
         'post_bobur',
@@ -81,7 +84,7 @@ void main() {
         final post = await load(id);
         for (final path in {
           post.imagePath,
-          post.author.avatarPath,
+          ?post.author.avatarPath,
           ...post.products.map((p) => p.imagePath),
           ...post.similar.map((p) => p.imagePath),
         }) {
