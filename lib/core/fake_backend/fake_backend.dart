@@ -34,10 +34,14 @@ class FakeBackend {
   final _followers = <String, Set<String>>{}; // userId → follower ids
   final _wardrobes =
       <String, List<String>>{}; // userId → item ids, newest first
+
+  /// Every post, newest first: the seeded ones plus those published here.
+  var _posts = <String, Map<String, Object?>>{};
   var _nextId = 1;
 
   void _seed() {
     for (final MapEntry(key: id, value: post) in FakeContent.posts.entries) {
+      _posts[id] = Map.of(post);
       _postLikes[id] = post['likes']! as int;
     }
     for (final MapEntry(key: id, value: profile)
@@ -240,14 +244,18 @@ class FakeBackend {
     };
   }
 
-  /// GET /posts/:id → `{id, image, author, likes, comments, likedByMe,
-  /// savedByMe, styles, products, similar}`. Public. Each product carries
+  /// GET /posts/:id → `{id, image, author, caption?, location?, likes,
+  /// comments, likedByMe, savedByMe, styles, products, similar}`. Public. Each product carries
   /// `{id, name, shortName, brand, price: {amount, currency}, image,
   /// styledCount, tag: {x, y}}`, the tag as fractions of the photo.
   Future<Map<String, Object?>> post(String id, {String? token}) async {
     await _delay();
-    final post = _postOr404(id);
-    final viewer = _tokens[token];
+    _postOr404(id);
+    return _postDetail(id, _tokens[token]);
+  }
+
+  Map<String, Object?> _postDetail(String id, String? viewer) {
+    final post = _posts[id]!;
     return {
       ..._postSummary(id, viewer),
       'products': [
@@ -294,7 +302,7 @@ class FakeBackend {
   }
 
   Map<String, Object?> _postOr404(String id) =>
-      FakeContent.posts[id] ??
+      _posts[id] ??
       (throw const ServerException(
         statusCode: 404,
         code: ApiErrorCodes.notFound,
@@ -336,19 +344,21 @@ class FakeBackend {
   }
 
   Map<String, Object?> _postSummary(String id, String? userId) {
-    final post = FakeContent.posts[id]!;
+    final post = _posts[id]!;
     return {
       'id': id,
       'image': post['image'],
       'author': _author(post['author']! as String),
       'comments': post['comments'],
       'styles': post['styles'],
+      'caption': post['caption'],
+      'location': post['location'],
       ..._engagement(id, userId),
     };
   }
 
   Map<String, Object?> _postPreview(String id) {
-    final post = FakeContent.posts[id]!;
+    final post = _posts[id]!;
     final thumbnail = FakeContent.thumbnails[id];
     return {
       'id': id,
@@ -380,6 +390,7 @@ class FakeBackend {
       'name': product['name'],
       'shortName': product['shortName'],
       'brand': product['brand'],
+      'brandId': product['brandId'],
       'category': product['category'],
       'price': {'amount': product['price'], 'currency': 'USD'},
       'image': product['image'],
@@ -400,8 +411,7 @@ class FakeBackend {
           code: ApiErrorCodes.notFound,
         ));
     final looks = [
-      for (final MapEntry(key: postId, value: post)
-          in FakeContent.posts.entries)
+      for (final MapEntry(key: postId, value: post) in _posts.entries)
         if ((post['products']! as List<Object?>).any(
           (tag) => (tag! as Map<String, Object?>)['product'] == id,
         ))
@@ -409,7 +419,7 @@ class FakeBackend {
     ];
     final styles = <String, String>{}; // style → first look's image
     for (final postId in looks) {
-      final post = FakeContent.posts[postId]!;
+      final post = _posts[postId]!;
       for (final style in post['styles']! as List<Object?>) {
         styles.putIfAbsent(style! as String, () => post['image']! as String);
       }
@@ -448,8 +458,7 @@ class FakeBackend {
           code: ApiErrorCodes.notFound,
         ));
     final posts = [
-      for (final MapEntry(key: postId, value: post)
-          in FakeContent.posts.entries)
+      for (final MapEntry(key: postId, value: post) in _posts.entries)
         if (post['author'] == userId) postId,
     ];
     return {
@@ -515,7 +524,7 @@ class FakeBackend {
           {
             ..._postPreview(postId),
             ..._engagement(postId, userId),
-            'author': _author(FakeContent.posts[postId]!['author']! as String),
+            'author': _author(_posts[postId]!['author']! as String),
           },
       ],
     };
@@ -587,4 +596,116 @@ class FakeBackend {
       else
         {'id': id, ...FakeContent.ownItems[id]!},
   ];
+
+  /// GET /styles → `{styles}`: every style a post can be tagged with.
+  Future<Map<String, Object?>> postStyles() async {
+    await _delay();
+    return {'styles': FakeContent.allStyles};
+  }
+
+  /// GET /products/search?q=&category=&mine= → `{products}`. Public. Every
+  /// word of `q` must appear in the brand, name or item type, so "jeans
+  /// zara" finds ZARA's jeans; `category` (tops / bottoms / shoes /
+  /// accessories) narrows it down; `mine` keeps only the signed-in user's
+  /// wardrobe. Products belong to brand and business profiles (`brandId`).
+  Future<Map<String, Object?>> searchProducts({
+    String query = '',
+    String? category,
+    bool mine = false,
+    String? token,
+  }) async {
+    await _delay();
+    final wardrobe = mine
+        ? _wardrobes[_userIdFor(token ?? '')] ?? const []
+        : null;
+    final words = query.toLowerCase().split(RegExp(r'\s+'))
+      ..removeWhere((word) => word.isEmpty);
+    return {
+      'products': [
+        for (final MapEntry(key: id, value: product)
+            in FakeContent.products.entries)
+          if ((category == null || product['category'] == category) &&
+              (wardrobe == null || wardrobe.contains(id)) &&
+              words.every(
+                (word) => [
+                  product['brand'],
+                  product['name'],
+                  product['shortName'],
+                ].any((field) => '$field'.toLowerCase().contains(word)),
+              ))
+            _productSummary(id),
+      ],
+    };
+  }
+
+  /// GET /me/recent-tags → `{products}`: products the user tagged in their
+  /// own posts, most recent first, without repeats.
+  Future<Map<String, Object?>> recentTags(String? token) async {
+    await _delay();
+    final userId = _userIdFor(token ?? '');
+    final seen = <String>{};
+    return {
+      'products': [
+        for (final post in _posts.values)
+          if (post['author'] == userId)
+            for (final tag
+                in (post['products']! as List<Object?>)
+                    .cast<Map<String, Object?>>())
+              if (seen.add(tag['product']! as String))
+                _productSummary(tag['product']! as String),
+      ],
+    };
+  }
+
+  /// POST /posts — body `{image, caption?, location?, styles, tags:
+  /// [{productId, x, y}], allowBrandFeature}` → the new post, as from
+  /// GET /posts/:id. Signed-in users only; every post is public (there's no
+  /// audience setting). The real API takes the photo as a multipart upload
+  /// and returns its URL; here `image` stays the local file path.
+  Future<Map<String, Object?>> publishPost(
+    String? token,
+    Map<String, Object?> body,
+  ) async {
+    await _delay();
+    final userId = _userIdFor(token ?? '');
+    final image = body['image'] as String?;
+    final tags = (body['tags'] as List<Object?>? ?? const [])
+        .cast<Map<String, Object?>>();
+    if (image == null ||
+        image.isEmpty ||
+        tags.any(
+          (tag) => !FakeContent.products.containsKey(tag['productId']),
+        )) {
+      throw const ServerException(
+        statusCode: 422,
+        code: ApiErrorCodes.validation,
+      );
+    }
+    final styles = [...?(body['styles'] as List<Object?>?)?.cast<String>()];
+    final id = 'post_${_nextId++}';
+    final similar = [
+      for (final MapEntry(key: other, value: post) in _posts.entries)
+        if ((post['styles']! as List<Object?>).any(styles.contains)) other,
+    ].take(4).toList();
+    _posts = {
+      id: {
+        'author': userId,
+        'image': image,
+        'likes': 0,
+        'comments': 0,
+        'styles': styles,
+        'caption': body['caption'],
+        'location': body['location'],
+        'allowBrandFeature': body['allowBrandFeature'] ?? false,
+        'products': [
+          for (final tag in tags)
+            {'product': tag['productId'], 'x': tag['x'], 'y': tag['y']},
+        ],
+        'similar': similar,
+      },
+      ..._posts,
+    };
+    _postLikes[id] = 0;
+    return _postDetail(id, userId);
+  }
 }

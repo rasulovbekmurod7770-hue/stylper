@@ -10,6 +10,8 @@ import '../../../../core/widgets/screen_top_bar.dart';
 import '../../../../core/widgets/snackbars.dart';
 import '../../../../core/widgets/stylper_wordmark.dart';
 import '../../../post/presentation/cubits/post_engagement_cubit.dart';
+import '../../../posting/presentation/cubits/published_posts_cubit.dart';
+import '../../domain/repositories/profile_repository.dart';
 import '../../domain/entities/user_profile.dart';
 import '../cubits/profile_cubit.dart';
 import '../cubits/saved_posts_cubit.dart';
@@ -30,11 +32,26 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return BlocListener<ProfileCubit, ProfileState>(
-      listenWhen: (previous, current) =>
-          current.followFailureCount != previous.followFailureCount,
-      listener: (context, state) =>
-          context.showMessage(state.failure!.message(l10n)),
+    return MultiBlocListener(
+      listeners: [
+        BlocListener<ProfileCubit, ProfileState>(
+          listenWhen: (previous, current) =>
+              current.followFailureCount != previous.followFailureCount,
+          listener: (context, state) =>
+              context.showMessage(state.failure!.message(l10n)),
+        ),
+        // Your profile stays alive under other tabs; show a post you just
+        // published.
+        BlocListener<PublishedPostsCubit, String?>(
+          listener: (context, _) {
+            final profile = context.read<ProfileCubit>();
+            final isMe =
+                profile.userId == ProfileRepository.me ||
+                (profile.state.profile?.isMe ?? false);
+            if (isMe) profile.refresh();
+          },
+        ),
+      ],
       child: Scaffold(
         body: SafeArea(
           bottom: false,

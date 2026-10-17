@@ -25,6 +25,13 @@ PAIRS = {
     'style_quiz': '05_intro_dress_like_you.png',
     'forgot_password': '06_forgot_password.png',
     'home': '07_home.png',  # Figma render is 311×1024 (scaled)
+    # Cut from the "Posting" section screenshot (2849:1017). The sample
+    # photo differs (the Figma one isn't bundled); publish has no "Share to
+    # followers" on purpose.
+    'posting_media': '08a_posting_media_2820-76.png',
+    'posting_tag': '08b_posting_tag_2845-396.png',
+    'posting_details': '08c_posting_details_2820-198.png',
+    'posting_publish': '08d_posting_publish_2820-253.png',
 }
 
 

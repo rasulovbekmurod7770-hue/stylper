@@ -5,7 +5,29 @@ import '../constants/app_assets.dart';
 /// as the Figma post screens do. Delete with the fake backend.
 abstract final class FakeContent {
   static const city = 'Tashkent';
+
+  /// Home's "For you" style chips.
   static const styles = ['Casual', 'Minimal', 'Street'];
+
+  /// Every style a post can be tagged with; Home's chips are a subset.
+  static const allStyles = [
+    'Minimal',
+    'Casual',
+    'Street',
+    'Neutral',
+    'Oversized',
+    'Smart Casual',
+  ];
+
+  /// Brands (and other businesses) that sell the catalog products.
+  static const brands = <String, String>{
+    'b_cos': 'COS',
+    'b_zara': 'ZARA',
+    'b_uniqlo': 'UNIQLO',
+    'b_arket': 'ARKET',
+    'b_kink': 'Kink',
+    'b_terra_pro': 'Terra Pro',
+  };
 
   /// Public profiles. `a_john` and `a_katty` are also sign-in accounts (see
   /// `FakeBackend._seed`); their handle is the account's username. `avatar`
@@ -118,6 +140,7 @@ abstract final class FakeContent {
       'name': 'Cotton Cardigan',
       'shortName': 'Cardigan',
       'brand': 'COS',
+      'brandId': 'b_cos',
       'price': 89,
       'image': AppImages.quizCottonCardigan,
       'styledCount': 124,
@@ -127,6 +150,7 @@ abstract final class FakeContent {
       'name': 'White T-Shirt',
       'shortName': 'T-Shirt',
       'brand': 'Terra Pro',
+      'brandId': 'b_terra_pro',
       'price': 12,
       'image': AppImages.quizWhiteTShirt,
       'styledCount': 312,
@@ -136,6 +160,7 @@ abstract final class FakeContent {
       'name': 'Oversized White T-Shirt',
       'shortName': 'T-Shirt',
       'brand': 'ZARA',
+      'brandId': 'b_zara',
       'price': 19,
       'image': AppImages.quizOversizedWhiteTShirt,
       'styledCount': 143,
@@ -145,6 +170,7 @@ abstract final class FakeContent {
       'name': 'Striped Long Sleeve',
       'shortName': 'Long sleeve',
       'brand': 'UNIQLO',
+      'brandId': 'b_uniqlo',
       'price': 25,
       'image': AppImages.quizStripedLongSleeve,
       'styledCount': 64,
@@ -154,6 +180,7 @@ abstract final class FakeContent {
       'name': 'Waffle Long-Sleeve',
       'shortName': 'Sweater',
       'brand': 'UNIQLO',
+      'brandId': 'b_uniqlo',
       'price': 29,
       'image': AppImages.quizWaffleLongSleeve,
       'styledCount': 38,
@@ -163,6 +190,7 @@ abstract final class FakeContent {
       'name': 'Rugby Polo Sweater',
       'shortName': 'Sweater',
       'brand': 'ARKET',
+      'brandId': 'b_arket',
       'price': 79,
       'image': AppImages.quizRugbyPoloSweater,
       'styledCount': 51,
@@ -172,6 +200,7 @@ abstract final class FakeContent {
       'name': 'Wide Leg Tailored Trousers',
       'shortName': 'Trousers',
       'brand': 'ZARA',
+      'brandId': 'b_zara',
       'price': 55,
       'image': AppImages.quizWideLegTrousers,
       'styledCount': 87,
@@ -181,6 +210,7 @@ abstract final class FakeContent {
       'name': 'Baggy Jeans',
       'shortName': 'Jeans',
       'brand': 'Kink',
+      'brandId': 'b_kink',
       'price': 45,
       'image': AppImages.quizBaggyJeans,
       'styledCount': 205,
@@ -190,9 +220,41 @@ abstract final class FakeContent {
       'name': 'Vintage Jeans',
       'shortName': 'Jeans',
       'brand': 'ZARA',
+      'brandId': 'b_zara',
       'price': 45,
       'image': AppImages.quizVintageJeans,
       'styledCount': 112,
+    },
+    // Shoes and accessories from local brands, so every category has items.
+    'p_sneakers_terra_pro': {
+      'category': 'shoes',
+      'name': 'Suede Sneakers',
+      'shortName': 'Sneakers',
+      'brand': 'Terra Pro',
+      'brandId': 'b_terra_pro',
+      'price': 65,
+      'image': AppImages.wardrobeSneakers,
+      'styledCount': 41,
+    },
+    'p_watch_kink': {
+      'category': 'accessories',
+      'name': 'Digital Watch',
+      'shortName': 'Watch',
+      'brand': 'Kink',
+      'brandId': 'b_kink',
+      'price': 30,
+      'image': AppImages.wardrobeWatches,
+      'styledCount': 19,
+    },
+    'p_sunglasses_kink': {
+      'category': 'accessories',
+      'name': 'Sport Sunglasses',
+      'shortName': 'Sunglasses',
+      'brand': 'Kink',
+      'brandId': 'b_kink',
+      'price': 22,
+      'image': AppImages.wardrobeSunglasses,
+      'styledCount': 27,
     },
   };
 

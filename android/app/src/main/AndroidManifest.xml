@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Posting: the in-app camera roll (photo_manager, images only). Android
+         13+ asks for images; 14+ can grant a selection. Older versions use
+         READ_EXTERNAL_STORAGE, which the plugin declares itself. -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <application
         android:label="stylper"
         android:name="${applicationName}"

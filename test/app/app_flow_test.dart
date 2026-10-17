@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:stylper/app/app.dart';
 import 'package:stylper/app/di/injection.dart';
 import 'package:stylper/app/session/session_cubit.dart';
+import 'package:stylper/app/shell/app_tab_bar.dart';
 import 'package:stylper/core/constants/app_assets.dart';
 import 'package:stylper/core/fake_backend/fake_backend.dart';
 import 'package:stylper/core/widgets/app_switch.dart';
@@ -14,11 +15,20 @@ import 'package:stylper/features/home/presentation/pages/home_page.dart';
 import 'package:stylper/features/onboarding/presentation/pages/profile_setup_page.dart';
 import 'package:stylper/features/onboarding/presentation/pages/style_quiz_page.dart';
 import 'package:stylper/features/post/presentation/pages/post_detail_page.dart';
+import 'package:stylper/features/posting/presentation/pages/media_selection_page.dart';
+import 'package:stylper/features/posting/presentation/pages/posting_details_page.dart';
+import 'package:stylper/features/posting/presentation/pages/publish_page.dart';
+import 'package:stylper/features/posting/presentation/pages/tag_items_page.dart';
+import 'package:stylper/features/posting/presentation/widgets/posting_widgets.dart';
 import 'package:stylper/features/product/presentation/pages/product_detail_page.dart';
 import 'package:stylper/features/profile/presentation/pages/profile_page.dart';
 import 'package:stylper/features/wardrobe/presentation/pages/wardrobe_page.dart';
 
+import '../helpers/fake_media.dart';
 import '../helpers/screen_harness.dart';
+
+/// The photo posted in the posting flows; none of John's posts use it.
+const _newPhoto = 'assets/images/posts/amin.webp';
 
 /// Drives the real app — DI, router, session and the fake backend — through
 /// the auth and onboarding flows.
@@ -27,7 +37,11 @@ void main() {
 
   setUp(() async {
     await sl.reset();
-    configureDependencies(backend: FakeBackend(latency: Duration.zero));
+    configureDependencies(
+      backend: FakeBackend(latency: Duration.zero),
+      media: FakeMediaRepository(library: [_newPhoto]),
+      thumbnails: const AssetGalleryThumbnails(),
+    );
     session = sl<SessionCubit>();
   });
 
@@ -313,5 +327,125 @@ void main() {
     await openTab(tester, 'Home');
     expect(find.byType(PostDetailPage), findsNothing);
     expect(find.byType(HomePage), findsOneWidget);
+  });
+
+  /// Images showing [asset] on screen.
+  Finder imagesOf(String asset) => find.byWidgetPredicate(
+    (widget) =>
+        widget is Image &&
+        widget.image is AssetImage &&
+        (widget.image as AssetImage).assetName == asset,
+  );
+
+  testWidgets('posting: pick, tag from the catalog, describe, publish → '
+      'your profile shows it', (tester) async {
+    await signInAsDemo(tester);
+    await openTab(tester, 'Profile');
+    expect(imagesOf(_newPhoto), findsNothing);
+
+    await tester.tap(find.bySemanticsLabel('New post'));
+    await tester.pumpAndSettle();
+    // Posting covers the tab bar, on every step.
+    expect(find.byType(MediaSelectionPage), findsOneWidget);
+    expect(find.byType(AppTabBar), findsNothing);
+    await tapText(tester, 'Next');
+
+    // Tap the photo where the jeans are, then find them in the catalog.
+    expect(find.byType(TagItemsPage), findsOneWidget);
+    expect(find.byType(AppTabBar), findsNothing);
+    await tester.tap(find.byType(TagCanvas));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, 'jeans zara');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+    expect(find.text('Baggy Jeans'), findsNothing);
+    await tapText(tester, 'Vintage Jeans');
+    expect(find.text('ZARA · Jeans'), findsOneWidget);
+    await tapText(tester, 'Next');
+
+    expect(find.byType(PostingDetailsPage), findsOneWidget);
+    expect(find.byType(AppTabBar), findsNothing);
+    expect(find.text('1 item tagged in this outfit'), findsOneWidget);
+    await type(tester, 0, 'Weekend denim');
+    await type(tester, 1, 'Tashkent');
+    await tapText(tester, 'Casual');
+    expect(find.text('ZARA'), findsOneWidget, reason: 'mentioned brand');
+    await tapText(tester, 'Next');
+
+    expect(find.byType(PublishPage), findsOneWidget);
+    expect(find.byType(AppTabBar), findsNothing);
+    expect(find.text('Weekend denim'), findsOneWidget);
+    expect(find.text('#Casual'), findsOneWidget);
+    expect(find.text('Share to followers'), findsNothing);
+    await tapText(tester, 'Publish to Stylper');
+
+    // Back on your profile, which shows the new look right away.
+    expect(find.byType(ProfilePage), findsOneWidget);
+    expect(find.byType(AppTabBar), findsOneWidget);
+    expect(find.text('Your look is live!'), findsOneWidget);
+    expect(imagesOf(_newPhoto), findsWidgets);
+
+    // It opens like any post, with its caption, place and item.
+    final newPost = imagesOf(_newPhoto).first.hitTestable();
+    await tester.scrollUntilVisible(
+      newPost,
+      100,
+      scrollable: find.byType(Scrollable).hitTestable().first,
+    );
+    await tester.tap(newPost);
+    await tester.pumpAndSettle();
+    expect(find.byType(PostDetailPage), findsOneWidget);
+    expect(find.text('Tashkent'), findsOneWidget);
+    expect(
+      find.textContaining('Weekend denim', findRichText: true),
+      findsOneWidget,
+    );
+    expect(find.text('ZARA · Jeans'), findsOneWidget);
+  });
+
+  testWidgets('closing posting returns to the tab; a started post asks first', (
+    tester,
+  ) async {
+    await signInAsDemo(tester);
+    await openTab(tester, 'Profile');
+
+    // Nothing started: close just leaves.
+    await tester.tap(find.bySemanticsLabel('New post'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.bySemanticsLabel('Close'));
+    await tester.pumpAndSettle();
+    expect(find.byType(MediaSelectionPage), findsNothing);
+    expect(find.byType(ProfilePage), findsOneWidget);
+    expect(find.byType(AppTabBar), findsOneWidget);
+
+    // With a photo chosen, back from step 1 asks before discarding.
+    await tester.tap(find.bySemanticsLabel('New post'));
+    await tester.pumpAndSettle();
+    await tapText(tester, 'Next');
+    await tester.tap(find.bySemanticsLabel('Back'));
+    await tester.pumpAndSettle();
+    expect(find.byType(MediaSelectionPage), findsOneWidget);
+
+    await tester.binding.handlePopRoute();
+    await tester.pumpAndSettle();
+    expect(find.text('Discard post?'), findsOneWidget);
+    await tapText(tester, 'Cancel');
+    expect(find.byType(MediaSelectionPage), findsOneWidget);
+
+    await tester.tap(find.bySemanticsLabel('Close'));
+    await tester.pumpAndSettle();
+    await tapText(tester, 'Discard');
+    expect(find.byType(MediaSelectionPage), findsNothing);
+    expect(find.byType(ProfilePage), findsOneWidget);
+  });
+
+  testWidgets('guests are asked to sign in before posting', (tester) async {
+    await launch(tester);
+    await tapText(tester, 'Skip for now');
+
+    await tester.tap(find.bySemanticsLabel('New post'));
+    await tester.pumpAndSettle();
+    expect(find.byType(MediaSelectionPage), findsNothing);
+    expect(find.text('Sign in to share your look.'), findsOneWidget);
   });
 }

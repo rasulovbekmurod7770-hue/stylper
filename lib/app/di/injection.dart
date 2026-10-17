@@ -49,20 +49,43 @@ import '../../features/post/domain/repositories/post_repository.dart';
 import '../../features/post/domain/usecases/post_usecases.dart';
 import '../../features/post/presentation/cubits/post_detail_cubit.dart';
 import '../../features/post/presentation/cubits/post_engagement_cubit.dart';
+import '../../features/posting/data/datasources/posting_remote_data_source.dart';
+import '../../features/posting/data/repositories/device_media_repository.dart';
+import '../../features/posting/data/repositories/posting_repository_impl.dart';
+import '../../features/posting/domain/repositories/media_repository.dart';
+import '../../features/posting/domain/repositories/posting_repository.dart';
+import '../../features/posting/domain/usecases/posting_usecases.dart';
+import '../../features/posting/presentation/cubits/media_picker_cubit.dart';
+import '../../features/posting/presentation/cubits/post_draft_cubit.dart';
+import '../../features/posting/presentation/cubits/published_posts_cubit.dart';
+import '../../features/posting/presentation/cubits/tag_search_cubit.dart';
+import '../../features/posting/presentation/gallery_thumbnails.dart';
 import '../session/session_cubit.dart';
 
 final sl = GetIt.instance;
 
-/// [backend] lets tests inject a [FakeBackend] without simulated latency.
-void configureDependencies({FakeBackend? backend}) {
+/// [backend] lets tests inject a [FakeBackend] without simulated latency;
+/// [media] and [thumbnails] replace the device's photo library and camera.
+void configureDependencies({
+  FakeBackend? backend,
+  MediaRepository? media,
+  GalleryThumbnails? thumbnails,
+}) {
   // Infrastructure
   sl
     ..registerLazySingleton<AuthTokenStore>(InMemoryAuthTokenStore.new)
+    // The photo library and camera (photo_manager / image_picker).
+    ..registerLazySingleton<MediaRepository>(
+      () => media ?? DeviceMediaRepository(),
+    )
+    ..registerLazySingleton<GalleryThumbnails>(
+      () => thumbnails ?? const DeviceGalleryThumbnails(),
+    )
     // ── Backend ────────────────────────────────────────────────────────────
     // Until the Stylper API exists, remote data sources talk to an in-memory
     // FakeBackend. When it's ready, register HTTP implementations of
     // every *RemoteDataSource (auth, onboarding, home, post, product,
-    // profile, wardrobe) here instead;
+    // profile, wardrobe, posting) here instead;
     // nothing outside this block needs to change.
     ..registerLazySingleton(() => backend ?? FakeBackend())
     ..registerLazySingleton<AuthRemoteDataSource>(
@@ -85,6 +108,9 @@ void configureDependencies({FakeBackend? backend}) {
     )
     ..registerLazySingleton<WardrobeRemoteDataSource>(
       () => FakeWardrobeRemoteDataSource(sl(), sl()),
+    )
+    ..registerLazySingleton<PostingRemoteDataSource>(
+      () => FakePostingRemoteDataSource(sl(), sl()),
     )
     // ───────────────────────────────────────────────────────────────────────
     ..registerLazySingleton(StyleQuizLocalDataSource.new)
@@ -110,6 +136,9 @@ void configureDependencies({FakeBackend? backend}) {
     ..registerLazySingleton<WardrobeRepository>(
       () => WardrobeRepositoryImpl(remote: sl()),
     )
+    ..registerLazySingleton<PostingRepository>(
+      () => PostingRepositoryImpl(remote: sl()),
+    )
     // Use cases
     ..registerFactory(() => RestoreSession(sl()))
     ..registerFactory(() => WatchCurrentUser(sl()))
@@ -132,6 +161,10 @@ void configureDependencies({FakeBackend? backend}) {
     ..registerFactory(() => GetWardrobe(sl()))
     ..registerFactory(() => GetWardrobeItems(sl()))
     ..registerFactory(() => SetInWardrobe(sl()))
+    ..registerFactory(() => SearchProducts(sl()))
+    ..registerFactory(() => GetRecentTags(sl()))
+    ..registerFactory(() => GetPostStyles(sl()))
+    ..registerFactory(() => PublishPost(sl()))
     // Presentation
     ..registerLazySingleton(
       () => SessionCubit(
@@ -164,5 +197,10 @@ void configureDependencies({FakeBackend? backend}) {
     ..registerFactory(() => WardrobeCubit(sl()))
     ..registerFactoryParam<WardrobeItemsCubit, String, void>(
       (category, _) => WardrobeItemsCubit(sl(), category: category),
-    );
+    )
+    ..registerFactory(() => MediaPickerCubit(sl()))
+    ..registerFactory(() => PostDraftCubit(sl(), sl()))
+    ..registerFactory(() => TagSearchCubit(sl(), sl()))
+    // App-wide, so screens showing your posts pick up a new one.
+    ..registerLazySingleton(PublishedPostsCubit.new);
 }

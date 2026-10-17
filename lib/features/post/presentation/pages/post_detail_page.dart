@@ -77,9 +77,31 @@ class _PostView extends StatelessWidget {
     final l10n = context.l10n;
     return CustomScrollView(
       slivers: [
-        SliverToBoxAdapter(child: _AuthorRow(author: post.author)),
+        SliverToBoxAdapter(
+          child: _AuthorRow(author: post.author, location: post.location),
+        ),
         SliverToBoxAdapter(child: TaggedPhoto(post: post)),
         SliverToBoxAdapter(child: _SocialActions(post: post)),
+        if (post.caption case final caption?)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '${post.author.name} ',
+                      style: AppTypography.label,
+                    ),
+                    TextSpan(text: caption),
+                  ],
+                ),
+                style: AppTypography.label.copyWith(
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
+            ),
+          ),
         const SliverToBoxAdapter(
           child: SizedBox(
             height: 1,
@@ -119,11 +141,13 @@ class _PostView extends StatelessWidget {
   }
 }
 
-/// "User-Row" (52px): avatar, name and a "more" button.
+/// "User-Row" (52px): avatar, name (and where the photo was taken) and a
+/// "more" button.
 class _AuthorRow extends StatelessWidget {
-  const _AuthorRow({required this.author});
+  const _AuthorRow({required this.author, this.location});
 
   final PostAuthor author;
+  final String? location;
 
   @override
   Widget build(BuildContext context) {
@@ -148,11 +172,24 @@ class _AuthorRow extends StatelessWidget {
                     ),
                     const SizedBox(width: 8),
                     Flexible(
-                      child: Text(
-                        author.name,
-                        style: AppTypography.label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            author.name,
+                            style: AppTypography.label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          if (location case final location?)
+                            Text(
+                              location,
+                              style: AppTypography.meta,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                        ],
                       ),
                     ),
                   ],

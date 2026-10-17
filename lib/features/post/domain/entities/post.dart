@@ -146,6 +146,8 @@ class Post extends Equatable {
     required this.author,
     required this.engagement,
     required this.commentCount,
+    this.caption,
+    this.location,
     this.products = const [],
     this.similar = const [],
   });
@@ -155,6 +157,10 @@ class Post extends Equatable {
   final PostAuthor author;
   final PostEngagement engagement;
   final int commentCount;
+
+  /// What the author wrote, and where; null when left empty.
+  final String? caption;
+  final String? location;
   final List<TaggedProduct> products;
   final List<PostPreview> similar;
 
@@ -165,6 +171,8 @@ class Post extends Equatable {
     author,
     engagement,
     commentCount,
+    caption,
+    location,
     products,
     similar,
   ];

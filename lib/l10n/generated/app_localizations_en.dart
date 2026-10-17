@@ -288,6 +288,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signInToInteract => 'Sign in to like and save posts.';
 
   @override
+  String get signInToPost => 'Sign in to share your look.';
+
+  @override
   String get errorPostNotFound => 'This post is no longer available.';
 
   @override
@@ -544,4 +547,142 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filterAll => 'All';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get postingNext => 'Next';
+
+  @override
+  String get postingNewPost => 'New Post';
+
+  @override
+  String get postingTagItems => 'Tag Items';
+
+  @override
+  String get postingDetails => 'Details';
+
+  @override
+  String get postingPublish => 'Publish';
+
+  @override
+  String get postingRecentPhotos => 'Recent Photos';
+
+  @override
+  String get postingAlbums => 'Albums';
+
+  @override
+  String get postingCameraRoll => 'Camera Roll';
+
+  @override
+  String get postingTakePhoto => 'Take Photo';
+
+  @override
+  String get postingAllowAccessTitle => 'Allow access to your photos';
+
+  @override
+  String get postingAllowAccessBody =>
+      'Stylper shows your photos so you can choose an outfit to post. You can still take a new photo.';
+
+  @override
+  String get postingOpenSettings => 'Open Settings';
+
+  @override
+  String get postingLimitedAccess => 'You\'ve given access to some photos.';
+
+  @override
+  String get postingManage => 'Manage';
+
+  @override
+  String get postingNoPhotos => 'No photos yet';
+
+  @override
+  String get postingTapToTag => 'Tap anywhere on the photo to tag clothes';
+
+  @override
+  String get postingSearchHint => 'Search brand or item...';
+
+  @override
+  String get postingRecentTags => 'Recent tags';
+
+  @override
+  String get postingTip =>
+      'Tip: Tag specific items rather than just the brand for better visibility';
+
+  @override
+  String get postingNoResults => 'No items found';
+
+  @override
+  String get postingRemoveTag => 'Remove tag';
+
+  @override
+  String get postingWardrobeOnlyCatalog =>
+      'Only items from brands can be tagged.';
+
+  @override
+  String get postingReadyToPublish => 'Ready to publish!';
+
+  @override
+  String get postingCaption => 'Caption';
+
+  @override
+  String get postingCaptionHint => 'Write a caption...';
+
+  @override
+  String get postingLocation => 'Location';
+
+  @override
+  String get postingLocationHint => 'Add a location';
+
+  @override
+  String get postingMentionedBrands => 'Mentioned brands';
+
+  @override
+  String get postingNoBrands => 'Tag items to mention their brands';
+
+  @override
+  String get postingAllowBrandFeature => 'Allow brands to feature this';
+
+  @override
+  String get postingAllowBrandFeatureHint =>
+      'Brands can showcase your look in their showroom';
+
+  @override
+  String get postingPublishCta => 'Publish to Stylper';
+
+  @override
+  String get postingVisibleToEveryone =>
+      'Your post will be visible to everyone';
+
+  @override
+  String get postingPublished => 'Your look is live!';
+
+  @override
+  String get postingDiscardTitle => 'Discard post?';
+
+  @override
+  String get postingDiscardBody => 'Your photo and tags will be lost.';
+
+  @override
+  String get postingDiscard => 'Discard';
+
+  @override
+  String get errorPublishInvalid =>
+      'Couldn\'t publish this post. Check the photo and tags.';
+
+  @override
+  String postingItemsTagged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items tagged in this outfit',
+      one: '1 item tagged in this outfit',
+      zero: 'No items tagged yet',
+    );
+    return '$_temp0';
+  }
 }

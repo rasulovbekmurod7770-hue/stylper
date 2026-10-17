@@ -288,6 +288,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get signInToInteract => 'Postlarni yoqtirish va saqlash uchun kiring.';
 
   @override
+  String get signInToPost => 'Obrazingizni ulashish uchun kiring.';
+
+  @override
   String get errorPostNotFound => 'Bu post endi mavjud emas.';
 
   @override
@@ -541,4 +544,143 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get filterAll => 'Hammasi';
+
+  @override
+  String get cancel => 'Bekor qilish';
+
+  @override
+  String get close => 'Yopish';
+
+  @override
+  String get postingNext => 'Keyingi';
+
+  @override
+  String get postingNewPost => 'Yangi post';
+
+  @override
+  String get postingTagItems => 'Kiyimlarni belgilang';
+
+  @override
+  String get postingDetails => 'Tafsilotlar';
+
+  @override
+  String get postingPublish => 'Eʼlon qilish';
+
+  @override
+  String get postingRecentPhotos => 'Soʻnggi rasmlar';
+
+  @override
+  String get postingAlbums => 'Albomlar';
+
+  @override
+  String get postingCameraRoll => 'Galereya';
+
+  @override
+  String get postingTakePhoto => 'Suratga olish';
+
+  @override
+  String get postingAllowAccessTitle => 'Rasmlaringizga ruxsat bering';
+
+  @override
+  String get postingAllowAccessBody =>
+      'Stylper post uchun obraz tanlashingiz uchun rasmlaringizni koʻrsatadi. Yangi surat ham olishingiz mumkin.';
+
+  @override
+  String get postingOpenSettings => 'Sozlamalarni ochish';
+
+  @override
+  String get postingLimitedAccess => 'Siz baʼzi rasmlarga ruxsat bergansiz.';
+
+  @override
+  String get postingManage => 'Boshqarish';
+
+  @override
+  String get postingNoPhotos => 'Hozircha rasmlar yoʻq';
+
+  @override
+  String get postingTapToTag =>
+      'Kiyimni belgilash uchun rasmning istalgan joyiga bosing';
+
+  @override
+  String get postingSearchHint => 'Brend yoki kiyimni qidiring...';
+
+  @override
+  String get postingRecentTags => 'Soʻnggi belgilar';
+
+  @override
+  String get postingTip =>
+      'Maslahat: faqat brendni emas, aniq kiyimni belgilang — post koʻproq koʻrinadi';
+
+  @override
+  String get postingNoResults => 'Hech narsa topilmadi';
+
+  @override
+  String get postingRemoveTag => 'Belgini olib tashlash';
+
+  @override
+  String get postingWardrobeOnlyCatalog =>
+      'Faqat brend kiyimlarini belgilash mumkin.';
+
+  @override
+  String get postingReadyToPublish => 'Eʼlon qilishga tayyor!';
+
+  @override
+  String get postingCaption => 'Izoh';
+
+  @override
+  String get postingCaptionHint => 'Izoh yozing...';
+
+  @override
+  String get postingLocation => 'Joylashuv';
+
+  @override
+  String get postingLocationHint => 'Joylashuvni qoʻshing';
+
+  @override
+  String get postingMentionedBrands => 'Tilga olingan brendlar';
+
+  @override
+  String get postingNoBrands =>
+      'Brendlarni tilga olish uchun kiyimlarni belgilang';
+
+  @override
+  String get postingAllowBrandFeature =>
+      'Brendlarga koʻrsatishga ruxsat berish';
+
+  @override
+  String get postingAllowBrandFeatureHint =>
+      'Brendlar obrazingizni oʻz shourumida koʻrsatishi mumkin';
+
+  @override
+  String get postingPublishCta => 'Stylperda eʼlon qilish';
+
+  @override
+  String get postingVisibleToEveryone => 'Postingizni hamma koʻradi';
+
+  @override
+  String get postingPublished => 'Obrazingiz eʼlon qilindi!';
+
+  @override
+  String get postingDiscardTitle => 'Post bekor qilinsinmi?';
+
+  @override
+  String get postingDiscardBody => 'Rasm va belgilar saqlanmaydi.';
+
+  @override
+  String get postingDiscard => 'Bekor qilish';
+
+  @override
+  String get errorPublishInvalid =>
+      'Postni eʼlon qilib boʻlmadi. Rasm va belgilarni tekshiring.';
+
+  @override
+  String postingItemsTagged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Obrazda $count ta kiyim belgilangan',
+      zero: 'Hozircha belgilar yoʻq',
+    );
+    return '$_temp0';
+  }
 }

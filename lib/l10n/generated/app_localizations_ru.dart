@@ -290,6 +290,9 @@ class AppLocalizationsRu extends AppLocalizations {
       'Войдите, чтобы ставить лайки и сохранять посты.';
 
   @override
+  String get signInToPost => 'Войдите, чтобы поделиться своим образом.';
+
+  @override
   String get errorPostNotFound => 'Этот пост больше недоступен.';
 
   @override
@@ -550,4 +553,142 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get filterAll => 'Все';
+
+  @override
+  String get cancel => 'Отмена';
+
+  @override
+  String get close => 'Закрыть';
+
+  @override
+  String get postingNext => 'Далее';
+
+  @override
+  String get postingNewPost => 'Новый пост';
+
+  @override
+  String get postingTagItems => 'Отметьте вещи';
+
+  @override
+  String get postingDetails => 'Детали';
+
+  @override
+  String get postingPublish => 'Публикация';
+
+  @override
+  String get postingRecentPhotos => 'Недавние фото';
+
+  @override
+  String get postingAlbums => 'Альбомы';
+
+  @override
+  String get postingCameraRoll => 'Галерея';
+
+  @override
+  String get postingTakePhoto => 'Сделать фото';
+
+  @override
+  String get postingAllowAccessTitle => 'Разрешите доступ к фото';
+
+  @override
+  String get postingAllowAccessBody =>
+      'Stylper показывает ваши фото, чтобы вы могли выбрать образ для поста. Можно и сделать новое фото.';
+
+  @override
+  String get postingOpenSettings => 'Открыть настройки';
+
+  @override
+  String get postingLimitedAccess => 'Вы открыли доступ к части фото.';
+
+  @override
+  String get postingManage => 'Изменить';
+
+  @override
+  String get postingNoPhotos => 'Фото пока нет';
+
+  @override
+  String get postingTapToTag => 'Нажмите на фото, чтобы отметить одежду';
+
+  @override
+  String get postingSearchHint => 'Бренд или вещь...';
+
+  @override
+  String get postingRecentTags => 'Недавние отметки';
+
+  @override
+  String get postingTip =>
+      'Совет: отмечайте конкретные вещи, а не только бренд — так пост заметнее';
+
+  @override
+  String get postingNoResults => 'Ничего не найдено';
+
+  @override
+  String get postingRemoveTag => 'Удалить отметку';
+
+  @override
+  String get postingWardrobeOnlyCatalog =>
+      'Отметить можно только вещи брендов.';
+
+  @override
+  String get postingReadyToPublish => 'Готово к публикации!';
+
+  @override
+  String get postingCaption => 'Подпись';
+
+  @override
+  String get postingCaptionHint => 'Напишите подпись...';
+
+  @override
+  String get postingLocation => 'Место';
+
+  @override
+  String get postingLocationHint => 'Добавьте место';
+
+  @override
+  String get postingMentionedBrands => 'Упомянутые бренды';
+
+  @override
+  String get postingNoBrands => 'Отметьте вещи, чтобы упомянуть бренды';
+
+  @override
+  String get postingAllowBrandFeature => 'Разрешить брендам показывать пост';
+
+  @override
+  String get postingAllowBrandFeatureHint =>
+      'Бренды смогут показать ваш образ в своём шоуруме';
+
+  @override
+  String get postingPublishCta => 'Опубликовать в Stylper';
+
+  @override
+  String get postingVisibleToEveryone => 'Пост увидят все';
+
+  @override
+  String get postingPublished => 'Ваш образ опубликован!';
+
+  @override
+  String get postingDiscardTitle => 'Удалить пост?';
+
+  @override
+  String get postingDiscardBody => 'Фото и отметки не сохранятся.';
+
+  @override
+  String get postingDiscard => 'Удалить';
+
+  @override
+  String get errorPublishInvalid =>
+      'Не удалось опубликовать пост. Проверьте фото и отметки.';
+
+  @override
+  String postingItemsTagged(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count вещей отмечено в образе',
+      few: '$count вещи отмечены в образе',
+      one: '$count вещь отмечена в образе',
+      zero: 'Вещи не отмечены',
+    );
+    return '$_temp0';
+  }
 }

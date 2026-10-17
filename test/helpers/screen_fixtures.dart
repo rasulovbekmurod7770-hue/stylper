@@ -1,5 +1,5 @@
 import 'package:bloc_test/bloc_test.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fpdart/fpdart.dart';
@@ -8,6 +8,7 @@ import 'package:stylper/app/session/session_cubit.dart';
 import 'package:stylper/app/shell/app_shell.dart';
 import 'package:stylper/core/constants/app_assets.dart';
 import 'package:stylper/core/fake_backend/fake_backend.dart';
+import 'package:stylper/core/network/auth_token_store.dart';
 import 'package:stylper/core/usecase/usecase.dart';
 import 'package:stylper/features/auth/domain/usecases/email_auth.dart';
 import 'package:stylper/features/auth/domain/usecases/social_auth.dart';
@@ -36,6 +37,23 @@ import 'package:stylper/features/post/domain/usecases/post_usecases.dart';
 import 'package:stylper/features/post/presentation/cubits/post_detail_cubit.dart';
 import 'package:stylper/features/post/presentation/cubits/post_engagement_cubit.dart';
 import 'package:stylper/features/post/presentation/pages/post_detail_page.dart';
+import 'package:stylper/features/posting/data/datasources/posting_remote_data_source.dart';
+import 'package:stylper/features/posting/data/repositories/posting_repository_impl.dart';
+import 'package:stylper/features/posting/domain/entities/post_draft.dart';
+import 'package:stylper/features/posting/domain/failures/posting_failure.dart';
+import 'package:stylper/features/posting/domain/repositories/posting_repository.dart';
+import 'package:stylper/features/posting/domain/usecases/posting_usecases.dart';
+import 'package:stylper/features/posting/presentation/cubits/media_picker_cubit.dart';
+import 'package:stylper/features/posting/presentation/cubits/post_draft_cubit.dart';
+import 'package:stylper/features/posting/presentation/cubits/published_posts_cubit.dart';
+import 'package:stylper/features/posting/presentation/cubits/tag_search_cubit.dart';
+import 'package:stylper/features/posting/presentation/gallery_thumbnails.dart';
+import 'package:stylper/features/posting/presentation/pages/media_selection_page.dart';
+import 'package:stylper/features/posting/presentation/pages/posting_details_page.dart';
+import 'package:stylper/features/posting/presentation/pages/publish_page.dart';
+import 'package:stylper/features/posting/presentation/pages/tag_items_page.dart';
+import 'package:stylper/features/posting/presentation/widgets/posting_widgets.dart';
+import 'package:stylper/features/product/domain/entities/product.dart';
 import 'package:stylper/features/product/data/models/product_json.dart';
 import 'package:stylper/features/product/domain/usecases/get_product.dart';
 import 'package:stylper/features/product/presentation/cubits/product_detail_cubit.dart';
@@ -53,6 +71,7 @@ import 'package:stylper/features/wardrobe/presentation/cubits/wardrobe_cubit.dar
 import 'package:stylper/features/wardrobe/presentation/pages/wardrobe_page.dart';
 import 'package:stylper/features/wardrobe/presentation/cubits/wardrobe_membership_cubit.dart';
 
+import 'fake_media.dart';
 import 'screen_harness.dart';
 
 class _MockSignInWithEmail extends Mock implements SignInWithEmail {}
@@ -108,6 +127,25 @@ Widget _inShell(Widget page, {MainTab tab = MainTab.home}) => _withAppState(
 
 /// John's own profile, with his saved posts.
 Widget _ownProfile() {
+  final getSaved = _MockGetSavedPosts();
+  when(() => getSaved(any())).thenAnswer((_) async {
+    final (backend, token) = await _signedInBackend();
+    return Right(ProfileJson.saved(await backend.savedPosts(token)));
+  });
+  return _inShell(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => _ownProfileCubit()),
+        BlocProvider(create: (_) => SavedPostsCubit(getSaved)),
+      ],
+      child: const ProfilePage(),
+    ),
+    tab: MainTab.profile,
+  );
+}
+
+/// John's profile, loading.
+ProfileCubit _ownProfileCubit() {
   final getProfile = _MockGetProfile();
   when(() => getProfile(any())).thenAnswer((_) async {
     final (backend, token) = await _signedInBackend();
@@ -117,26 +155,102 @@ Widget _ownProfile() {
       ),
     );
   });
-  final getSaved = _MockGetSavedPosts();
-  when(() => getSaved(any())).thenAnswer((_) async {
+  return ProfileCubit(
+    getProfile,
+    _MockSetFollowing(),
+    userId: ProfileRepository.me,
+  )..load();
+}
+
+/// John's posting endpoints on the fake backend, signed in on first use.
+class _JohnsPosting implements PostingRepository {
+  late final Future<PostingRepository> _repository = () async {
     final (backend, token) = await _signedInBackend();
-    return Right(ProfileJson.saved(await backend.savedPosts(token)));
-  });
-  return _inShell(
-    MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) => ProfileCubit(
-            getProfile,
-            _MockSetFollowing(),
-            userId: ProfileRepository.me,
-          )..load(),
+    final tokens = InMemoryAuthTokenStore();
+    await tokens.save(token);
+    return PostingRepositoryImpl(
+      remote: FakePostingRemoteDataSource(backend, tokens),
+    );
+  }();
+
+  @override
+  Future<Either<PostingFailure, List<ProductSummary>>> searchProducts(
+    String query, {
+    String? category,
+    bool mine = false,
+  }) async =>
+      (await _repository).searchProducts(query, category: category, mine: mine);
+
+  @override
+  Future<Either<PostingFailure, List<ProductSummary>>> recentTags() async =>
+      (await _repository).recentTags();
+
+  @override
+  Future<Either<PostingFailure, List<String>>> styles() async =>
+      (await _repository).styles();
+
+  @override
+  Future<Either<PostingFailure, String>> publish(PostDraft draft) async =>
+      (await _repository).publish(draft);
+}
+
+/// The Figma posting sample: John's grey knit with two tagged items, posted
+/// in Tashkent as Minimal / Casual, filled in up to [step] (0–3).
+Widget _posting(Widget page, {required int step}) {
+  final posting = _JohnsPosting();
+  final draft = PostDraftCubit(GetPostStyles(posting), PublishPost(posting))
+    ..loadStyles();
+  if (step >= 1) draft.setPhoto('assets/images/posts/john_knit.webp');
+  if (step >= 2) {
+    draft
+      ..addTag(
+        const DraftTag(
+          productId: 'p_polo_arket',
+          brand: 'ARKET',
+          label: 'Sweater',
+          imagePath: AppImages.quizRugbyPoloSweater,
+          x: 0.42,
+          y: 0.24,
         ),
-        BlocProvider(create: (_) => SavedPostsCubit(getSaved)),
-      ],
-      child: const ProfilePage(),
+      )
+      ..addTag(
+        const DraftTag(
+          productId: 'p_jeans_kink',
+          brand: 'Kink',
+          label: 'Jeans',
+          imagePath: AppImages.quizBaggyJeans,
+          x: 0.5,
+          y: 0.62,
+        ),
+      )
+      ..setLocation('Tashkent')
+      ..toggleStyle('Minimal')
+      ..toggleStyle('Casual');
+  }
+  if (step >= 3) {
+    draft.setCaption(
+      'Minimal tones for autumn season. Soft layering makes it easy.',
+    );
+  }
+  return _withAppState(
+    RepositoryProvider<GalleryThumbnails>.value(
+      value: const AssetGalleryThumbnails(),
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: draft),
+          BlocProvider(
+            create: (_) =>
+                TagSearchCubit(SearchProducts(posting), GetRecentTags(posting))
+                  ..load(),
+          ),
+          BlocProvider(
+            create: (_) => MediaPickerCubit(FakeMediaRepository())..start(),
+          ),
+          BlocProvider(create: (_) => _ownProfileCubit()),
+        ],
+        child: page,
+      ),
     ),
-    tab: MainTab.profile,
   );
 }
 
@@ -147,7 +261,8 @@ class _MockSessionCubit extends MockCubit<SessionState>
     implements SessionCubit {}
 
 /// The app-wide cubits that screens read (provided above the router in the
-/// app): a guest session, the like / save state and wardrobe membership.
+/// app): a guest session, the like / save state, wardrobe membership and
+/// newly published posts.
 Widget _withAppState(Widget child) {
   final session = _MockSessionCubit();
   whenListen(
@@ -165,6 +280,7 @@ Widget _withAppState(Widget child) {
       BlocProvider(
         create: (_) => WardrobeMembershipCubit(_MockSetInWardrobe()),
       ),
+      BlocProvider(create: (_) => PublishedPostsCubit()),
     ],
     child: child,
   );
@@ -425,6 +541,42 @@ List<ScreenFixture> screenFixtures() {
           tab: MainTab.profile,
         );
       },
+      images: _allContentImages,
+    ),
+    // Figma "Posting" (2849:1017), steps 1–4, and the item search.
+    ScreenFixture(
+      name: 'posting_media',
+      build: () => _posting(const MediaSelectionPage(), step: 0),
+      images: _allContentImages,
+    ),
+    ScreenFixture(
+      name: 'posting_tag',
+      build: () => _posting(const TagItemsPage(), step: 1),
+      images: _allContentImages,
+    ),
+    ScreenFixture(
+      name: 'posting_tag_search',
+      build: () => _posting(const TagItemsPage(), step: 1),
+      images: _allContentImages,
+      fillIn: (tester) async {
+        await tester.tap(find.byType(PostingSearchField));
+        await settleState(tester);
+        await tester.enterText(find.byType(TextField).last, 'jeans');
+        // Past the search debounce, with the keyboard up.
+        await tester.pump(const Duration(milliseconds: 400));
+        tester.view.viewInsets = const FakeViewPadding(bottom: 300);
+        await settleState(tester);
+        await settleAssets(tester, precacheImages: _allContentImages);
+      },
+    ),
+    ScreenFixture(
+      name: 'posting_details',
+      build: () => _posting(const PostingDetailsPage(), step: 2),
+      images: _allContentImages,
+    ),
+    ScreenFixture(
+      name: 'posting_publish',
+      build: () => _posting(const PublishPage(), step: 3),
       images: _allContentImages,
     ),
   ];

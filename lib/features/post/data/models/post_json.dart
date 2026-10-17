@@ -11,6 +11,8 @@ abstract final class PostJson {
     author: author(json['author']! as JsonMap),
     engagement: engagement(json),
     commentCount: json['comments']! as int,
+    caption: json['caption'] as String?,
+    location: json['location'] as String?,
     products: list(json['products'], _product),
     similar: list(json['similar'], preview),
   );

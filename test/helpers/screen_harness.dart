@@ -38,6 +38,10 @@ Future<void> loadAppFonts() async {
     }
     await loader.load();
   }
+  // Material icons (still used where a Figma icon isn't exported yet).
+  await (FontLoader(
+    'MaterialIcons',
+  )..addFont(rootBundle.load('fonts/MaterialIcons-Regular.otf'))).load();
   _fontsLoaded = true;
 }
 

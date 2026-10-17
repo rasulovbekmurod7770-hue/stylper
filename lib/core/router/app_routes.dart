@@ -28,6 +28,12 @@ abstract final class AppRoutes {
 
   static String wardrobeCategory(String category) => '$wardrobe/$category';
 
+  /// Posting: full-screen steps outside the tabs, so the tab bar is hidden.
+  static const create = '/create';
+  static const createTag = '$create/tag';
+  static const createDetails = '$create/details';
+  static const createPublish = '$create/publish';
+
   static bool isAuthRoute(String location) => location.startsWith(welcome);
 
   static bool isMainRoute(String location) =>

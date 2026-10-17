@@ -55,6 +55,21 @@ it", local brands first, and trust (nothing that misleads).
   Full-screen flows that must hide it — **posting** (Figma `2849:1017`,
   started by the bar's "+") — are top-level routes next to the
   `StatefulShellRoute`, not inside it, so they cover the bar.
+- **Posting** (`features/posting`, routes `/create`, `/create/tag`,
+  `/create/details`, `/create/publish`) is one plain `ShellRoute` whose
+  builder provides the single `PostDraftCubit` for all four steps and the
+  `DiscardGuard` (back from step 1 asks before throwing a started post
+  away). Signed-in users only. The device's photo library and camera go
+  through `MediaRepository` (photo_manager / image_picker) and
+  `GalleryThumbnails`; tests swap both through `configureDependencies`
+  (`test/helpers/fake_media.dart`). Photo access is asked **once** (the
+  user's requirement, iOS-style): a shared_preferences flag stops Android
+  from re-prompting after a denial; afterwards it's Settings or "Manage".
+  Tagged items come from the brands' catalogs via the backend search, never
+  free text. There is **no audience setting** ("Share to followers" was
+  removed on purpose): every post is public. After publishing,
+  `PublishedPostsCubit` (app-wide) tells screens that list your posts to
+  refresh.
 - **No backend yet, and no Firebase.** The real API will be a custom REST
   backend (likely Node.js). Every remote call goes through a
   `*RemoteDataSource` interface; until the API exists, a `Fake…` data source
@@ -86,10 +101,13 @@ it", local brands first, and trust (nothing that misleads).
   marked PROVISIONAL until their design context or SVG exports are cached:
   outfit post "home-feed-2" `2775:2840` (variant `2775:2953` = tapped tag),
   product detail `2775:3077`, profile `2775:3285`, profile Saved tab
-  "Profile 4" `2775:3374`, wardrobe `2789:226`. Not in Figma, built from the
-  same pieces: product "See all looks", wardrobe category, settings sheet.
-  Next in the flow: brand profile `2856:1809`, brand showroom `2856:1919`,
-  posting `2849:1017`.
+  "Profile 4" `2775:3374`, wardrobe `2789:226`; posting `2849:1017` (media
+  `2820:76`, tag items `2845:396` + search-sheet variants, details
+  `2820:198`, publish `2820:253`) from the section screenshot
+  `design/figma/screens/08_posting_2849-1017.png` (per-step crops `08a`–`08d`).
+  Not in Figma, built from the same pieces: product "See all looks",
+  wardrobe category, settings sheet. Next in the flow: brand profile
+  `2856:1809`, brand showroom `2856:1919`.
 - Controls whose screens don't exist yet show "Coming soon" — never leave a
   tappable-looking control dead.
 - Fonts (the user's decision): **Poppins everywhere**, through the shared

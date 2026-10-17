@@ -64,6 +64,24 @@ class ProfileCubit extends Cubit<ProfileState> {
     );
   }
 
+  /// Reloads while the current profile stays on screen (e.g. after you
+  /// post); a failure keeps what's shown.
+  Future<void> refresh() async {
+    if (state.profile == null) return load();
+    final result = await _getProfile(userId);
+    if (isClosed) return;
+    result.match(
+      (_) {},
+      (profile) => emit(
+        ProfileState(
+          status: ProfileStatus.ready,
+          profile: profile,
+          followFailureCount: state.followFailureCount,
+        ),
+      ),
+    );
+  }
+
   /// Follows or unfollows, updating the follower count at once and rolling
   /// back if the API refuses.
   Future<void> toggleFollow() async {

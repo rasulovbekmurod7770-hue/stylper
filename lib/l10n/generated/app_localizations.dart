@@ -592,6 +592,12 @@ abstract class AppLocalizations {
   /// **'Sign in to like and save posts.'**
   String get signInToInteract;
 
+  /// Shown to guests who tap New post.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to share your look.'**
+  String get signInToPost;
+
   /// No description provided for @errorPostNotFound.
   ///
   /// In en, this message translates to:
@@ -1005,6 +1011,252 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get filterAll;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @postingNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get postingNext;
+
+  /// No description provided for @postingNewPost.
+  ///
+  /// In en, this message translates to:
+  /// **'New Post'**
+  String get postingNewPost;
+
+  /// No description provided for @postingTagItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag Items'**
+  String get postingTagItems;
+
+  /// No description provided for @postingDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get postingDetails;
+
+  /// No description provided for @postingPublish.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish'**
+  String get postingPublish;
+
+  /// No description provided for @postingRecentPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Photos'**
+  String get postingRecentPhotos;
+
+  /// No description provided for @postingAlbums.
+  ///
+  /// In en, this message translates to:
+  /// **'Albums'**
+  String get postingAlbums;
+
+  /// No description provided for @postingCameraRoll.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera Roll'**
+  String get postingCameraRoll;
+
+  /// No description provided for @postingTakePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photo'**
+  String get postingTakePhoto;
+
+  /// No description provided for @postingAllowAccessTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow access to your photos'**
+  String get postingAllowAccessTitle;
+
+  /// No description provided for @postingAllowAccessBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Stylper shows your photos so you can choose an outfit to post. You can still take a new photo.'**
+  String get postingAllowAccessBody;
+
+  /// No description provided for @postingOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Settings'**
+  String get postingOpenSettings;
+
+  /// No description provided for @postingLimitedAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve given access to some photos.'**
+  String get postingLimitedAccess;
+
+  /// No description provided for @postingManage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage'**
+  String get postingManage;
+
+  /// No description provided for @postingNoPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'No photos yet'**
+  String get postingNoPhotos;
+
+  /// No description provided for @postingTapToTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap anywhere on the photo to tag clothes'**
+  String get postingTapToTag;
+
+  /// No description provided for @postingSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search brand or item...'**
+  String get postingSearchHint;
+
+  /// No description provided for @postingRecentTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent tags'**
+  String get postingRecentTags;
+
+  /// No description provided for @postingTip.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: Tag specific items rather than just the brand for better visibility'**
+  String get postingTip;
+
+  /// No description provided for @postingNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No items found'**
+  String get postingNoResults;
+
+  /// No description provided for @postingRemoveTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove tag'**
+  String get postingRemoveTag;
+
+  /// No description provided for @postingWardrobeOnlyCatalog.
+  ///
+  /// In en, this message translates to:
+  /// **'Only items from brands can be tagged.'**
+  String get postingWardrobeOnlyCatalog;
+
+  /// No description provided for @postingReadyToPublish.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to publish!'**
+  String get postingReadyToPublish;
+
+  /// No description provided for @postingCaption.
+  ///
+  /// In en, this message translates to:
+  /// **'Caption'**
+  String get postingCaption;
+
+  /// No description provided for @postingCaptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a caption...'**
+  String get postingCaptionHint;
+
+  /// No description provided for @postingLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get postingLocation;
+
+  /// No description provided for @postingLocationHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a location'**
+  String get postingLocationHint;
+
+  /// No description provided for @postingMentionedBrands.
+  ///
+  /// In en, this message translates to:
+  /// **'Mentioned brands'**
+  String get postingMentionedBrands;
+
+  /// No description provided for @postingNoBrands.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag items to mention their brands'**
+  String get postingNoBrands;
+
+  /// No description provided for @postingAllowBrandFeature.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow brands to feature this'**
+  String get postingAllowBrandFeature;
+
+  /// No description provided for @postingAllowBrandFeatureHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Brands can showcase your look in their showroom'**
+  String get postingAllowBrandFeatureHint;
+
+  /// No description provided for @postingPublishCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Publish to Stylper'**
+  String get postingPublishCta;
+
+  /// No description provided for @postingVisibleToEveryone.
+  ///
+  /// In en, this message translates to:
+  /// **'Your post will be visible to everyone'**
+  String get postingVisibleToEveryone;
+
+  /// No description provided for @postingPublished.
+  ///
+  /// In en, this message translates to:
+  /// **'Your look is live!'**
+  String get postingPublished;
+
+  /// No description provided for @postingDiscardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard post?'**
+  String get postingDiscardTitle;
+
+  /// No description provided for @postingDiscardBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your photo and tags will be lost.'**
+  String get postingDiscardBody;
+
+  /// No description provided for @postingDiscard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get postingDiscard;
+
+  /// No description provided for @errorPublishInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t publish this post. Check the photo and tags.'**
+  String get errorPublishInvalid;
+
+  /// No description provided for @postingItemsTagged.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No items tagged yet} =1{1 item tagged in this outfit} other{{count} items tagged in this outfit}}'**
+  String postingItemsTagged(int count);
 }
 
 class _AppLocalizationsDelegate

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/l10n/l10n.dart';
+import '../../core/router/app_routes.dart';
 import '../../core/widgets/snackbars.dart';
 import '../../features/post/presentation/cubits/post_engagement_cubit.dart';
 import '../../features/post/presentation/post_failure_message.dart';
 import '../../features/wardrobe/presentation/cubits/wardrobe_membership_cubit.dart';
 import '../../features/wardrobe/presentation/wardrobe_failure_message.dart';
+import '../session/sign_in_prompt.dart';
 import 'app_tab_bar.dart';
 
 export 'app_tab_bar.dart' show MainTab;
@@ -51,8 +54,12 @@ class AppShell extends StatelessWidget {
         bottomNavigationBar: AppTabBar(
           currentTab: currentTab,
           onTabSelected: onTabSelected,
-          // Posting isn't built yet; it will open as a full-screen route.
-          onCreate: () => context.showMessage(context.l10n.comingSoon),
+          // Posting covers the tabs; guests are asked to sign in first.
+          onCreate: () => runSignedIn(
+            context,
+            () => context.push(AppRoutes.create),
+            message: context.l10n.signInToPost,
+          ),
         ),
       ),
     );

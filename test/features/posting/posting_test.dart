@@ -1,0 +1,353 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:stylper/core/fake_backend/fake_backend.dart';
+import 'package:stylper/core/network/auth_token_store.dart';
+import 'package:stylper/features/post/data/datasources/post_remote_data_source.dart';
+import 'package:stylper/features/post/data/repositories/post_repository_impl.dart';
+import 'package:stylper/features/posting/data/datasources/posting_remote_data_source.dart';
+import 'package:stylper/features/posting/data/repositories/posting_repository_impl.dart';
+import 'package:stylper/features/posting/domain/entities/media.dart';
+import 'package:stylper/features/posting/domain/entities/post_draft.dart';
+import 'package:stylper/features/posting/domain/failures/posting_failure.dart';
+import 'package:stylper/features/posting/domain/usecases/posting_usecases.dart';
+import 'package:stylper/features/posting/presentation/cubits/media_picker_cubit.dart';
+import 'package:stylper/features/posting/presentation/cubits/post_draft_cubit.dart';
+import 'package:stylper/features/posting/presentation/cubits/tag_search_cubit.dart';
+import 'package:stylper/features/profile/data/datasources/profile_remote_data_source.dart';
+import 'package:stylper/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:stylper/features/profile/domain/repositories/profile_repository.dart';
+
+import '../../helpers/fake_media.dart';
+
+const _photo = 'assets/images/posts/john_knit.webp';
+
+const _sweaterTag = DraftTag(
+  productId: 'p_polo_arket',
+  brand: 'ARKET',
+  label: 'Sweater',
+  imagePath: 'assets/images/style_quiz/rugby_polo_sweater_arket.webp',
+  x: 0.4,
+  y: 0.25,
+);
+
+void main() {
+  late FakeBackend backend;
+  late InMemoryAuthTokenStore tokens;
+  late PostingRepositoryImpl posting;
+
+  setUp(() {
+    backend = FakeBackend(latency: Duration.zero);
+    tokens = InMemoryAuthTokenStore();
+    posting = PostingRepositoryImpl(
+      remote: FakePostingRemoteDataSource(backend, tokens),
+    );
+  });
+
+  Future<void> signIn() async {
+    final session = await backend.login(
+      FakeBackend.demoEmail,
+      FakeBackend.demoPassword,
+    );
+    await tokens.save(session['accessToken']! as String);
+  }
+
+  Future<List<String>> search(
+    String query, {
+    String? category,
+    bool mine = false,
+  }) async => (await posting.searchProducts(
+    query,
+    category: category,
+    mine: mine,
+  )).getOrElse((f) => throw StateError('$f')).map((p) => p.id).toList();
+
+  group('item search (brands\' catalogs)', () {
+    test('every word must match the brand, name or item type', () async {
+      expect(await search('jeans zara'), ['p_jeans_vintage_zara']);
+      expect(
+        await search('JEANS'),
+        unorderedEquals(['p_jeans_kink', 'p_jeans_vintage_zara']),
+      );
+      expect(await search('cardigan'), ['p_cardigan_cos']);
+      expect(await search('nothing like this'), isEmpty);
+    });
+
+    test('a category narrows the catalog', () async {
+      expect(await search('', category: 'shoes'), ['p_sneakers_terra_pro']);
+      expect(
+        await search('kink', category: 'accessories'),
+        unorderedEquals(['p_watch_kink', 'p_sunglasses_kink']),
+      );
+    });
+
+    test('"My Wardrobe" keeps only your saved items', () async {
+      await signIn();
+      final wardrobe =
+          (await backend.searchProducts(
+                mine: true,
+                token: await tokens.read(),
+              ))['products']!
+              as List<Object?>;
+      final mine = await search('', mine: true);
+      expect(mine, hasLength(wardrobe.length));
+      expect(mine, isNotEmpty);
+      expect(await search(''), containsAll(mine));
+    });
+
+    test('recent tags are items from your own posts', () async {
+      await signIn();
+      final recent = (await posting.recentTags()).getOrElse(
+        (f) => throw StateError('$f'),
+      );
+      expect(recent, isNotEmpty);
+      expect(recent.map((p) => p.id).toSet(), hasLength(recent.length));
+    });
+  });
+
+  group('publishing', () {
+    test(
+      'the new post opens with its tags and shows on your profile',
+      () async {
+        await signIn();
+        final id = (await posting.publish(
+          const PostDraft(
+            photoPath: _photo,
+            tags: [_sweaterTag],
+            caption: '  Soft layers  ',
+            location: 'Tashkent',
+            styles: ['Minimal'],
+          ),
+        )).getOrElse((f) => throw StateError('$f'));
+
+        final posts = PostRepositoryImpl(
+          remote: FakePostRemoteDataSource(backend, tokens),
+        );
+        final post = (await posts.getPost(id))
+            .getOrElse((f) => throw StateError('$f'));
+        expect(post.imagePath, _photo);
+        expect(post.caption, 'Soft layers');
+        expect(post.location, 'Tashkent');
+        expect(post.author.handle, 'john');
+        expect(post.products.single.id, 'p_polo_arket');
+        expect(post.products.single.tagX, 0.4);
+
+        final profiles = ProfileRepositoryImpl(
+          remote: FakeProfileRemoteDataSource(backend, tokens),
+        );
+        final me = (await profiles.getProfile(ProfileRepository.me))
+            .getOrElse((f) => throw StateError('$f'));
+        expect(me.recentPosts.first.id, id);
+      },
+    );
+
+    test('needs a signed-in user', () async {
+      final result = await posting.publish(const PostDraft(photoPath: _photo));
+      expect(
+        result.getLeft().toNullable(),
+        const PostingFailure(PostingFailureReason.signInRequired),
+      );
+    });
+
+    test('refuses an unknown item', () async {
+      await signIn();
+      final result = await posting.publish(
+        const PostDraft(
+          photoPath: _photo,
+          tags: [
+            DraftTag(
+              productId: 'p_missing',
+              brand: 'X',
+              label: 'Y',
+              imagePath: _photo,
+              x: 0.5,
+              y: 0.5,
+            ),
+          ],
+        ),
+      );
+      expect(
+        result.getLeft().toNullable(),
+        const PostingFailure(PostingFailureReason.invalid),
+      );
+    });
+  });
+
+  group('MediaPickerCubit', () {
+    test(
+      'with access, shows the library with the newest photo chosen',
+      () async {
+        final media = FakeMediaRepository();
+        final cubit = MediaPickerCubit(media);
+        await cubit.start();
+
+        expect(cubit.state.status, MediaPickerStatus.ready);
+        expect(cubit.state.limited, isFalse);
+        expect(cubit.state.photos, hasLength(media.library.length));
+        expect(cubit.state.selected?.id, media.library.first);
+        expect(await cubit.chosenFile(), media.library.first);
+        await cubit.close();
+      },
+    );
+
+    test('limited access still shows the shared photos, with Manage', () async {
+      final media = FakeMediaRepository(access: MediaAccess.limited);
+      final cubit = MediaPickerCubit(media);
+      await cubit.start();
+      expect(cubit.state.status, MediaPickerStatus.ready);
+      expect(cubit.state.limited, isTrue);
+
+      await cubit.manageSelection();
+      expect(media.manageCalls, 1);
+      await cubit.close();
+    });
+
+    test(
+      'without access the camera still works; Settings is offered',
+      () async {
+        final media = FakeMediaRepository(
+          access: MediaAccess.denied,
+          cameraPhoto: _photo,
+        );
+        final cubit = MediaPickerCubit(media);
+        await cubit.start();
+        expect(cubit.state.status, MediaPickerStatus.denied);
+        expect(cubit.state.hasChoice, isFalse);
+
+        await cubit.takePhoto();
+        expect(cubit.state.cameraPhotoPath, _photo);
+        expect(await cubit.chosenFile(), _photo);
+
+        // Allowed in Settings, back in the app.
+        media.access = MediaAccess.full;
+        await cubit.start();
+        expect(cubit.state.status, MediaPickerStatus.ready);
+        // The photo just taken stays chosen.
+        expect(await cubit.chosenFile(), _photo);
+        await cubit.close();
+      },
+    );
+
+    test('pages through a large library', () async {
+      final media = FakeMediaRepository(
+        library: [for (var i = 0; i < 130; i++) 'photo_$i'],
+      );
+      final cubit = MediaPickerCubit(media);
+      await cubit.start();
+      expect(cubit.state.photos, hasLength(MediaPickerCubit.pageSize));
+      expect(cubit.state.hasMore, isTrue);
+
+      await cubit.loadMore();
+      await cubit.loadMore();
+      expect(cubit.state.photos, hasLength(130));
+      expect(cubit.state.hasMore, isFalse);
+      await cubit.close();
+    });
+  });
+
+  group('PostDraftCubit', () {
+    late PostDraftCubit draft;
+
+    setUp(() async {
+      draft = PostDraftCubit(GetPostStyles(posting), PublishPost(posting));
+      await draft.loadStyles();
+    });
+
+    tearDown(() => draft.close());
+
+    test('loads the style options from the backend', () {
+      expect(draft.state.styleOptions, contains('Minimal'));
+    });
+
+    test('a different photo drops the tags placed on the old one', () {
+      draft
+        ..setPhoto(_photo)
+        ..addTag(_sweaterTag)
+        ..setPhoto(_photo);
+      expect(draft.state.draft.tags, [_sweaterTag]);
+
+      draft.setPhoto('assets/images/posts/leo.webp');
+      expect(draft.state.draft.tags, isEmpty);
+    });
+
+    test('lists each mentioned brand once', () {
+      draft
+        ..setPhoto(_photo)
+        ..addTag(_sweaterTag)
+        ..addTag(_sweaterTag.copyWithPosition(0.6, 0.7));
+      expect(draft.state.draft.brands, ['ARKET']);
+    });
+
+    test('styles toggle on and off', () {
+      draft
+        ..toggleStyle('Minimal')
+        ..toggleStyle('Casual')
+        ..toggleStyle('Minimal');
+      expect(draft.state.draft.styles, ['Casual']);
+    });
+
+    test('publishing reports the new post', () async {
+      await signIn();
+      draft
+        ..setPhoto(_photo)
+        ..addTag(_sweaterTag);
+      await draft.publish();
+      expect(draft.state.status, PublishStatus.published);
+      expect(draft.state.publishedPostId, isNotNull);
+    });
+
+    test('a refused publish keeps the draft to try again', () async {
+      draft.setPhoto(_photo);
+      await draft.publish();
+      expect(draft.state.status, PublishStatus.failure);
+      expect(
+        draft.state.failure,
+        const PostingFailure(PostingFailureReason.signInRequired),
+      );
+      expect(draft.state.draft.photoPath, _photo);
+    });
+  });
+
+  group('TagSearchCubit', () {
+    test('searches once the user pauses typing', () async {
+      await signIn();
+      final search = TagSearchCubit(
+        SearchProducts(posting),
+        GetRecentTags(posting),
+      );
+      await search.load();
+      expect(search.state.recent, isNotEmpty);
+      expect(search.state.results.length, greaterThan(5));
+
+      search
+        ..setQuery('j')
+        ..setQuery('jea')
+        ..setQuery('jeans zara');
+      await Future<void>.delayed(const Duration(milliseconds: 350));
+      expect(search.state.results.map((p) => p.id), ['p_jeans_vintage_zara']);
+
+      search.toggleCategory('tops');
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      expect(search.state.results, isEmpty);
+      await search.close();
+    });
+
+    test('closing cancels a pending search', () async {
+      final search = TagSearchCubit(
+        SearchProducts(posting),
+        GetRecentTags(posting),
+      )..setQuery('jeans');
+      await search.close();
+      await Future<void>.delayed(const Duration(milliseconds: 350));
+    });
+  });
+}
+
+extension on DraftTag {
+  DraftTag copyWithPosition(double x, double y) => DraftTag(
+    productId: productId,
+    brand: brand,
+    label: label,
+    imagePath: imagePath,
+    x: x,
+    y: y,
+  );
+}

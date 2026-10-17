@@ -33,6 +33,14 @@ abstract final class AppColors {
   static const accentSurface = Color(0x0FFF325B); // 6%
   static const accentBorder = Color(0x33FF325B); // 20%
 
+  // Posting (sampled from Figma 2849:1017) and shared soft surfaces
+  static const surfaceMuted = Color(0xFFF0EDEB); // fields, chips, cards
+  static const surfaceCard = Color(0xFFF2F2F0); // product result cards
+  static const imageBackdrop = Color(0xFFEBECEE); // behind product cut-outs
+  static const chipSelected = Color(0xFFB1ECFF); // the active category chip
+  static const textSubtle = Color(0xFF666173); // hints, unselected pills
+  static const brandRose = Color(0xFFE04159); // "Next", the current step
+
   // Home feed
   static const hairline = Color(0xFFEBEBE8);
   static const navBorder = Color(0xFF424242);

@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../core/l10n/l10n.dart';
 import '../core/theme/app_theme.dart';
 import '../features/post/presentation/cubits/post_engagement_cubit.dart';
+import '../features/posting/presentation/cubits/published_posts_cubit.dart';
 import '../features/wardrobe/presentation/cubits/wardrobe_membership_cubit.dart';
 import 'di/injection.dart';
 import 'router/app_router.dart';
@@ -41,6 +42,7 @@ class _StylperAppState extends State<StylperApp> {
         BlocProvider.value(value: widget.session),
         BlocProvider.value(value: _engagement),
         BlocProvider.value(value: _wardrobe),
+        BlocProvider.value(value: sl<PublishedPostsCubit>()),
       ],
       child: BlocListener<SessionCubit, SessionState>(
         // Likes, saves and wardrobes belong to the user who made them.

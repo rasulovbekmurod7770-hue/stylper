@@ -22,6 +22,15 @@ import '../../features/onboarding/presentation/pages/profile_setup_page.dart';
 import '../../features/onboarding/presentation/pages/style_quiz_page.dart';
 import '../../features/post/presentation/cubits/post_detail_cubit.dart';
 import '../../features/post/presentation/pages/post_detail_page.dart';
+import '../../features/posting/presentation/cubits/media_picker_cubit.dart';
+import '../../features/posting/presentation/cubits/post_draft_cubit.dart';
+import '../../features/posting/presentation/cubits/tag_search_cubit.dart';
+import '../../features/posting/presentation/gallery_thumbnails.dart';
+import '../../features/posting/presentation/pages/media_selection_page.dart';
+import '../../features/posting/presentation/pages/posting_details_page.dart';
+import '../../features/posting/presentation/pages/publish_page.dart';
+import '../../features/posting/presentation/pages/tag_items_page.dart';
+import '../../features/posting/presentation/widgets/discard_guard.dart';
 import '../../features/product/presentation/cubits/product_detail_cubit.dart';
 import '../../features/product/presentation/pages/product_detail_page.dart';
 import '../../features/product/presentation/pages/product_looks_page.dart';
@@ -99,6 +108,48 @@ GoRouter createRouter(SessionCubit session) {
           create: (_) => sl<StyleQuizCubit>()..load(),
           child: const StyleQuizPage(),
         ),
+      ),
+      // Posting: four full-screen steps over the tabs (no tab bar), sharing
+      // one draft. Signed-in users only (guests are sent Home).
+      ShellRoute(
+        builder: (context, state, child) => RepositoryProvider.value(
+          value: sl<GalleryThumbnails>(),
+          child: BlocProvider(
+            create: (_) => sl<PostDraftCubit>()..loadStyles(),
+            child: DiscardGuard(child: child),
+          ),
+        ),
+        routes: [
+          GoRoute(
+            path: AppRoutes.create,
+            builder: (context, state) => BlocProvider(
+              create: (_) => sl<MediaPickerCubit>()..start(),
+              child: const MediaSelectionPage(),
+            ),
+            routes: [
+              GoRoute(
+                path: 'tag',
+                builder: (context, state) => BlocProvider(
+                  create: (_) => sl<TagSearchCubit>()..load(),
+                  child: const TagItemsPage(),
+                ),
+              ),
+              GoRoute(
+                path: 'details',
+                builder: (context, state) => const PostingDetailsPage(),
+              ),
+              GoRoute(
+                path: 'publish',
+                builder: (context, state) => BlocProvider(
+                  // The preview shows who's posting.
+                  create: (_) =>
+                      sl<ProfileCubit>(param1: ProfileRepository.me)..load(),
+                  child: const PublishPage(),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
       StatefulShellRoute.indexedStack(
         // Every in-app screen shows the tab bar. Full-screen flows (posting)
