@@ -291,6 +291,9 @@ class AppLocalizationsUz extends AppLocalizations {
   String get signInToPost => 'Obrazingizni ulashish uchun kiring.';
 
   @override
+  String get signInToFollow => 'Odamlarga obuna boʻlish uchun kiring.';
+
+  @override
   String get errorPostNotFound => 'Bu post endi mavjud emas.';
 
   @override

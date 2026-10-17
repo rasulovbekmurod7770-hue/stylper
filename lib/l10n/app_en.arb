@@ -172,6 +172,7 @@
   "@signInToPost": {
     "description": "Shown to guests who tap New post."
   },
+  "signInToFollow": "Sign in to follow people.",
   "errorPostNotFound": "This post is no longer available.",
   "profileGuestMessage": "You're browsing as a guest.",
   "signOut": "Sign out",

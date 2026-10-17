@@ -11,7 +11,7 @@ import '../../../../core/widgets/screen_top_bar.dart';
 import '../../../../core/widgets/snackbars.dart';
 import '../../../../core/widgets/user_avatar.dart';
 import '../../domain/entities/user_profile.dart';
-import '../cubits/profile_cubit.dart';
+import '../cubits/following_cubit.dart';
 import 'settings_sheet.dart';
 
 /// The pinned bar over a profile ("hero-top" in Figma 2775:3285). Your own
@@ -207,6 +207,11 @@ class _Stats extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     void comingSoon() => context.showMessage(l10n.comingSoon);
+    // Includes a follow made anywhere in the app this session.
+    final followers = context.select(
+      (FollowingCubit cubit) =>
+          cubit.state.of(profile.id, profile.followState).followerCount,
+    );
 
     Widget stat(int count, String label, {VoidCallback? onTap}) =>
         GestureDetector(
@@ -240,8 +245,8 @@ class _Stats extends StatelessWidget {
         stat(profile.postCount, l10n.profilePostsLabel(profile.postCount)),
         dot,
         stat(
-          profile.followerCount,
-          l10n.profileFollowersLabel(profile.followerCount),
+          followers,
+          l10n.profileFollowersLabel(followers),
           onTap: comingSoon,
         ),
         dot,
@@ -266,6 +271,10 @@ class _Actions extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     void comingSoon() => context.showMessage(l10n.comingSoon);
+    final following = context.select(
+      (FollowingCubit cubit) =>
+          cubit.state.of(profile.id, profile.followState).following,
+    );
 
     final (first, second) = profile.isMe
         ? (
@@ -282,13 +291,17 @@ class _Actions extends StatelessWidget {
           )
         : (
             ProfileButton(
-              label: profile.followedByMe
+              label: following
                   ? l10n.profileFollowingButton
                   : l10n.profileFollow,
-              filled: !profile.followedByMe,
+              filled: !following,
               onTap: () => runSignedIn(
                 context,
-                context.read<ProfileCubit>().toggleFollow,
+                () => context.read<FollowingCubit>().toggle(
+                  profile.id,
+                  profile.followState,
+                ),
+                message: l10n.signInToFollow,
               ),
             ),
             ProfileButton(

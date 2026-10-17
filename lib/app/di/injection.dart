@@ -35,6 +35,7 @@ import '../../features/profile/data/datasources/profile_remote_data_source.dart'
 import '../../features/profile/data/repositories/profile_repository_impl.dart';
 import '../../features/profile/domain/repositories/profile_repository.dart';
 import '../../features/profile/domain/usecases/profile_usecases.dart';
+import '../../features/profile/presentation/cubits/following_cubit.dart';
 import '../../features/profile/presentation/cubits/profile_cubit.dart';
 import '../../features/profile/presentation/cubits/saved_posts_cubit.dart';
 import '../../features/wardrobe/data/datasources/wardrobe_remote_data_source.dart';
@@ -189,8 +190,10 @@ void configureDependencies({
       (productId, _) => ProductDetailCubit(sl(), productId: productId),
     )
     ..registerFactoryParam<ProfileCubit, String, void>(
-      (userId, _) => ProfileCubit(sl(), sl(), userId: userId),
+      (userId, _) => ProfileCubit(sl(), userId: userId),
     )
+    // App-wide, so a post's Follow and the author's profile agree.
+    ..registerLazySingleton(() => FollowingCubit(sl()))
     ..registerFactory(() => SavedPostsCubit(sl()))
     // App-wide, so every "save to wardrobe" control agrees.
     ..registerLazySingleton(() => WardrobeMembershipCubit(sl()))

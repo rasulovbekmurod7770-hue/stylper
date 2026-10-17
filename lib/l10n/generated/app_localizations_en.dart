@@ -291,6 +291,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signInToPost => 'Sign in to share your look.';
 
   @override
+  String get signInToFollow => 'Sign in to follow people.';
+
+  @override
   String get errorPostNotFound => 'This post is no longer available.';
 
   @override

@@ -598,6 +598,12 @@ abstract class AppLocalizations {
   /// **'Sign in to share your look.'**
   String get signInToPost;
 
+  /// No description provided for @signInToFollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to follow people.'**
+  String get signInToFollow;
+
   /// No description provided for @errorPostNotFound.
   ///
   /// In en, this message translates to:

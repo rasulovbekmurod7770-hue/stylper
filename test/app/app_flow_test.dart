@@ -448,4 +448,49 @@ void main() {
     expect(find.byType(MediaSelectionPage), findsNothing);
     expect(find.text('Sign in to share your look.'), findsOneWidget);
   });
+
+  testWidgets('follow a post\'s author; their profile agrees, and back', (
+    tester,
+  ) async {
+    await signInAsDemo(tester);
+    await tapText(tester, 'Amin');
+    expect(find.byType(PostDetailPage), findsOneWidget);
+
+    await tester.tap(find.text('Follow'));
+    await tester.pumpAndSettle();
+    expect(find.text('Following'), findsOneWidget);
+
+    // Their profile shows it, with one more follower (720 → 721).
+    await tester.tap(find.text('Amin').first);
+    await tester.pumpAndSettle();
+    expect(find.byType(ProfilePage), findsOneWidget);
+    expect(find.text('Following'), findsOneWidget);
+    expect(find.textContaining('721', findRichText: true), findsOneWidget);
+
+    // Unfollow there; the post agrees when you go back.
+    await tester.tap(find.text('Following'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('720', findRichText: true), findsOneWidget);
+    await tester.tap(find.bySemanticsLabel('Back'));
+    await tester.pumpAndSettle();
+    expect(find.byType(PostDetailPage), findsOneWidget);
+    expect(find.text('Follow'), findsOneWidget);
+  });
+
+  testWidgets('your own post has no Follow button', (tester) async {
+    await signInAsDemo(tester);
+    await openTab(tester, 'Profile');
+    final ownPost = imagesOf(AppImages.postJohnCoat).first.hitTestable();
+    await tester.scrollUntilVisible(
+      ownPost,
+      100,
+      scrollable: find.byType(Scrollable).hitTestable().first,
+    );
+    await tester.tap(ownPost);
+    await tester.pumpAndSettle();
+
+    expect(find.byType(PostDetailPage), findsOneWidget);
+    expect(find.text('Follow'), findsNothing);
+    expect(find.text('Following'), findsNothing);
+  });
 }

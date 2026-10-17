@@ -13,6 +13,9 @@ class PostAuthor extends Equatable {
     required this.name,
     required this.handle,
     this.avatarPath,
+    this.followerCount = 0,
+    this.followedByMe = false,
+    this.isMe = false,
   });
 
   final String id;
@@ -24,8 +27,24 @@ class PostAuthor extends Equatable {
   /// Null when the user has no photo; the app shows initials.
   final String? avatarPath;
 
+  /// Only an opened post carries these (for its Follow button); feed cards
+  /// leave the defaults.
+  final int followerCount;
+  final bool followedByMe;
+
+  /// The signed-in viewer wrote the post: nobody to follow.
+  final bool isMe;
+
   @override
-  List<Object?> get props => [id, name, handle, avatarPath];
+  List<Object?> get props => [
+    id,
+    name,
+    handle,
+    avatarPath,
+    followerCount,
+    followedByMe,
+    isMe,
+  ];
 }
 
 /// The signed-in viewer's like / save state for a post, with its like count.

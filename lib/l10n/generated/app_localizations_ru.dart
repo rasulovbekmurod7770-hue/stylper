@@ -293,6 +293,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get signInToPost => 'Войдите, чтобы поделиться своим образом.';
 
   @override
+  String get signInToFollow => 'Войдите, чтобы подписываться на людей.';
+
+  @override
   String get errorPostNotFound => 'Этот пост больше недоступен.';
 
   @override

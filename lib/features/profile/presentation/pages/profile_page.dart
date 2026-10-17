@@ -7,7 +7,6 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/load_error_view.dart';
 import '../../../../core/widgets/screen_top_bar.dart';
-import '../../../../core/widgets/snackbars.dart';
 import '../../../../core/widgets/stylper_wordmark.dart';
 import '../../../post/presentation/cubits/post_engagement_cubit.dart';
 import '../../../posting/presentation/cubits/published_posts_cubit.dart';
@@ -32,26 +31,16 @@ class ProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<ProfileCubit, ProfileState>(
-          listenWhen: (previous, current) =>
-              current.followFailureCount != previous.followFailureCount,
-          listener: (context, state) =>
-              context.showMessage(state.failure!.message(l10n)),
-        ),
-        // Your profile stays alive under other tabs; show a post you just
-        // published.
-        BlocListener<PublishedPostsCubit, String?>(
-          listener: (context, _) {
-            final profile = context.read<ProfileCubit>();
-            final isMe =
-                profile.userId == ProfileRepository.me ||
-                (profile.state.profile?.isMe ?? false);
-            if (isMe) profile.refresh();
-          },
-        ),
-      ],
+    // Your profile stays alive under other tabs; show a post you just
+    // published.
+    return BlocListener<PublishedPostsCubit, String?>(
+      listener: (context, _) {
+        final profile = context.read<ProfileCubit>();
+        final isMe =
+            profile.userId == ProfileRepository.me ||
+            (profile.state.profile?.isMe ?? false);
+        if (isMe) profile.refresh();
+      },
       child: Scaffold(
         body: SafeArea(
           bottom: false,

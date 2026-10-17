@@ -42,20 +42,9 @@ class UserProfile extends Equatable {
   /// Newest first; the first three are "My style".
   final List<PostPreview> recentPosts;
 
-  UserProfile copyWith({int? followerCount, bool? followedByMe}) => UserProfile(
-    id: id,
-    name: name,
-    handle: handle,
-    avatarPath: avatarPath,
-    bio: bio,
-    styles: styles,
-    postCount: postCount,
-    followerCount: followerCount ?? this.followerCount,
-    followingCount: followingCount,
-    isMe: isMe,
-    followedByMe: followedByMe ?? this.followedByMe,
-    recentPosts: recentPosts,
-  );
+  /// Whether you follow them, and their follower count, as loaded.
+  FollowState get followState =>
+      FollowState(followerCount: followerCount, following: followedByMe);
 
   @override
   List<Object?> get props => [

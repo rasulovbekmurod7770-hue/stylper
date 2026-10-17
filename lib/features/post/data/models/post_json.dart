@@ -22,6 +22,9 @@ abstract final class PostJson {
     name: json['name']! as String,
     handle: json['handle']! as String,
     avatarPath: json['avatar'] as String?,
+    followerCount: json['followers'] as int? ?? 0,
+    followedByMe: json['followedByMe'] as bool? ?? false,
+    isMe: json['isMe'] as bool? ?? false,
   );
 
   /// Reads `{likes, likedByMe?, savedByMe?}` (missing flags mean "no").

@@ -61,6 +61,7 @@ import 'package:stylper/features/product/presentation/pages/product_detail_page.
 import 'package:stylper/features/profile/data/models/profile_json.dart';
 import 'package:stylper/features/profile/domain/repositories/profile_repository.dart';
 import 'package:stylper/features/profile/domain/usecases/profile_usecases.dart';
+import 'package:stylper/features/profile/presentation/cubits/following_cubit.dart';
 import 'package:stylper/features/profile/presentation/cubits/profile_cubit.dart';
 import 'package:stylper/features/profile/presentation/cubits/saved_posts_cubit.dart';
 import 'package:stylper/features/profile/presentation/pages/profile_page.dart';
@@ -155,11 +156,7 @@ ProfileCubit _ownProfileCubit() {
       ),
     );
   });
-  return ProfileCubit(
-    getProfile,
-    _MockSetFollowing(),
-    userId: ProfileRepository.me,
-  )..load();
+  return ProfileCubit(getProfile, userId: ProfileRepository.me)..load();
 }
 
 /// John's posting endpoints on the fake backend, signed in on first use.
@@ -261,8 +258,8 @@ class _MockSessionCubit extends MockCubit<SessionState>
     implements SessionCubit {}
 
 /// The app-wide cubits that screens read (provided above the router in the
-/// app): a guest session, the like / save state, wardrobe membership and
-/// newly published posts.
+/// app): a guest session, the like / save state, wardrobe membership,
+/// newly published posts and follows.
 Widget _withAppState(Widget child) {
   final session = _MockSessionCubit();
   whenListen(
@@ -281,6 +278,7 @@ Widget _withAppState(Widget child) {
         create: (_) => WardrobeMembershipCubit(_MockSetInWardrobe()),
       ),
       BlocProvider(create: (_) => PublishedPostsCubit()),
+      BlocProvider(create: (_) => FollowingCubit(_MockSetFollowing())),
     ],
     child: child,
   );

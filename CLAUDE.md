@@ -39,10 +39,12 @@ it", local brands first, and trust (nothing that misleads).
   reference patterns.
 - Posts are shared across features: `features/post` owns `Post`,
   `PostPreview`, `PostAuthor`, `PostGrid`. Likes and saves go through the
-  app-wide `PostEngagementCubit`, and "save to wardrobe" through the app-wide
-  `WardrobeMembershipCubit` — both optimistic, rolled back on failure, reset
-  when the user changes — so every screen agrees; guests get the sign-in
-  prompt (`runSignedIn`) instead.
+  app-wide `PostEngagementCubit`, "save to wardrobe" through the app-wide
+  `WardrobeMembershipCubit`, and follows through the app-wide
+  `FollowingCubit` (features/profile; the post's author row has a Follow
+  pill, hidden on your own posts) — all optimistic, rolled back on failure,
+  reset when the user changes, failures shown once by `AppShell` — so every
+  screen agrees; guests get the sign-in prompt (`runSignedIn`) instead.
 - Detail screens (post, product, product looks, user profile) open **inside
   the current tab** with `context.openPost / openProduct / openUser`
   (`lib/core/router/tab_navigation.dart`), so each tab keeps its own back

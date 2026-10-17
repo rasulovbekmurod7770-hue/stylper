@@ -13,6 +13,8 @@ import '../../../../core/router/tab_navigation.dart';
 import '../../../../core/widgets/user_avatar.dart';
 import '../../../../core/widgets/load_error_view.dart';
 import '../../../../core/widgets/snackbars.dart';
+import '../../../profile/domain/entities/user_profile.dart';
+import '../../../profile/presentation/widgets/follow_button.dart';
 import '../../domain/entities/post.dart';
 import '../cubits/post_detail_cubit.dart';
 import '../cubits/post_engagement_cubit.dart';
@@ -141,8 +143,9 @@ class _PostView extends StatelessWidget {
   }
 }
 
-/// "User-Row" (52px): avatar, name (and where the photo was taken) and a
-/// "more" button.
+/// "User-Row" (52px): avatar, name (and where the photo was taken), Follow
+/// (not on your own posts — people gather followers through their looks)
+/// and a "more" button.
 class _AuthorRow extends StatelessWidget {
   const _AuthorRow({required this.author, this.location});
 
@@ -196,6 +199,17 @@ class _AuthorRow extends StatelessWidget {
                 ),
               ),
             ),
+            if (!author.isMe) ...[
+              const SizedBox(width: 12),
+              FollowButton(
+                userId: author.id,
+                loaded: FollowState(
+                  followerCount: author.followerCount,
+                  following: author.followedByMe,
+                ),
+              ),
+              const SizedBox(width: 8),
+            ],
             Semantics(
               button: true,
               label: l10n.postMore,

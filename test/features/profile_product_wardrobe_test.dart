@@ -5,6 +5,8 @@ import 'package:fpdart/fpdart.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:stylper/core/fake_backend/fake_backend.dart';
 import 'package:stylper/core/network/auth_token_store.dart';
+import 'package:stylper/features/post/data/models/post_json.dart';
+import 'package:stylper/features/post/domain/entities/post.dart';
 import 'package:stylper/features/product/data/datasources/product_remote_data_source.dart';
 import 'package:stylper/features/product/data/repositories/product_repository_impl.dart';
 import 'package:stylper/features/product/domain/failures/product_failure.dart';
@@ -14,14 +16,12 @@ import 'package:stylper/features/profile/domain/entities/user_profile.dart';
 import 'package:stylper/features/profile/domain/failures/profile_failure.dart';
 import 'package:stylper/features/profile/domain/repositories/profile_repository.dart';
 import 'package:stylper/features/profile/domain/usecases/profile_usecases.dart';
-import 'package:stylper/features/profile/presentation/cubits/profile_cubit.dart';
+import 'package:stylper/features/profile/presentation/cubits/following_cubit.dart';
 import 'package:stylper/features/wardrobe/data/datasources/wardrobe_remote_data_source.dart';
 import 'package:stylper/features/wardrobe/data/repositories/wardrobe_repository_impl.dart';
 import 'package:stylper/features/wardrobe/domain/failures/wardrobe_failure.dart';
 import 'package:stylper/features/wardrobe/domain/usecases/wardrobe_usecases.dart';
 import 'package:stylper/features/wardrobe/presentation/cubits/wardrobe_membership_cubit.dart';
-
-class _MockGetProfile extends Mock implements GetProfile {}
 
 class _MockSetFollowing extends Mock implements SetFollowing {}
 
@@ -143,6 +143,29 @@ void main() {
       );
     });
 
+    test('an opened post says whether you follow its author', () async {
+      Future<PostAuthor> authorOf(String postId) async =>
+          PostJson.post(await backend.post(postId, token: await tokens.read()))
+              .author;
+
+      // Guests see Follow (and are asked to sign in when they tap it).
+      var leo = await authorOf('post_utility_chic');
+      expect(leo.isMe, isFalse);
+      expect(leo.followedByMe, isFalse);
+
+      await signIn();
+      await profiles.setFollowing('a_leo', following: true);
+      leo = await authorOf('post_utility_chic');
+      expect(leo.followedByMe, isTrue);
+      expect(
+        leo.followerCount,
+        right(await profiles.getProfile('a_leo')).followerCount,
+      );
+
+      // Your own post has nobody to follow.
+      expect((await authorOf('post_john_coat')).isMe, isTrue);
+    });
+
     test('you cannot follow yourself; guests must sign in', () async {
       expect(
         (await profiles.setFollowing(
@@ -211,44 +234,74 @@ void main() {
     });
   });
 
-  group('ProfileCubit', () {
-    const amin = UserProfile(
-      id: 'a_amin',
-      name: 'Amin',
-      handle: 'amin',
-      postCount: 1,
-      followerCount: 720,
-      followingCount: 133,
-      isMe: false,
-    );
-    late _MockGetProfile getProfile;
+  group('FollowingCubit', () {
+    const amin = FollowState(followerCount: 720, following: false);
     late _MockSetFollowing setFollowing;
 
     setUpAll(
       () => registerFallbackValue(const FollowToggle('', following: true)),
     );
-    setUp(() {
-      getProfile = _MockGetProfile();
-      setFollowing = _MockSetFollowing();
-      when(() => getProfile(any())).thenAnswer((_) async => const Right(amin));
-    });
+    setUp(() => setFollowing = _MockSetFollowing());
 
     test('a follow shows at once and a refusal rolls it back', () async {
       final response = Completer<Either<ProfileFailure, FollowState>>();
       when(() => setFollowing(any())).thenAnswer((_) => response.future);
-      final cubit = ProfileCubit(getProfile, setFollowing, userId: 'a_amin');
-      await cubit.load();
+      final cubit = FollowingCubit(setFollowing);
 
-      final done = cubit.toggleFollow();
-      expect(cubit.state.profile!.followedByMe, isTrue);
-      expect(cubit.state.profile!.followerCount, 721);
+      final done = cubit.toggle('a_amin', amin);
+      expect(
+        cubit.state.of('a_amin', amin),
+        const FollowState(followerCount: 721, following: true),
+      );
+      // A second tap while the first is pending does nothing.
+      await cubit.toggle('a_amin', amin);
+      verify(() => setFollowing(any())).called(1);
 
       response.complete(
         const Left(ProfileFailure(ProfileFailureReason.network)),
       );
       await done;
-      expect(cubit.state.profile, amin);
-      expect(cubit.state.followFailureCount, 1);
+      expect(cubit.state.of('a_amin', amin), amin);
+      expect(cubit.state.failureCount, 1);
+      await cubit.close();
+    });
+
+    test('the server\'s answer wins, and unfollowing undoes it', () async {
+      when(() => setFollowing(any())).thenAnswer(
+        (invocation) async => Right(
+          (invocation.positionalArguments.single as FollowToggle).following
+              ? const FollowState(followerCount: 725, following: true)
+              : const FollowState(followerCount: 724, following: false),
+        ),
+      );
+      final cubit = FollowingCubit(setFollowing);
+
+      await cubit.toggle('a_amin', amin);
+      expect(
+        cubit.state.of('a_amin', amin),
+        const FollowState(followerCount: 725, following: true),
+      );
+      // Another screen still holding the old loaded state agrees.
+      await cubit.toggle('a_amin', amin);
+      expect(
+        cubit.state.of('a_amin', amin),
+        const FollowState(followerCount: 724, following: false),
+      );
+      await cubit.close();
+    });
+
+    test('a reply that lands after another user signs in is dropped', () async {
+      final response = Completer<Either<ProfileFailure, FollowState>>();
+      when(() => setFollowing(any())).thenAnswer((_) => response.future);
+      final cubit = FollowingCubit(setFollowing);
+
+      final done = cubit.toggle('a_amin', amin);
+      cubit.reset();
+      response.complete(
+        const Right(FollowState(followerCount: 721, following: true)),
+      );
+      await done;
+      expect(cubit.state.of('a_amin', amin), amin);
       await cubit.close();
     });
   });

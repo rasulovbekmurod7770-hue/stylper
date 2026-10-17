@@ -7,6 +7,8 @@ import '../../core/router/app_routes.dart';
 import '../../core/widgets/snackbars.dart';
 import '../../features/post/presentation/cubits/post_engagement_cubit.dart';
 import '../../features/post/presentation/post_failure_message.dart';
+import '../../features/profile/presentation/cubits/following_cubit.dart';
+import '../../features/profile/presentation/profile_failure_message.dart';
 import '../../features/wardrobe/presentation/cubits/wardrobe_membership_cubit.dart';
 import '../../features/wardrobe/presentation/wardrobe_failure_message.dart';
 import '../session/sign_in_prompt.dart';
@@ -32,7 +34,8 @@ class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Likes, saves and wardrobe changes the API refused (rolled back).
+    // Likes, saves, wardrobe changes and follows the API refused (rolled
+    // back).
     return MultiBlocListener(
       listeners: [
         BlocListener<PostEngagementCubit, PostEngagementState>(
@@ -42,6 +45,12 @@ class AppShell extends StatelessWidget {
               context.showMessage(state.failure!.message(context.l10n)),
         ),
         BlocListener<WardrobeMembershipCubit, WardrobeMembershipState>(
+          listenWhen: (previous, current) =>
+              current.failureCount != previous.failureCount,
+          listener: (context, state) =>
+              context.showMessage(state.failure!.message(context.l10n)),
+        ),
+        BlocListener<FollowingCubit, FollowingState>(
           listenWhen: (previous, current) =>
               current.failureCount != previous.failureCount,
           listener: (context, state) =>

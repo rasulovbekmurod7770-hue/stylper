@@ -30,4 +30,14 @@ void main() {
     await tester.pump();
     expect(find.text('Sign in to like and save posts.'), findsOneWidget);
   });
+
+  testWidgets('guests are asked to sign in before following', (tester) async {
+    final post = screenFixtures().firstWhere((f) => f.name == 'post');
+    await pumpScreen(tester, post.build(), precacheImages: post.images);
+
+    await tester.tap(find.text('Follow'));
+    await tester.pump();
+    expect(find.text('Sign in to follow people.'), findsOneWidget);
+    expect(find.text('Following'), findsNothing);
+  });
 }

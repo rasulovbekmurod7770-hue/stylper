@@ -245,7 +245,9 @@ class FakeBackend {
   }
 
   /// GET /posts/:id → `{id, image, author, caption?, location?, likes,
-  /// comments, likedByMe, savedByMe, styles, products, similar}`. Public. Each product carries
+  /// comments, likedByMe, savedByMe, styles, products, similar}`. Public.
+  /// `author` is `{id, name, handle, avatar?, followers, followedByMe,
+  /// isMe}`, so the post can offer Follow. Each product carries
   /// `{id, name, shortName, brand, price: {amount, currency}, image,
   /// styledCount, tag: {x, y}}`, the tag as fractions of the photo.
   Future<Map<String, Object?>> post(String id, {String? token}) async {
@@ -256,8 +258,14 @@ class FakeBackend {
 
   Map<String, Object?> _postDetail(String id, String? viewer) {
     final post = _posts[id]!;
+    final authorId = post['author']! as String;
     return {
       ..._postSummary(id, viewer),
+      'author': {
+        ..._author(authorId),
+        ..._followCounts(authorId, viewer),
+        'isMe': viewer == authorId,
+      },
       'products': [
         for (final tag in post['products']! as List<Object?>)
           _taggedProduct(tag! as Map<String, Object?>, viewer),
