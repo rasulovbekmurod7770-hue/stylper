@@ -694,4 +694,42 @@ class AppLocalizationsRu extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get searchHint => 'Поиск брендов и людей';
+
+  @override
+  String get searchBrandsOnStylper => 'Бренды на Stylper';
+
+  @override
+  String get searchBrands => 'Бренды';
+
+  @override
+  String get searchPeople => 'Люди';
+
+  @override
+  String get searchLocal => 'Местный';
+
+  @override
+  String get searchVerified => 'Официальный бренд';
+
+  @override
+  String get searchClear => 'Очистить поиск';
+
+  @override
+  String searchNoResults(String query) {
+    return 'По запросу «$query» нет брендов и людей';
+  }
+
+  @override
+  String searchBrandItems(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count товаров',
+      few: '$count товара',
+      one: '$count товар',
+    );
+    return '$_temp0';
+  }
 }

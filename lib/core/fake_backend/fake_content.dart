@@ -19,14 +19,17 @@ abstract final class FakeContent {
     'Smart Casual',
   ];
 
-  /// Brands (and other businesses) that sell the catalog products.
-  static const brands = <String, String>{
-    'b_cos': 'COS',
-    'b_zara': 'ZARA',
-    'b_uniqlo': 'UNIQLO',
-    'b_arket': 'ARKET',
-    'b_kink': 'Kink',
-    'b_terra_pro': 'Terra Pro',
+  /// Brands (and other businesses) that sell the catalog products. `handle`
+  /// is the brand's username; `local` marks Uzbek brands (shown first);
+  /// `verified` an official showroom run by the brand. No logos yet (the app
+  /// shows a monogram).
+  static const brands = <String, Map<String, Object?>>{
+    'b_cos': {'name': 'COS', 'handle': 'cos', 'local': false},
+    'b_zara': {'name': 'ZARA', 'handle': 'zara', 'local': false},
+    'b_uniqlo': {'name': 'UNIQLO', 'handle': 'uniqlo', 'local': false},
+    'b_arket': {'name': 'ARKET', 'handle': 'arket', 'local': false},
+    'b_kink': {'name': 'Kink', 'handle': 'kink', 'local': true},
+    'b_terra_pro': {'name': 'Terra Pro', 'handle': 'terra_pro', 'local': true},
   };
 
   /// Public profiles. `a_john` and `a_katty` are also sign-in accounts (see
@@ -54,7 +57,7 @@ abstract final class FakeContent {
     },
     'a_mina': {
       'name': 'Mina Cho',
-      'handle': 'fozil',
+      'handle': 'mina',
       'avatar': AppImages.homeAvatarMina,
       'bio': 'Sneakers first, outfit second',
       'styles': ['Casual', 'Street'],

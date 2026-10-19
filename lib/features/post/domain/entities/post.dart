@@ -7,6 +7,7 @@ export '../../../../core/domain/money.dart';
 // Image fields hold a bundled asset path for now; an image URL once posts
 // come from the API.
 
+/// A person on Stylper: a post's author, or a person in search results.
 class PostAuthor extends Equatable {
   const PostAuthor({
     required this.id,
@@ -27,8 +28,8 @@ class PostAuthor extends Equatable {
   /// Null when the user has no photo; the app shows initials.
   final String? avatarPath;
 
-  /// Only an opened post carries these (for its Follow button); feed cards
-  /// leave the defaults.
+  /// Only an opened post and search results carry these (for the Follow
+  /// button); feed cards leave the defaults.
   final int followerCount;
   final bool followedByMe;
 

@@ -83,6 +83,8 @@ it", local brands first, and trust (nothing that misleads).
 - Every user-facing string goes into all three of `lib/l10n/app_{en,ru,uz}.arb`
   (Uzbek is Latin script, with `ʻ`), then `flutter gen-l10n`. Content from the
   backend (names, captions, tags) isn't localized.
+- Usernames (`handle`) are unique across people and brands; seed data must
+  keep them so, since Search finds accounts by username.
 - Main tabs are a `StatefulShellRoute` (`lib/app/router/app_router.dart`);
   `MainTab` order equals branch order. Guests may open any main tab
   (`AppRoutes.isMainRoute`); routing is driven by `SessionCubit` + `redirectFor`.
@@ -108,8 +110,13 @@ it", local brands first, and trust (nothing that misleads).
   `2820:198`, publish `2820:253`) from the section screenshot
   `design/figma/screens/08_posting_2849-1017.png` (per-step crops `08a`–`08d`).
   Not in Figma, built from the same pieces: product "See all looks",
-  wardrobe category, settings sheet. Next in the flow: brand profile
-  `2856:1809`, brand showroom `2856:1919`.
+  wardrobe category, settings sheet. **Search** (the tab) has no Figma frame:
+  it follows the Search screen of the claude.ai "Stylper Prototype"
+  artifact (https://claude.ai/artifact/QnuM1JWAdTM5BZqDZD9mvb), finding
+  brands and people by username or name (`GET /search`); its Styles chips
+  were left out (nothing to open). Brand results show "Coming soon" until
+  the brand profile exists. Next in the flow: brand profile `2856:1809`,
+  brand showroom `2856:1919`.
 - Controls whose screens don't exist yet show "Coming soon" — never leave a
   tappable-looking control dead.
 - Fonts (the user's decision): **Poppins everywhere**, through the shared

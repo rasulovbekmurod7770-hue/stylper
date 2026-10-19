@@ -605,6 +605,104 @@ class FakeBackend {
         {'id': id, ...FakeContent.ownItems[id]!},
   ];
 
+  /// GET /search/discover → `{city, brands, trending}`: what Search shows
+  /// before anything is typed — every brand (local brands first) and the
+  /// trending looks as post previews. Public.
+  Future<Map<String, Object?>> searchDiscover() async {
+    await _delay();
+    final brands = FakeContent.brands.keys.toList()
+      ..sort((a, b) => _localFirst(a) - _localFirst(b));
+    return {
+      'city': FakeContent.city,
+      'brands': [for (final id in brands) _brandSummary(id)],
+      'trending': [for (final id in FakeContent.trending) _postPreview(id)],
+    };
+  }
+
+  /// GET /search?q= → `{people, brands}`, at most 20 of each. Public.
+  /// Matches usernames and names, ignoring case and a leading `@`: an exact
+  /// username first, then usernames starting with the query, then names
+  /// with a word starting with it, then anything containing it; among
+  /// equals, local brands and then more-followed people first. People are
+  /// `{id, name, handle, avatar?, followers, followedByMe, isMe}` (for their
+  /// Follow button); brands `{id, name, handle, logo?, local, verified,
+  /// products}`, `products` being how many catalog items they sell.
+  Future<Map<String, Object?>> search(String query, {String? token}) async {
+    await _delay();
+    final q = query.trim().toLowerCase().replaceFirst(RegExp('^@'), '');
+    if (q.isEmpty) return {'people': const [], 'brands': const []};
+    final viewer = _tokens[token];
+
+    // Lower is better; null means no match.
+    int? rank(String handle, String name) {
+      handle = handle.toLowerCase();
+      name = name.toLowerCase();
+      if (handle == q) return 0;
+      if (handle.startsWith(q)) return 1;
+      if (name.startsWith(q) || name.contains(' $q')) return 2;
+      if (handle.contains(q) || name.contains(q)) return 3;
+      return null;
+    }
+
+    final people =
+        [
+          for (final id in {..._profiles.keys, ..._users.keys})
+            if (_profileOf(id) case final profile?
+                when profile['handle'] != null)
+              if (rank(profile['handle']! as String, profile['name']! as String)
+                  case final r?)
+                (id: id, rank: r, followers: _followCounts(id, viewer)),
+        ]..sort(
+          (a, b) => a.rank != b.rank
+              ? a.rank - b.rank
+              : (b.followers['followers']! as int) -
+                    (a.followers['followers']! as int),
+        );
+    final brands =
+        [
+          for (final MapEntry(key: id, value: brand)
+              in FakeContent.brands.entries)
+            if (rank(brand['handle']! as String, brand['name']! as String)
+                case final r?)
+              (id: id, rank: r),
+        ]..sort(
+          (a, b) => a.rank != b.rank
+              ? a.rank - b.rank
+              : _localFirst(a.id) - _localFirst(b.id),
+        );
+
+    return {
+      'people': [
+        for (final person in people.take(20))
+          {
+            ..._author(person.id),
+            ...person.followers,
+            'isMe': viewer == person.id,
+          },
+      ],
+      'brands': [for (final brand in brands.take(20)) _brandSummary(brand.id)],
+    };
+  }
+
+  int _localFirst(String brandId) =>
+      FakeContent.brands[brandId]!['local']! as bool ? 0 : 1;
+
+  Map<String, Object?> _brandSummary(String id) {
+    final brand = FakeContent.brands[id]!;
+    return {
+      'id': id,
+      'name': brand['name'],
+      'handle': brand['handle'],
+      'logo': brand['logo'],
+      'local': brand['local'],
+      // Every brand on Stylper is an official showroom for now.
+      'verified': true,
+      'products': FakeContent.products.values
+          .where((product) => product['brandId'] == id)
+          .length,
+    };
+  }
+
   /// GET /styles → `{styles}`: every style a post can be tagged with.
   Future<Map<String, Object?>> postStyles() async {
     await _delay();

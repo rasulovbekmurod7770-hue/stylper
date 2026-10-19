@@ -686,4 +686,40 @@ class AppLocalizationsUz extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get searchHint => 'Brendlar va odamlarni qidiring';
+
+  @override
+  String get searchBrandsOnStylper => 'Stylperdagi brendlar';
+
+  @override
+  String get searchBrands => 'Brendlar';
+
+  @override
+  String get searchPeople => 'Odamlar';
+
+  @override
+  String get searchLocal => 'Mahalliy';
+
+  @override
+  String get searchVerified => 'Rasmiy brend';
+
+  @override
+  String get searchClear => 'Qidiruvni tozalash';
+
+  @override
+  String searchNoResults(String query) {
+    return '“$query” boʻyicha brend yoki odam topilmadi';
+  }
+
+  @override
+  String searchBrandItems(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ta mahsulot',
+    );
+    return '$_temp0';
+  }
 }

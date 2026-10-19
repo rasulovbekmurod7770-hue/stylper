@@ -688,4 +688,41 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get searchHint => 'Search brands and people';
+
+  @override
+  String get searchBrandsOnStylper => 'Brands on Stylper';
+
+  @override
+  String get searchBrands => 'Brands';
+
+  @override
+  String get searchPeople => 'People';
+
+  @override
+  String get searchLocal => 'Local';
+
+  @override
+  String get searchVerified => 'Official brand';
+
+  @override
+  String get searchClear => 'Clear search';
+
+  @override
+  String searchNoResults(String query) {
+    return 'No brands or people match “$query”';
+  }
+
+  @override
+  String searchBrandItems(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
 }

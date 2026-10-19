@@ -66,6 +66,11 @@ import 'package:stylper/features/profile/presentation/cubits/profile_cubit.dart'
 import 'package:stylper/features/profile/presentation/cubits/saved_posts_cubit.dart';
 import 'package:stylper/features/profile/presentation/pages/profile_page.dart';
 import 'package:stylper/features/profile/presentation/widgets/profile_sections.dart';
+import 'package:stylper/features/search/data/datasources/search_remote_data_source.dart';
+import 'package:stylper/features/search/data/repositories/search_repository_impl.dart';
+import 'package:stylper/features/search/domain/usecases/search_usecases.dart';
+import 'package:stylper/features/search/presentation/cubits/search_cubit.dart';
+import 'package:stylper/features/search/presentation/pages/search_page.dart';
 import 'package:stylper/features/wardrobe/data/models/wardrobe_json.dart';
 import 'package:stylper/features/wardrobe/domain/usecases/wardrobe_usecases.dart';
 import 'package:stylper/features/wardrobe/presentation/cubits/wardrobe_cubit.dart';
@@ -249,6 +254,41 @@ Widget _posting(Widget page, {required int step}) {
       ),
     ),
   );
+}
+
+/// The Search tab on the fake backend, as a guest.
+Widget _search() {
+  final repository = SearchRepositoryImpl(
+    remote: FakeSearchRemoteDataSource(
+      FakeBackend(latency: Duration.zero),
+      InMemoryAuthTokenStore(),
+    ),
+  );
+  return _inShell(
+    BlocProvider(
+      create: (_) => SearchCubit(
+        GetSearchDiscovery(repository),
+        SearchBrandsAndPeople(repository),
+      )..loadDiscovery(),
+      child: const SearchPage(),
+    ),
+    tab: MainTab.search,
+  );
+}
+
+/// Types [query] into Search and waits for the results; [keyboard] is the
+/// on-screen keyboard's height, if it's up.
+Future<void> _typeSearch(
+  WidgetTester tester,
+  String query, {
+  double keyboard = 0,
+}) async {
+  await tester.enterText(find.byType(TextField), query);
+  if (keyboard == 0) FocusManager.instance.primaryFocus?.unfocus();
+  await tester.pump(SearchCubit.debounce + const Duration(milliseconds: 50));
+  if (keyboard > 0) tester.view.viewInsets = FakeViewPadding(bottom: keyboard);
+  await settleState(tester);
+  await settleAssets(tester);
 }
 
 /// Every content photo, for screens that show many.
@@ -540,6 +580,19 @@ List<ScreenFixture> screenFixtures() {
         );
       },
       images: _allContentImages,
+    ),
+    // Not in Figma: the claude.ai prototype's Search screen. Before typing,
+    // then "k" (brands Kink and ARKET, people katty_miller and zokir).
+    ScreenFixture(name: 'search', build: _search, images: _allContentImages),
+    ScreenFixture(
+      name: 'search_results',
+      build: _search,
+      fillIn: (tester) => _typeSearch(tester, 'k'),
+    ),
+    ScreenFixture(
+      name: 'search_keyboard',
+      build: _search,
+      fillIn: (tester) => _typeSearch(tester, 'k', keyboard: 300),
     ),
     // Figma "Posting" (2849:1017), steps 1–4, and the item search.
     ScreenFixture(

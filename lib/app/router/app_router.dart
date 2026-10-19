@@ -38,6 +38,8 @@ import '../../features/profile/domain/repositories/profile_repository.dart';
 import '../../features/profile/presentation/cubits/profile_cubit.dart';
 import '../../features/profile/presentation/cubits/saved_posts_cubit.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/search/presentation/cubits/search_cubit.dart';
+import '../../features/search/presentation/pages/search_page.dart';
 import '../../features/wardrobe/presentation/cubits/wardrobe_cubit.dart';
 import '../../features/wardrobe/presentation/cubits/wardrobe_items_cubit.dart';
 import '../../features/wardrobe/presentation/pages/wardrobe_category_page.dart';
@@ -181,8 +183,12 @@ GoRouter createRouter(SessionCubit session) {
             routes: [
               GoRoute(
                 path: AppRoutes.search,
-                builder: (context, state) =>
-                    TabPlaceholderPage(title: context.l10n.tabSearch),
+                builder: (context, state) => BlocProvider(
+                  create: (_) => sl<SearchCubit>()..loadDiscovery(),
+                  child: const SearchPage(),
+                ),
+                // People and trending looks open inside the Search tab.
+                routes: _detailRoutes(),
               ),
             ],
           ),

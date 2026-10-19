@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:stylper/app/app.dart';
@@ -22,6 +23,9 @@ import 'package:stylper/features/posting/presentation/pages/tag_items_page.dart'
 import 'package:stylper/features/posting/presentation/widgets/posting_widgets.dart';
 import 'package:stylper/features/product/presentation/pages/product_detail_page.dart';
 import 'package:stylper/features/profile/presentation/pages/profile_page.dart';
+import 'package:stylper/features/search/presentation/cubits/search_cubit.dart';
+import 'package:stylper/features/search/presentation/pages/search_page.dart';
+import 'package:stylper/features/search/presentation/widgets/search_rows.dart';
 import 'package:stylper/features/wardrobe/presentation/pages/wardrobe_page.dart';
 
 import '../helpers/fake_media.dart';
@@ -492,5 +496,118 @@ void main() {
     expect(find.byType(PostDetailPage), findsOneWidget);
     expect(find.text('Follow'), findsNothing);
     expect(find.text('Following'), findsNothing);
+  });
+
+  /// Types into the Search field and waits for the results.
+  Future<void> search(WidgetTester tester, String query) async {
+    await tester.enterText(
+      find.descendant(
+        of: find.byType(SearchPage),
+        matching: find.byType(TextField),
+      ),
+      query,
+    );
+    await tester.pump(SearchCubit.debounce + const Duration(milliseconds: 50));
+    await tester.pumpAndSettle();
+  }
+
+  /// The path of the screen showing [widget], e.g. `/search/user/a_amin`.
+  String pathOf(WidgetTester tester, Type widget) =>
+      GoRouterState.of(tester.element(find.byType(widget))).uri.path;
+
+  testWidgets('search finds people by username; their profile opens in the '
+      'Search tab, and Back keeps the search', (tester) async {
+    await signInAsDemo(tester);
+    await openTab(tester, 'Search');
+    expect(find.text('BRANDS ON STYLPER'), findsOneWidget);
+
+    await search(tester, '@amin');
+    final aminRow = find.descendant(
+      of: find.byType(PersonRow),
+      matching: find.text('@amin'),
+    );
+    expect(aminRow, findsOneWidget);
+    await tester.tap(aminRow);
+    await tester.pumpAndSettle();
+    expect(find.byType(ProfilePage), findsOneWidget);
+    expect(pathOf(tester, ProfilePage), '/search/user/a_amin');
+    expect(find.byType(AppTabBar), findsOneWidget);
+
+    await tester.tap(find.bySemanticsLabel('Back'));
+    await tester.pumpAndSettle();
+    expect(find.byType(SearchPage), findsOneWidget);
+    expect(aminRow, findsOneWidget, reason: 'query and results kept');
+
+    // Leaving the tab and coming back keeps the search too.
+    await openTab(tester, 'Home');
+    await openTab(tester, 'Search');
+    expect(aminRow, findsOneWidget);
+  });
+
+  testWidgets('follow someone from search; their profile agrees', (
+    tester,
+  ) async {
+    await signInAsDemo(tester);
+    await openTab(tester, 'Search');
+    await search(tester, 'amin');
+
+    await tester.tap(find.text('Follow').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Following'), findsOneWidget);
+
+    await tester.tap(find.text('@amin'));
+    await tester.pumpAndSettle();
+    expect(find.text('Following'), findsOneWidget);
+    expect(find.textContaining('721', findRichText: true), findsOneWidget);
+  });
+
+  testWidgets('you find yourself without a Follow button', (tester) async {
+    await signInAsDemo(tester);
+    await openTab(tester, 'Search');
+    await search(tester, 'john');
+    expect(find.text('@john'), findsOneWidget);
+    expect(find.text('Follow'), findsNothing);
+  });
+
+  testWidgets('brands are found by name; their page is coming soon', (
+    tester,
+  ) async {
+    await signInAsDemo(tester);
+    await openTab(tester, 'Search');
+    await search(tester, 'zara');
+    expect(find.text('BRANDS'), findsOneWidget);
+    expect(find.text('@zara · 3 items'), findsOneWidget);
+
+    await tester.tap(find.text('ZARA'));
+    await tester.pump();
+    expect(find.text('Coming soon'), findsOneWidget);
+
+    await search(tester, 'nobody like this');
+    expect(
+      find.text('No brands or people match “nobody like this”'),
+      findsOneWidget,
+    );
+  });
+
+  testWidgets('trending looks open inside the Search tab', (tester) async {
+    await signInAsDemo(tester);
+    await openTab(tester, 'Search');
+    await tapText(tester, 'Utility chic');
+    expect(find.byType(PostDetailPage), findsOneWidget);
+    expect(pathOf(tester, PostDetailPage), '/search/post/post_utility_chic');
+  });
+
+  testWidgets('guests can search, and are asked to sign in to follow', (
+    tester,
+  ) async {
+    await launch(tester);
+    await tapText(tester, 'Skip for now');
+    await openTab(tester, 'Search');
+    await search(tester, 'leo');
+    expect(find.text('@leo'), findsOneWidget);
+
+    await tester.tap(find.text('Follow'));
+    await tester.pump();
+    expect(find.text('Sign in to follow people.'), findsOneWidget);
   });
 }

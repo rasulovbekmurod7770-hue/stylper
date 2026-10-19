@@ -344,5 +344,25 @@
         "type": "int"
       }
     }
+  },
+  "searchHint": "Search brands and people",
+  "searchBrandsOnStylper": "Brands on Stylper",
+  "searchBrands": "Brands",
+  "searchPeople": "People",
+  "searchLocal": "Local",
+  "searchVerified": "Official brand",
+  "searchClear": "Clear search",
+  "searchNoResults": "No brands or people match “{query}”",
+  "@searchNoResults": {
+    "placeholders": {
+      "query": {"type": "String"}
+    }
+  },
+  "searchBrandItems": "{count, plural, =1{1 item} other{{count} items}}",
+  "@searchBrandItems": {
+    "description": "How many catalog items a brand sells.",
+    "placeholders": {
+      "count": {"type": "int"}
+    }
   }
 }

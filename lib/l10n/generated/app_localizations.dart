@@ -1263,6 +1263,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =0{No items tagged yet} =1{1 item tagged in this outfit} other{{count} items tagged in this outfit}}'**
   String postingItemsTagged(int count);
+
+  /// No description provided for @searchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search brands and people'**
+  String get searchHint;
+
+  /// No description provided for @searchBrandsOnStylper.
+  ///
+  /// In en, this message translates to:
+  /// **'Brands on Stylper'**
+  String get searchBrandsOnStylper;
+
+  /// No description provided for @searchBrands.
+  ///
+  /// In en, this message translates to:
+  /// **'Brands'**
+  String get searchBrands;
+
+  /// No description provided for @searchPeople.
+  ///
+  /// In en, this message translates to:
+  /// **'People'**
+  String get searchPeople;
+
+  /// No description provided for @searchLocal.
+  ///
+  /// In en, this message translates to:
+  /// **'Local'**
+  String get searchLocal;
+
+  /// No description provided for @searchVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Official brand'**
+  String get searchVerified;
+
+  /// No description provided for @searchClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get searchClear;
+
+  /// No description provided for @searchNoResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No brands or people match “{query}”'**
+  String searchNoResults(String query);
+
+  /// How many catalog items a brand sells.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item} other{{count} items}}'**
+  String searchBrandItems(int count);
 }
 
 class _AppLocalizationsDelegate

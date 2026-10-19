@@ -38,6 +38,11 @@ import '../../features/profile/domain/usecases/profile_usecases.dart';
 import '../../features/profile/presentation/cubits/following_cubit.dart';
 import '../../features/profile/presentation/cubits/profile_cubit.dart';
 import '../../features/profile/presentation/cubits/saved_posts_cubit.dart';
+import '../../features/search/data/datasources/search_remote_data_source.dart';
+import '../../features/search/data/repositories/search_repository_impl.dart';
+import '../../features/search/domain/repositories/search_repository.dart';
+import '../../features/search/domain/usecases/search_usecases.dart';
+import '../../features/search/presentation/cubits/search_cubit.dart';
 import '../../features/wardrobe/data/datasources/wardrobe_remote_data_source.dart';
 import '../../features/wardrobe/data/repositories/wardrobe_repository_impl.dart';
 import '../../features/wardrobe/domain/repositories/wardrobe_repository.dart';
@@ -86,7 +91,7 @@ void configureDependencies({
     // Until the Stylper API exists, remote data sources talk to an in-memory
     // FakeBackend. When it's ready, register HTTP implementations of
     // every *RemoteDataSource (auth, onboarding, home, post, product,
-    // profile, wardrobe, posting) here instead;
+    // profile, wardrobe, posting, search) here instead;
     // nothing outside this block needs to change.
     ..registerLazySingleton(() => backend ?? FakeBackend())
     ..registerLazySingleton<AuthRemoteDataSource>(
@@ -112,6 +117,9 @@ void configureDependencies({
     )
     ..registerLazySingleton<PostingRemoteDataSource>(
       () => FakePostingRemoteDataSource(sl(), sl()),
+    )
+    ..registerLazySingleton<SearchRemoteDataSource>(
+      () => FakeSearchRemoteDataSource(sl(), sl()),
     )
     // ───────────────────────────────────────────────────────────────────────
     ..registerLazySingleton(StyleQuizLocalDataSource.new)
@@ -140,6 +148,9 @@ void configureDependencies({
     ..registerLazySingleton<PostingRepository>(
       () => PostingRepositoryImpl(remote: sl()),
     )
+    ..registerLazySingleton<SearchRepository>(
+      () => SearchRepositoryImpl(remote: sl()),
+    )
     // Use cases
     ..registerFactory(() => RestoreSession(sl()))
     ..registerFactory(() => WatchCurrentUser(sl()))
@@ -166,6 +177,8 @@ void configureDependencies({
     ..registerFactory(() => GetRecentTags(sl()))
     ..registerFactory(() => GetPostStyles(sl()))
     ..registerFactory(() => PublishPost(sl()))
+    ..registerFactory(() => GetSearchDiscovery(sl()))
+    ..registerFactory(() => SearchBrandsAndPeople(sl()))
     // Presentation
     ..registerLazySingleton(
       () => SessionCubit(
@@ -204,6 +217,7 @@ void configureDependencies({
     ..registerFactory(() => MediaPickerCubit(sl()))
     ..registerFactory(() => PostDraftCubit(sl(), sl()))
     ..registerFactory(() => TagSearchCubit(sl(), sl()))
+    ..registerFactory(() => SearchCubit(sl(), sl()))
     // App-wide, so screens showing your posts pick up a new one.
     ..registerLazySingleton(PublishedPostsCubit.new);
 }
