@@ -416,7 +416,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get wardrobeTitle => 'Mening garderobim';
 
   @override
-  String get wardrobeAddItem => 'Qoʻshish';
+  String get wardrobeQuickScan => 'Skanerlash';
 
   @override
   String get wardrobeAddNewItem => 'Yangi narsa qoʻshish';

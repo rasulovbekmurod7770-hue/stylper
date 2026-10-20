@@ -20,9 +20,8 @@ import '../widgets/profile_sections.dart';
 
 /// Figma: "Profile" (2775:3285) and, for the Saved tab, "Profile 4"
 /// (2775:3374) — someone's personal style: who they are, their style DNA,
-/// their looks, and (on your own profile) what you saved. Layout follows
-/// the frames' cached metadata; styling is PROVISIONAL until their design
-/// context is fetched.
+/// their looks, and (on your own profile) what you saved. Styled from the
+/// frames' design context (design/figma/specs/11_profile_…, 12_profile_saved_…).
 ///
 /// Needs a [ProfileCubit] and, for your own profile, a [SavedPostsCubit].
 class ProfilePage extends StatelessWidget {

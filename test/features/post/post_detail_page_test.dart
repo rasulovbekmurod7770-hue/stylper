@@ -10,11 +10,13 @@ void main() {
     final post = screenFixtures().firstWhere((f) => f.name == 'post');
     await pumpScreen(tester, post.build(), precacheImages: post.images);
     expect(find.text('Cotton Cardigan'), findsNothing);
+    // The cardigan's price under "Outfit details".
+    expect(find.text('\$89'), findsOneWidget);
 
     await tester.tap(find.text('COS · Cardigan'));
     await tester.pumpAndSettle();
     expect(find.text('Cotton Cardigan'), findsOneWidget);
-    expect(find.text('\$89'), findsOneWidget);
+    expect(find.text('\$89'), findsNWidgets(2));
     expect(find.text('124 people styled this'), findsOneWidget);
 
     await tester.tap(find.text('COS · Cardigan'));

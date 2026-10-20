@@ -65,6 +65,7 @@ import 'package:stylper/features/profile/presentation/cubits/following_cubit.dar
 import 'package:stylper/features/profile/presentation/cubits/profile_cubit.dart';
 import 'package:stylper/features/profile/presentation/cubits/saved_posts_cubit.dart';
 import 'package:stylper/features/profile/presentation/pages/profile_page.dart';
+import 'package:stylper/features/profile/presentation/widgets/profile_header.dart';
 import 'package:stylper/features/profile/presentation/widgets/profile_sections.dart';
 import 'package:stylper/features/search/data/datasources/search_remote_data_source.dart';
 import 'package:stylper/features/search/data/repositories/search_repository_impl.dart';
@@ -324,6 +325,37 @@ Widget _withAppState(Widget child) {
   );
 }
 
+/// The Figma post sample: Leo's "Utility chic".
+Widget _post() {
+  final getPost = _MockGetPost();
+  when(() => getPost(any())).thenAnswer(
+    (_) async => Right(
+      PostJson.post(
+        await FakeBackend(latency: Duration.zero).post('post_utility_chic'),
+      ),
+    ),
+  );
+  return _inShell(
+    BlocProvider(
+      create: (_) =>
+          PostDetailCubit(getPost, postId: 'post_utility_chic')..load(),
+      child: const PostDetailPage(),
+    ),
+  );
+}
+
+const _postImages = [
+  AppImages.postUtilityChic,
+  AppImages.homePersonLeo,
+  AppImages.quizCottonCardigan,
+  AppImages.quizWhiteTShirt,
+  AppImages.quizWideLegTrousers,
+  AppImages.homeTrendSoftNeutrals,
+  AppImages.postFozil,
+  AppImages.homeTrendNoWords,
+  AppImages.homeTrendLikeMyOutfit,
+];
+
 /// One app screen with its cubits (backed by unused mock use
 /// cases) and the sample content from the Figma frame.
 class ScreenFixture {
@@ -483,35 +515,19 @@ List<ScreenFixture> screenFixtures() {
     ScreenFixture(
       name: 'post',
       goldenSize: const Size(390, 1287),
-      build: () {
-        final getPost = _MockGetPost();
-        when(() => getPost(any())).thenAnswer(
-          (_) async => Right(
-            PostJson.post(
-              await FakeBackend(latency: Duration.zero)
-                  .post('post_utility_chic'),
-            ),
-          ),
-        );
-        return _inShell(
-          BlocProvider(
-            create: (_) =>
-                PostDetailCubit(getPost, postId: 'post_utility_chic')..load(),
-            child: const PostDetailPage(),
-          ),
-        );
+      build: _post,
+      images: _postImages,
+    ),
+    // Figma 2775:2953: the same post with the cardigan's tag tapped.
+    ScreenFixture(
+      name: 'post_tag',
+      goldenSize: const Size(390, 1287),
+      build: _post,
+      images: _postImages,
+      fillIn: (tester) async {
+        await tester.tap(find.text('COS · Cardigan'));
+        await settleState(tester);
       },
-      images: const [
-        AppImages.postUtilityChic,
-        AppImages.homePersonLeo,
-        AppImages.quizCottonCardigan,
-        AppImages.quizWhiteTShirt,
-        AppImages.quizWideLegTrousers,
-        AppImages.homeTrendSoftNeutrals,
-        AppImages.postFozil,
-        AppImages.homeTrendNoWords,
-        AppImages.homeTrendLikeMyOutfit,
-      ],
     ),
     ScreenFixture(
       name: 'product',
@@ -558,7 +574,15 @@ List<ScreenFixture> screenFixtures() {
         );
         await tester.tap(find.byKey(savedTab));
         await settleState(tester);
-        await tester.drag(scroll, const Offset(0, -400));
+        // Just far enough for the tab bar to pin under the compact header.
+        final tabBarTop = tester.getTopLeft(find.byType(ProfileTabBar)).dy;
+        final headerBottom = tester
+            .getBottomLeft(find.byType(ProfileTopBar))
+            .dy;
+        final position = tester
+            .state<ScrollableState>(find.byType(Scrollable).first)
+            .position;
+        position.jumpTo(position.pixels + tabBarTop - headerBottom);
         await settleState(tester);
         await settleAssets(tester, precacheImages: _allContentImages);
       },

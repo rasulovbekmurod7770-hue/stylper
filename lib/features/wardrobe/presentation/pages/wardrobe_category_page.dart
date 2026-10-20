@@ -101,10 +101,11 @@ class _ItemCard extends StatelessWidget {
       onTap: productId == null ? null : () => context.openProduct(productId),
       child: Container(
         padding: const EdgeInsets.all(12),
+        // The wardrobe's "category-card" look (2789:258).
         decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: AppColors.hairline),
-          borderRadius: const BorderRadius.all(Radius.circular(20)),
+          color: AppColors.surfaceMuted,
+          border: Border.all(color: AppColors.socialBorder),
+          borderRadius: const BorderRadius.all(Radius.circular(24)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -117,7 +118,7 @@ class _ItemCard extends StatelessWidget {
                     padding: const EdgeInsets.all(10),
                     decoration: const BoxDecoration(
                       color: AppColors.inputFill,
-                      borderRadius: BorderRadius.all(Radius.circular(14)),
+                      borderRadius: BorderRadius.all(Radius.circular(16)),
                     ),
                     child: Image(
                       image: imageFromPath(item.imagePath),

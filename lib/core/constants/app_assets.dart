@@ -28,6 +28,23 @@ abstract final class AppIcons {
   static const tabCreate = '$_dir/tab_create.svg';
   static const tabExplore = '$_dir/tab_explore.svg';
   static const tabProfile = '$_dir/tab_profile.svg';
+
+  // Post, product, profile and wardrobe (Figma 2775:2840, 2775:3077,
+  // 2775:3285 / 2775:3374, 2789:226). Single-colour icons are tinted with a
+  // colour filter where a screen uses them in another colour.
+  static const moreHorizontal = '$_dir/more_horizontal.svg';
+  static const chevronLeftSmall = '$_dir/chevron_left_small.svg';
+  static const send = '$_dir/send.svg';
+  static const bookmark = '$_dir/bookmark.svg';
+  // The saved state: the same glyph filled with the brand gradient, as the
+  // Saved tab's bookmarks (2775:3420).
+  static const bookmarkFilled = '$_dir/bookmark_filled.svg';
+  static const share = '$_dir/share.svg';
+  static const shoppingBag = '$_dir/shopping_bag.svg';
+  static const arrowRight = '$_dir/arrow_right.svg';
+  static const settings = '$_dir/settings.svg';
+  static const plus = '$_dir/plus.svg';
+  static const plusSmall = '$_dir/plus_small.svg';
 }
 
 abstract final class AppImages {

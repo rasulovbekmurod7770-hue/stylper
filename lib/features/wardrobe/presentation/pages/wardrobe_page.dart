@@ -18,10 +18,10 @@ import '../wardrobe_category_label.dart';
 import '../wardrobe_failure_message.dart';
 
 /// Figma: "Wardrobe — Light" (2789:226) — the signed-in user's clothes by
-/// category, under the same gradient logo as Home. Layout follows the
-/// frame's cached metadata; styling is PROVISIONAL until its design context
-/// is fetched. The back button isn't in the frame: the screen is opened from
-/// the profile and needs a way back.
+/// category. Styled from the frame's design context
+/// (design/figma/specs/13_wardrobe_…). The back button isn't in the frame:
+/// the screen is opened from the profile and needs a way back, so it sits in
+/// the frame's empty band above the title.
 class WardrobePage extends StatelessWidget {
   const WardrobePage({super.key});
 
@@ -42,9 +42,20 @@ class WardrobePage extends StatelessWidget {
           child: BlocBuilder<WardrobeCubit, WardrobeState>(
             builder: (context, state) => CustomScrollView(
               slivers: [
-                const SliverToBoxAdapter(child: _LogoRow()),
+                const SliverToBoxAdapter(
+                  child: SizedBox(
+                    height: 46,
+                    child: Padding(
+                      padding: EdgeInsets.only(left: 20),
+                      child: Align(
+                        alignment: Alignment.topLeft,
+                        child: TopBarBackButton(),
+                      ),
+                    ),
+                  ),
+                ),
                 SliverToBoxAdapter(
-                  // "header-area": title and the quick "Add item" button.
+                  // "header-area": title and "Quick Scan".
                   child: SizedBox(
                     height: 54,
                     child: Padding(
@@ -59,7 +70,7 @@ class WardrobePage extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          _QuickAddButton(onTap: comingSoon),
+                          _QuickScanButton(onTap: comingSoon),
                         ],
                       ),
                     ),
@@ -72,7 +83,9 @@ class WardrobePage extends StatelessWidget {
                       crossAxisCount: 2,
                       mainAxisSpacing: 16,
                       crossAxisSpacing: 16,
-                      childAspectRatio: 167 / 204,
+                      // Figma's card is 204px; the shared scale's count
+                      // line needs 3px more.
+                      childAspectRatio: 167 / 207,
                       children: [
                         for (final category in state.categories)
                           _CategoryCard(category: category),
@@ -114,32 +127,10 @@ class WardrobePage extends StatelessWidget {
   }
 }
 
-/// The gradient logo centred, with Back on the left.
-class _LogoRow extends StatelessWidget {
-  const _LogoRow();
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 46,
-      child: Stack(
-        alignment: Alignment.topCenter,
-        children: [
-          SvgPicture.asset(
-            AppIcons.stylperLogoGradient,
-            width: 95,
-            height: 31.6667,
-          ),
-          const Positioned(left: 20, top: 0, child: TopBarBackButton()),
-        ],
-      ),
-    );
-  }
-}
-
-/// "add-quick-btn": a small outlined "+ Add item" pill.
-class _QuickAddButton extends StatelessWidget {
-  const _QuickAddButton({required this.onTap});
+/// "add-quick-btn": a small "+ Quick Scan" pill on a left-to-right brand
+/// gradient.
+class _QuickScanButton extends StatelessWidget {
+  const _QuickScanButton({required this.onTap});
 
   final VoidCallback onTap;
 
@@ -153,17 +144,19 @@ class _QuickAddButton extends StatelessWidget {
         child: Container(
           height: 25,
           padding: const EdgeInsets.symmetric(horizontal: 12),
-          decoration: BoxDecoration(
-            border: Border.all(color: AppColors.outlineStrong),
-            borderRadius: const BorderRadius.all(Radius.circular(999)),
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [AppColors.brandRed, AppColors.brandPink],
+            ),
+            borderRadius: BorderRadius.all(Radius.circular(999)),
           ),
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.add, size: 12, color: AppColors.textPrimary),
+              SvgPicture.asset(AppIcons.plusSmall, width: 12, height: 12),
               const SizedBox(width: 4),
               Text(
-                context.l10n.wardrobeAddItem,
+                context.l10n.wardrobeQuickScan,
                 style: AppTypography.captionStrong,
               ),
             ],
@@ -175,7 +168,8 @@ class _QuickAddButton extends StatelessWidget {
 }
 
 /// "category-card" (167×204): the newest item's photo, the category and how
-/// many items it has. Opens the category.
+/// many items it has. Opens the category. Figma fills the thumbnail with a
+/// photo; catalog items are cut-outs, so they're fitted on a soft panel.
 class _CategoryCard extends StatelessWidget {
   const _CategoryCard({required this.category});
 
@@ -197,9 +191,9 @@ class _CategoryCard extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
-            color: Colors.white,
-            border: Border.all(color: AppColors.hairline),
-            borderRadius: const BorderRadius.all(Radius.circular(20)),
+            color: AppColors.surfaceMuted,
+            border: Border.all(color: AppColors.socialBorder),
+            borderRadius: const BorderRadius.all(Radius.circular(24)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -210,7 +204,7 @@ class _CategoryCard extends StatelessWidget {
                   padding: const EdgeInsets.all(10),
                   decoration: const BoxDecoration(
                     color: AppColors.inputFill,
-                    borderRadius: BorderRadius.all(Radius.circular(14)),
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
                   ),
                   child: image == null
                       ? const Icon(
@@ -240,7 +234,7 @@ class _CategoryCard extends StatelessWidget {
   }
 }
 
-/// "add-item-card": a dashed-looking wide card to add a new item.
+/// "add-item-card": a wide card with a red "+" disc to add a new item.
 class _AddItemCard extends StatelessWidget {
   const _AddItemCard({required this.onTap});
 
@@ -256,7 +250,8 @@ class _AddItemCard extends StatelessWidget {
         child: Container(
           height: 72,
           decoration: BoxDecoration(
-            border: Border.all(color: AppColors.outlineStrong),
+            color: AppColors.surfaceMuted,
+            border: Border.all(color: AppColors.socialBorder),
             borderRadius: const BorderRadius.all(Radius.circular(20)),
           ),
           child: Row(
@@ -265,11 +260,12 @@ class _AddItemCard extends StatelessWidget {
               Container(
                 width: 32,
                 height: 32,
+                alignment: Alignment.center,
                 decoration: const BoxDecoration(
                   shape: BoxShape.circle,
-                  gradient: AppColors.brandGradient,
+                  color: AppColors.brandRed,
                 ),
-                child: const Icon(Icons.add, size: 16, color: Colors.white),
+                child: SvgPicture.asset(AppIcons.plus, width: 16, height: 16),
               ),
               const SizedBox(width: 12),
               Text(

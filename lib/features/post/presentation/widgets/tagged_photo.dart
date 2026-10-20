@@ -1,6 +1,10 @@
+import 'dart:ui' show ImageFilter;
+
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_assets.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -12,9 +16,9 @@ import '../../domain/entities/post.dart';
 import '../../../../core/presentation/price_format.dart';
 
 /// "Image-Frame" (2775:2861): the outfit photo with a back button, a dot and
-/// "Brand · Item" label per tagged product, and a fade into the page. Tapping
-/// a tag opens its "expanded-tag-card" (variant 2775:2953); tapping the tag
-/// again or the photo closes it.
+/// "Brand · Item" label per tagged product, and a dark fade along the bottom.
+/// Tapping a tag opens its "expanded-tag-card" (variant 2775:2953); tapping
+/// the tag again or the photo closes it.
 class TaggedPhoto extends StatefulWidget {
   const TaggedPhoto({super.key, required this.post});
 
@@ -51,7 +55,7 @@ class _TaggedPhotoState extends State<TaggedPhoto> {
                   child: FeedPhoto(path: widget.post.imagePath, radius: 0),
                 ),
               ),
-              // "Gradient-Fade": the bottom 119px fade into the page.
+              // "Gradient-Fade": the bottom 119px darken.
               Positioned(
                 left: 0,
                 right: 0,
@@ -63,7 +67,7 @@ class _TaggedPhotoState extends State<TaggedPhoto> {
                       gradient: LinearGradient(
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
-                        colors: [Color(0x00FAFAF7), AppColors.background],
+                        colors: AppColors.photoFade,
                       ),
                     ),
                   ),
@@ -81,8 +85,9 @@ class _TaggedPhotoState extends State<TaggedPhoto> {
     );
   }
 
-  /// Dot centred on the tag point, label 9px right and down of it (flipped
-  /// to the left on the right half of the photo).
+  /// A dark dot with a light ring centred on the tag point (8px while its
+  /// card is open), and the label 9px right and down of it (flipped to the
+  /// left on the right half of the photo).
   List<Widget> _tag(
     TaggedProduct product,
     Size size, {
@@ -106,10 +111,10 @@ class _TaggedPhotoState extends State<TaggedPhoto> {
           child: Container(
             width: dot,
             height: dot,
-            decoration: const BoxDecoration(
-              color: Colors.white,
+            decoration: BoxDecoration(
+              color: AppColors.textPrimary,
               shape: BoxShape.circle,
-              boxShadow: [BoxShadow(color: Color(0x40000000), blurRadius: 4)],
+              border: Border.all(color: AppColors.background),
             ),
           ),
         ),
@@ -147,6 +152,45 @@ class _TaggedPhotoState extends State<TaggedPhoto> {
   }
 }
 
+/// Frosted dark glass over the photo, as the tags and their card.
+class _Glass extends StatelessWidget {
+  const _Glass({
+    required this.radius,
+    required this.blur,
+    required this.child,
+    this.shadows,
+  });
+
+  final double radius;
+
+  /// Figma's background blur; Flutter's sigma is half of it.
+  final double blur;
+  final List<BoxShadow>? shadows;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final borderRadius = BorderRadius.circular(radius);
+    return DecoratedBox(
+      decoration: BoxDecoration(borderRadius: borderRadius, boxShadow: shadows),
+      child: ClipRRect(
+        borderRadius: borderRadius,
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: blur / 2, sigmaY: blur / 2),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppColors.glass,
+              border: Border.all(color: AppColors.glassBorder),
+              borderRadius: borderRadius,
+            ),
+            child: child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _TagLabel extends StatelessWidget {
   const _TagLabel(this.text);
 
@@ -154,23 +198,25 @@ class _TagLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // PROVISIONAL look until the post frame's design context is cached.
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: const Color(0x731A1A1A),
-        border: Border.all(color: const Color(0x26FFFFFF)),
-        borderRadius: const BorderRadius.all(Radius.circular(999)),
-      ),
+    return _Glass(
+      radius: 999,
+      blur: 5,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        child: Text(text, style: AppTypography.onPhotoLabel),
+        child: Text(
+          text,
+          style: AppTypography.onPhotoLabel.copyWith(
+            color: AppColors.background,
+          ),
+        ),
       ),
     );
   }
 }
 
-/// "expanded-tag-card": brand, full name, price, how many people styled it,
-/// "See looks" (the product's looks) and "Save" (to the wardrobe).
+/// "expanded-tag-card": dark glass with the brand, full name, price, how many
+/// people styled it, "See looks" (the product's looks) and "Save" (to the
+/// wardrobe).
 class _TagCard extends StatelessWidget {
   const _TagCard({required this.product});
 
@@ -185,41 +231,43 @@ class _TagCard extends StatelessWidget {
       loaded: product.inWardrobe,
     );
 
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-        boxShadow: [
-          BoxShadow(
-            color: Color(0x261A1A1A),
-            blurRadius: 24,
-            offset: Offset(0, 8),
-          ),
-        ],
-      ),
+    const onGlass = AppColors.background;
+    return _Glass(
+      radius: 18,
+      blur: 9,
+      shadows: const [
+        BoxShadow(
+          color: Color(0x26000000),
+          blurRadius: 24,
+          offset: Offset(0, 10),
+        ),
+      ],
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text(product.brand, style: AppTypography.captionMuted),
+            Text(
+              product.brand,
+              style: AppTypography.captionMuted.copyWith(color: onGlass),
+            ),
             const SizedBox(height: 4),
             Text(
               product.name,
-              style: AppTypography.bodyStrong,
+              style: AppTypography.bodyStrong.copyWith(color: onGlass),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             const SizedBox(height: 4),
             Text(
               formatPrice(product.price, l10n.localeName),
-              style: AppTypography.label,
+              style: AppTypography.label.copyWith(color: onGlass),
             ),
             const SizedBox(height: 4),
             Text(
               l10n.postStyledCount(product.styledCount),
-              style: AppTypography.meta,
+              style: AppTypography.meta.copyWith(color: AppColors.onDarkMuted),
             ),
             const SizedBox(height: 12),
             Row(
@@ -228,7 +276,7 @@ class _TagCard extends StatelessWidget {
                 Expanded(
                   child: _CardButton(
                     label: l10n.postSeeLooks,
-                    filled: true,
+                    filled: false,
                     onTap: () => context.openProductLooks(product.id),
                   ),
                 ),
@@ -236,7 +284,7 @@ class _TagCard extends StatelessWidget {
                   // Saves the item to the wardrobe.
                   child: _CardButton(
                     label: inWardrobe ? l10n.postSaved : l10n.postSave,
-                    filled: false,
+                    filled: true,
                     onTap: () => toggleInWardrobe(
                       context,
                       product.id,
@@ -276,14 +324,16 @@ class _CardButton extends StatelessWidget {
           height: 29,
           alignment: Alignment.center,
           decoration: BoxDecoration(
-            gradient: filled ? AppColors.brandGradient : null,
-            border: filled ? null : Border.all(color: AppColors.outlineStrong),
+            color: filled ? AppColors.ink : null,
+            border: filled
+                ? null
+                : Border.all(color: AppColors.glassButtonBorder),
             borderRadius: const BorderRadius.all(Radius.circular(999)),
           ),
           child: Text(
             label,
             style: AppTypography.captionStrong.copyWith(
-              color: filled ? Colors.white : null,
+              color: AppColors.background,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -307,18 +357,19 @@ class _BackButton extends StatelessWidget {
         behavior: HitTestBehavior.opaque,
         onTap: () =>
             context.canPop() ? context.pop() : context.go(AppRoutes.home),
-        // PROVISIONAL look and icon until the post frame is exported.
         child: Container(
           width: 30,
           height: 30,
+          padding: const EdgeInsets.only(left: 6, top: 5),
+          alignment: Alignment.topLeft,
           decoration: const BoxDecoration(
-            color: Color(0xCCFAFAF7),
-            borderRadius: BorderRadius.all(Radius.circular(8)),
+            color: Color(0xCCFAFAF7), // background @ 80%
+            borderRadius: BorderRadius.all(Radius.circular(4)),
           ),
-          child: const Icon(
-            Icons.chevron_left,
-            size: 18,
-            color: AppColors.textPrimary,
+          child: SvgPicture.asset(
+            AppIcons.chevronLeftSmall,
+            width: 18,
+            height: 18,
           ),
         ),
       ),

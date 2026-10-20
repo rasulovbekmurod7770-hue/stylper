@@ -415,7 +415,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wardrobeTitle => 'My Wardrobe';
 
   @override
-  String get wardrobeAddItem => 'Add item';
+  String get wardrobeQuickScan => 'Quick Scan';
 
   @override
   String get wardrobeAddNewItem => 'Add new item';

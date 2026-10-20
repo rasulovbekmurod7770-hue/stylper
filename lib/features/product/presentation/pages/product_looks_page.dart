@@ -154,12 +154,8 @@ class _FilterChip extends StatelessWidget {
             border: selected ? null : Border.all(color: AppColors.inputBorder),
             borderRadius: const BorderRadius.all(Radius.circular(999)),
           ),
-          child: Text(
-            label,
-            style: AppTypography.captionStrong.copyWith(
-              color: selected ? Colors.white : null,
-            ),
-          ),
+          // Dark on the gradient, as Figma's gradient buttons.
+          child: Text(label, style: AppTypography.captionStrong),
         ),
       ),
     );

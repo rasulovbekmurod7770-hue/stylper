@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/presentation/image_source.dart';
@@ -20,9 +20,9 @@ class OutfitDetails extends StatelessWidget {
 
   static const _cardWidth = 110.0;
 
-  /// The name and "Brand price" lines under the photo, in the shared scale
-  /// (Figma's text here is smaller: 39px).
-  static const _infoHeight = 5 + 18 + 2 + 17 + 6.0;
+  /// The name and "Brand … price" lines under the photo, in the shared scale
+  /// (Figma's 10 / 9px Inter lines make it 39px).
+  static const _infoHeight = 6 + 18 + 4 + 17 + 6.0;
 
   @override
   Widget build(BuildContext context) {
@@ -39,8 +39,8 @@ class OutfitDetails extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         SizedBox(
-          // Card (photo 90 + border 2 + name / brand line) + gap + pills.
-          height: 92 + _infoHeight + 6 + 19,
+          // Card (photo 90 + name / brand line) + gap + pills.
+          height: 90 + _infoHeight + 6 + 19,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 14),
@@ -72,63 +72,71 @@ class _ProductCard extends StatelessWidget {
       loaded: product.inWardrobe,
     );
 
-    // PROVISIONAL look (fills, radii, pill styles) until the post frame is
-    // exported; sizes are from Figma.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         GestureDetector(
           onTap: open,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: AppColors.hairline),
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 90,
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(10),
-                  decoration: const BoxDecoration(
-                    color: AppColors.inputFill,
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(12),
+          child: ClipRRect(
+            borderRadius: const BorderRadius.all(Radius.circular(6)),
+            child: ColoredBox(
+              color: AppColors.surfaceCard,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // The cut-out fills the photo's height, on a light backdrop.
+                  Container(
+                    height: 90,
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
+                    color: AppColors.imageBackdrop,
+                    child: Image(
+                      image: imageFromPath(product.imagePath),
+                      fit: BoxFit.contain,
                     ),
                   ),
-                  child: Image(
-                    image: imageFromPath(product.imagePath),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-                SizedBox(
-                  height: OutfitDetails._infoHeight,
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(8, 5, 8, 0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          product.shortName,
-                          style: AppTypography.caption,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        const SizedBox(height: 2),
-                        Text(
-                          '${product.brand} '
-                          '${formatPrice(product.price, l10n.localeName)}',
-                          style: AppTypography.meta,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
+                  SizedBox(
+                    height: OutfitDetails._infoHeight,
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 6, 8, 0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            product.shortName,
+                            style: AppTypography.captionStrong.copyWith(
+                              color: AppColors.ink,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  product.brand,
+                                  style: AppTypography.meta,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                formatPrice(product.price, l10n.localeName),
+                                style: AppTypography.meta,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -184,29 +192,21 @@ class _Pill extends StatelessWidget {
         onTap: onTap,
         child: Container(
           constraints: const BoxConstraints(minWidth: 34),
-          padding: const EdgeInsets.symmetric(horizontal: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 6),
           alignment: Alignment.center,
           decoration: BoxDecoration(
             gradient: filled ? AppColors.brandGradient : null,
-            border: filled
-                ? null
-                : Border.all(
-                    color: selected
-                        ? AppColors.brandRed
-                        : AppColors.outlineStrong,
-                  ),
-            borderRadius: const BorderRadius.all(Radius.circular(999)),
+            color: filled ? null : AppColors.surfaceCard,
+            border: Border.all(
+              color: selected ? AppColors.brandRed : AppColors.outlineButton,
+              width: selected ? 1 : 0.4,
+            ),
+            borderRadius: const BorderRadius.all(Radius.circular(7)),
           ),
           // Longer translations shrink to fit the 19px pill.
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            child: Text(
-              label,
-              style: AppTypography.micro.copyWith(
-                color: filled ? Colors.white : null,
-              ),
-              maxLines: 1,
-            ),
+            child: Text(label, style: AppTypography.micro, maxLines: 1),
           ),
         ),
       ),

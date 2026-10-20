@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../../../core/constants/app_assets.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/presentation/image_source.dart';
 import '../../../../core/presentation/price_format.dart';
@@ -20,8 +22,9 @@ import '../widgets/product_card.dart';
 
 /// Figma: "product-detail" (2775:3077) — the exact item: photo, brand, price
 /// and where to buy it, real people wearing it, the styles they wear it in,
-/// and similar items. Layout follows the frame's cached metadata; styling is
-/// PROVISIONAL until its design context is fetched.
+/// and similar items. Styled from the frame's design context
+/// (design/figma/specs/10_product_…), in the shared Poppins scale instead of
+/// the frame's Inter and Bricolage Grotesque.
 class ProductDetailPage extends StatelessWidget {
   const ProductDetailPage({super.key});
 
@@ -82,12 +85,7 @@ class _ProductView extends StatelessWidget {
             trailing: TopBarButton(
               label: l10n.postShare,
               onTap: () => context.showMessage(l10n.comingSoon),
-              // PROVISIONAL icon until the frame's "share-2" is exported.
-              icon: const Icon(
-                Icons.share_outlined,
-                size: 20,
-                color: AppColors.textPrimary,
-              ),
+              icon: SvgPicture.asset(AppIcons.share, width: 20, height: 20),
             ),
           ),
         ),
@@ -219,9 +217,7 @@ class _Actions extends StatelessWidget {
         Expanded(
           child: _ActionButton(
             filled: false,
-            // PROVISIONAL icons until the frame's "bookmark" / "shopping-bag"
-            // are exported.
-            icon: inWardrobe ? Icons.bookmark : Icons.bookmark_border,
+            icon: inWardrobe ? AppIcons.bookmarkFilled : AppIcons.bookmark,
             label: inWardrobe ? l10n.inWardrobe : l10n.productSaveToWardrobe,
             selected: inWardrobe,
             onTap: () => toggleInWardrobe(context, id, inWardrobe: inWardrobe),
@@ -231,7 +227,7 @@ class _Actions extends StatelessWidget {
         Expanded(
           child: _ActionButton(
             filled: true,
-            icon: Icons.shopping_bag_outlined,
+            icon: AppIcons.shoppingBag,
             label: l10n.productBuyNow,
             onTap: store == null
                 ? () => context.showMessage(l10n.comingSoon)
@@ -262,14 +258,15 @@ class _ActionButton extends StatelessWidget {
   });
 
   final bool filled;
-  final IconData icon;
+
+  /// An SVG asset; single-colour outlines are drawn in the text colour.
+  final String icon;
   final String label;
   final VoidCallback onTap;
   final bool selected;
 
   @override
   Widget build(BuildContext context) {
-    final color = filled ? Colors.white : AppColors.textPrimary;
     return Semantics(
       button: true,
       toggled: filled ? null : selected,
@@ -278,7 +275,7 @@ class _ActionButton extends StatelessWidget {
         onTap: onTap,
         child: Container(
           height: 46,
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             gradient: filled ? AppColors.brandGradient : null,
             border: filled
@@ -286,26 +283,32 @@ class _ActionButton extends StatelessWidget {
                 : Border.all(
                     color: selected
                         ? AppColors.brandRed
-                        : AppColors.outlineStrong,
+                        : AppColors.outlineButton,
                   ),
-            borderRadius: const BorderRadius.all(Radius.circular(14)),
+            borderRadius: const BorderRadius.all(Radius.circular(30)),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              SvgPicture.asset(
                 icon,
-                size: 18,
-                color: selected ? AppColors.brandRed : color,
+                width: 18,
+                height: 18,
+                colorFilter: icon == AppIcons.bookmarkFilled
+                    ? null
+                    : const ColorFilter.mode(
+                        AppColors.textPrimary,
+                        BlendMode.srcIn,
+                      ),
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: 8),
               Flexible(
                 // Longer translations shrink to fit the half-width button.
                 child: FittedBox(
                   fit: BoxFit.scaleDown,
                   child: Text(
                     label,
-                    style: AppTypography.label.copyWith(color: color),
+                    style: AppTypography.bodyStrong,
                     maxLines: 1,
                   ),
                 ),
@@ -343,7 +346,7 @@ class _SeeItOnPeople extends StatelessWidget {
               detail.styledCount,
               product.shortName.toLowerCase(),
             ),
-            style: AppTypography.body,
+            style: AppTypography.body.copyWith(color: AppColors.textHint),
           ),
           const SizedBox(height: 20),
           GridView.count(
@@ -373,18 +376,10 @@ class _SeeItOnPeople extends StatelessWidget {
                 children: [
                   Text(
                     l10n.productSeeAllLooks,
-                    style: AppTypography.bodyStrong.copyWith(
-                      color: AppColors.brandRed,
-                    ),
+                    style: AppTypography.bodyStrong,
                   ),
                   const SizedBox(width: 4),
-                  // PROVISIONAL icon until the frame's "arrow-right" is
-                  // exported.
-                  const Icon(
-                    Icons.arrow_forward,
-                    size: 16,
-                    color: AppColors.brandRed,
-                  ),
+                  SvgPicture.asset(AppIcons.arrowRight, width: 16, height: 16),
                 ],
               ),
             ),
@@ -395,7 +390,8 @@ class _SeeItOnPeople extends StatelessWidget {
   }
 }
 
-/// "HowPeopleStyleItSection": a pill per style; each opens the looks in it.
+/// "HowPeopleStyleItSection": a pill per style (upper-case title, as in
+/// Figma); each opens the looks in it.
 class _HowPeopleStyleIt extends StatelessWidget {
   const _HowPeopleStyleIt({required this.detail});
 
@@ -411,7 +407,7 @@ class _HowPeopleStyleIt extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24),
             child: Text(
-              context.l10n.productHowPeopleStyleIt,
+              context.l10n.productHowPeopleStyleIt.toUpperCase(),
               style: AppTypography.heading,
             ),
           ),
@@ -435,6 +431,7 @@ class _HowPeopleStyleIt extends StatelessWidget {
                     child: Container(
                       padding: const EdgeInsets.fromLTRB(8, 8, 16, 8),
                       decoration: BoxDecoration(
+                        color: AppColors.surfaceCard,
                         border: Border.all(color: AppColors.inputBorder),
                         borderRadius: const BorderRadius.all(
                           Radius.circular(26),
@@ -485,8 +482,8 @@ class _SimilarStyle extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           SizedBox(
-            // Figma's card is 194px; the shared scale's lines need 12px more.
-            height: 206,
+            // Figma's card is 194px; the shared scale's lines need 11px more.
+            height: 205,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 24),

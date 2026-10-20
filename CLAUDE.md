@@ -94,18 +94,22 @@ it", local brands first, and trust (nothing that misleads).
 ## Design (Figma)
 
 - File `Z6aHsxkD41lT8lZ8JiBsQv`, page "Stylper Product" (`1991:310`).
-- **Figma MCP calls are scarce** (the user's seat allows only a few, sometimes
-  about one a day). Before calling Figma, look up node IDs in
+- **Figma MCP calls are limited** (the cap is unknown: once about one a day;
+  since the user's access was raised on 2026-10-20 several calls a day go
+  through). Before calling Figma, look up node IDs in
   `design/figma/metadata_1991-310.xml` and check `design/figma/specs/`
   (verbatim design context), `screens/` and `raw/`. Save every new fetch
-  there. When many assets are needed, ask the user to export them instead.
+  there, and download its assets at once (the URLs expire after 7 days).
+  When many assets are needed, ask the user to export them instead.
 - Implemented: welcome `2775:2369`, sign in `2775:2318`, sign up `2775:2441`,
   forgot password `2775:2408`, profile setup `2775:2501`, style quiz
-  `2775:2389`, home `2775:2563`. Built from cached metadata only, styling
-  marked PROVISIONAL until their design context or SVG exports are cached:
-  outfit post "home-feed-2" `2775:2840` (variant `2775:2953` = tapped tag),
-  product detail `2775:3077`, profile `2775:3285`, profile Saved tab
-  "Profile 4" `2775:3374`, wardrobe `2789:226`; posting `2849:1017` (media
+  `2775:2389`, home `2775:2563`, outfit post "home-feed-2" `2775:2840`
+  (variant `2775:2953` = tapped tag), product detail `2775:3077`, profile
+  `2775:3285`, profile Saved tab "Profile 4" `2775:3374`, wardrobe
+  `2789:226` (specs `09`–`13`). On those last five, Figma's gradient buttons
+  have dark text (kept app-wide, incl. Follow), the post's tags and tapped-tag
+  card are dark glass, and the photo fades to dark. Built from a screenshot
+  only, styling PROVISIONAL: posting `2849:1017` (media
   `2820:76`, tag items `2845:396` + search-sheet variants, details
   `2820:198`, publish `2820:253`) from the section screenshot
   `design/figma/screens/08_posting_2849-1017.png` (per-step crops `08a`–`08d`).

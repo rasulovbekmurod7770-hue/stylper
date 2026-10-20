@@ -46,6 +46,22 @@ abstract final class AppColors {
   static const navBorder = Color(0xFF424242);
   static const iconInactive = Color(0xFF767680);
 
+  // Post, product, profile and wardrobe (their Figma design context)
+  static const ink = Color(0xFF332E3D); // names on cards, the dark "Save"
+  static const textHint = Color(0xFF9B8FAE); // "124 real customers…"
+  static const onDarkMuted = Color(0xFFCACACA); // secondary text on glass
+  static const glass = Color(0xA61A1A1A); // 65%: tags and cards over photos
+  static const glassBorder = Color(0x661A1A1A); // 40%
+  static const glassButtonBorder = Color(0x4DFAFAF7); // background @ 30%
+  static const iconButtonFill = Color(0x1A1A1A1A); // 10%: top-bar buttons
+  static const outlineSoft = Color(0x141A1A1A); // 8%: chips, avatar ring
+  static const outlineMedium = Color(0x241A1A1A); // 14%: profile buttons
+  static const outlineButton = Color(0x261A1A1A); // 15%: buttons, pills
+  static const statDot = Color(0x261A1A1A); // 15%
+
+  /// A photo's bottom edge darkening into its frame ("Gradient-Fade").
+  static const photoFade = [Color(0x000E0816), Color(0xCC0E0816)];
+
   /// Top-to-bottom brand gradient ("stylper-1" → pink): selected tab, chips.
   static const brandGradient = LinearGradient(
     begin: Alignment.topCenter,

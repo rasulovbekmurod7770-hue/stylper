@@ -32,6 +32,14 @@ PAIRS = {
     'posting_tag': '08b_posting_tag_2845-396.png',
     'posting_details': '08c_posting_details_2820-198.png',
     'posting_publish': '08d_posting_publish_2820-253.png',
+    # Fetched 2026-10-20 (311 / 248 / 303px wide renders are scaled). The
+    # sample content is the app's seed data, not the Figma photos.
+    'post': '09_post_2775-2840.png',
+    'post_tag': '09b_post_tag_2775-2953.png',
+    'product': '10_product_2775-3077.png',
+    'profile': '11_profile_2775-3285.png',
+    'profile_saved': '12_profile_saved_2775-3374.png',
+    'wardrobe': '13_wardrobe_2789-226.png',
 }
 
 

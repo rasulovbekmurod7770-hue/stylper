@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
+import '../../../../core/constants/app_assets.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/router/tab_navigation.dart';
 import '../../../../core/theme/app_colors.dart';
@@ -11,7 +13,8 @@ import '../../../post/domain/entities/post.dart';
 import '../../../post/presentation/cubits/post_engagement_cubit.dart';
 import '../../domain/entities/user_profile.dart';
 
-/// "style-dna-section": the person's style tags.
+/// "style-dna-section": the person's style tags, each a faint chip with a
+/// brand-red dot.
 class StyleDnaSection extends StatelessWidget {
   const StyleDnaSection({super.key, required this.styles});
 
@@ -36,8 +39,8 @@ class StyleDnaSection extends StatelessWidget {
                 height: 38,
                 padding: const EdgeInsets.symmetric(horizontal: 14),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border.all(color: AppColors.hairline),
+                  color: AppColors.controlFillStrong,
+                  border: Border.all(color: AppColors.outlineSoft),
                   borderRadius: const BorderRadius.all(Radius.circular(999)),
                 ),
                 child: Row(
@@ -48,7 +51,7 @@ class StyleDnaSection extends StatelessWidget {
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          gradient: AppColors.brandGradient,
+                          color: AppColors.brandRed,
                         ),
                       ),
                     ),
@@ -78,7 +81,7 @@ class MyStyleSection extends StatelessWidget {
 
     Widget look(PostPreview post) => GestureDetector(
       onTap: () => context.openPost(post.id),
-      child: FeedPhoto(path: post.imagePath, radius: 18),
+      child: FeedPhoto(path: post.imagePath, radius: 20),
     );
 
     return Column(
@@ -121,7 +124,8 @@ class MyStyleSection extends StatelessWidget {
 
 enum ProfileTab { posts, saved, styleBoards }
 
-/// "tab-header": Posts / Saved / Style Boards, the active one underlined.
+/// "tab-header": Posts / Saved / Style Boards over a faint rule, the active
+/// one underlined in brand red.
 class ProfileTabBar extends StatelessWidget {
   const ProfileTabBar({
     super.key,
@@ -139,8 +143,11 @@ class ProfileTabBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    return ColoredBox(
-      color: AppColors.background,
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        color: AppColors.background,
+        border: Border(bottom: BorderSide(color: AppColors.socialBorder)),
+      ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Row(
@@ -166,7 +173,9 @@ class ProfileTabBar extends StatelessWidget {
                           },
                           style: tab == selected
                               ? AppTypography.bodyStrong
-                              : AppTypography.body,
+                              : AppTypography.body.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
@@ -177,7 +186,7 @@ class ProfileTabBar extends StatelessWidget {
                           child: tab == selected
                               ? const DecoratedBox(
                                   decoration: BoxDecoration(
-                                    gradient: AppColors.brandGradient,
+                                    color: AppColors.brandRed,
                                     borderRadius: BorderRadius.all(
                                       Radius.circular(1),
                                     ),
@@ -214,7 +223,7 @@ class ProfilePostsGrid extends StatelessWidget {
         for (final post in posts)
           GestureDetector(
             onTap: () => context.openPost(post.id),
-            child: FeedPhoto(path: post.imagePath, radius: 14),
+            child: FeedPhoto(path: post.imagePath, radius: 18),
           ),
       ],
     );
@@ -284,15 +293,20 @@ class _SavedCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final post = saved.post;
     final author = saved.author;
-    // PROVISIONAL card look until "Profile 4" is exported.
+    const shape = BorderRadius.all(Radius.circular(24));
     return GestureDetector(
       behavior: HitTestBehavior.opaque,
       onTap: () => context.openPost(post.id),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          border: Border.all(color: AppColors.hairline),
-          borderRadius: const BorderRadius.all(Radius.circular(18)),
+      child: Container(
+        clipBehavior: Clip.antiAlias,
+        decoration: const BoxDecoration(
+          color: AppColors.surfaceCard,
+          borderRadius: shape,
+        ),
+        // The outline is drawn over the photo's top edge.
+        foregroundDecoration: BoxDecoration(
+          border: Border.all(color: AppColors.socialBorder),
+          borderRadius: shape,
         ),
         child: Column(
           children: [
@@ -301,7 +315,7 @@ class _SavedCard extends StatelessWidget {
               child: Stack(
                 fit: StackFit.expand,
                 children: [
-                  FeedPhoto(path: post.imagePath, radius: 17),
+                  FeedPhoto(path: post.imagePath, radius: 0),
                   Positioned(
                     top: 12,
                     right: 12,
@@ -325,7 +339,9 @@ class _SavedCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         '@${author.handle}',
-                        style: AppTypography.caption,
+                        style: AppTypography.captionMuted.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -341,7 +357,8 @@ class _SavedCard extends StatelessWidget {
   }
 }
 
-/// "bookmark-tag": a white disc with a filled bookmark; tapping unsaves.
+/// "bookmark-tag": a dark translucent disc with the gradient bookmark;
+/// tapping unsaves.
 class _UnsaveButton extends StatelessWidget {
   const _UnsaveButton({required this.saved});
 
@@ -361,14 +378,15 @@ class _UnsaveButton extends StatelessWidget {
         child: Container(
           width: 32,
           height: 32,
+          alignment: Alignment.center,
           decoration: const BoxDecoration(
-            color: Colors.white,
+            color: Color(0x80000000),
             shape: BoxShape.circle,
           ),
-          child: const Icon(
-            Icons.bookmark,
-            size: 14,
-            color: AppColors.brandRed,
+          child: SvgPicture.asset(
+            AppIcons.bookmarkFilled,
+            width: 14,
+            height: 14,
           ),
         ),
       ),

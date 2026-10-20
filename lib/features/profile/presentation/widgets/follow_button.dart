@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../app/session/sign_in_prompt.dart';
@@ -26,8 +26,8 @@ class FollowButton extends StatelessWidget {
       (FollowingCubit cubit) => cubit.state.of(userId, loaded).following,
     );
 
-    // PROVISIONAL look (Figma's post frame has no Follow): the profile's
-    // Follow button, made compact.
+    // Not in Figma's post frame: the profile's Follow button (2775:3319's
+    // look), made compact.
     return Semantics(
       button: true,
       child: GestureDetector(
@@ -43,16 +43,12 @@ class FollowButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14),
           decoration: BoxDecoration(
             gradient: following ? null : AppColors.brandGradient,
-            border: following
-                ? Border.all(color: AppColors.outlineStrong)
-                : null,
+            border: Border.all(color: AppColors.outlineMedium),
             borderRadius: const BorderRadius.all(Radius.circular(999)),
           ),
           child: Text(
             following ? l10n.profileFollowingButton : l10n.profileFollow,
-            style: AppTypography.captionStrong.copyWith(
-              color: following ? null : Colors.white,
-            ),
+            style: AppTypography.captionStrong,
             maxLines: 1,
           ),
         ),

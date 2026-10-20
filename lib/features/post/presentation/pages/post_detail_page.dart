@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/presentation/compact_count.dart';
-import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/router/tab_navigation.dart';
 import '../../../../core/widgets/user_avatar.dart';
 import '../../../../core/widgets/load_error_view.dart';
+import '../../../../core/widgets/screen_top_bar.dart';
 import '../../../../core/widgets/snackbars.dart';
 import '../../../profile/domain/entities/user_profile.dart';
 import '../../../profile/presentation/widgets/follow_button.dart';
@@ -29,8 +28,8 @@ import '../widgets/tagged_photo.dart';
 /// product cards, and similar posts. Figma draws it without the tab bar; the
 /// app shows the bar on every in-app screen, so it keeps room for it.
 ///
-/// Layout follows the frame's cached metadata; finer styling is
-/// PROVISIONAL until its design context is fetched.
+/// Styled from the frame's design context (design/figma/specs/09_post_…),
+/// in the shared Poppins scale instead of the frame's Inter.
 class PostDetailPage extends StatelessWidget {
   const PostDetailPage({super.key});
 
@@ -77,37 +76,46 @@ class _PostView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final caption = post.caption;
     return CustomScrollView(
       slivers: [
+        // "Card-Outfit": author, photo, actions (and the caption) on the soft
+        // card colour, closed by a hairline.
         SliverToBoxAdapter(
-          child: _AuthorRow(author: post.author, location: post.location),
-        ),
-        SliverToBoxAdapter(child: TaggedPhoto(post: post)),
-        SliverToBoxAdapter(child: _SocialActions(post: post)),
-        if (post.caption case final caption?)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
-              child: Text.rich(
-                TextSpan(
-                  children: [
-                    TextSpan(
-                      text: '${post.author.name} ',
-                      style: AppTypography.label,
+          child: ColoredBox(
+            color: AppColors.surfaceCard,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _AuthorRow(author: post.author, location: post.location),
+                TaggedPhoto(post: post),
+                _SocialActions(post: post),
+                if (caption != null)
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 14),
+                    child: Text.rich(
+                      TextSpan(
+                        children: [
+                          TextSpan(
+                            text: '${post.author.name} ',
+                            style: AppTypography.label.copyWith(
+                              color: AppColors.ink,
+                            ),
+                          ),
+                          TextSpan(text: caption),
+                        ],
+                      ),
+                      style: AppTypography.labelMuted.copyWith(
+                        color: AppColors.ink,
+                      ),
                     ),
-                    TextSpan(text: caption),
-                  ],
+                  ),
+                const SizedBox(
+                  height: 1,
+                  child: ColoredBox(color: AppColors.hairline),
                 ),
-                style: AppTypography.label.copyWith(
-                  fontWeight: FontWeight.w400,
-                ),
-              ),
+              ],
             ),
-          ),
-        const SliverToBoxAdapter(
-          child: SizedBox(
-            height: 1,
-            child: ColoredBox(color: AppColors.hairline),
           ),
         ),
         if (post.products.isNotEmpty)
@@ -181,7 +189,9 @@ class _AuthorRow extends StatelessWidget {
                         children: [
                           Text(
                             author.name,
-                            style: AppTypography.label,
+                            style: AppTypography.label.copyWith(
+                              color: AppColors.ink,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -216,13 +226,16 @@ class _AuthorRow extends StatelessWidget {
               child: GestureDetector(
                 behavior: HitTestBehavior.opaque,
                 onTap: () => context.showMessage(l10n.comingSoon),
-                child: const SizedBox(
+                child: SizedBox(
                   width: 32,
                   height: 32,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    spacing: 3,
-                    children: [_Dot(), _Dot(), _Dot()],
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: SvgPicture.asset(
+                      AppIcons.moreHorizontal,
+                      width: 15,
+                      height: 3,
+                    ),
                   ),
                 ),
               ),
@@ -232,21 +245,6 @@ class _AuthorRow extends StatelessWidget {
       ),
     );
   }
-}
-
-class _Dot extends StatelessWidget {
-  const _Dot();
-
-  @override
-  Widget build(BuildContext context) => const SizedBox.square(
-    dimension: 3,
-    child: DecoratedBox(
-      decoration: BoxDecoration(
-        color: AppColors.textPrimary,
-        shape: BoxShape.circle,
-      ),
-    ),
-  );
 }
 
 /// "Social-Actions" (48px): like, comments, share — and save on the right.
@@ -270,7 +268,7 @@ class _SocialActions extends StatelessWidget {
               postId: post.id,
               loaded: post.engagement,
               iconSize: 18,
-              countStyle: AppTypography.label,
+              countStyle: AppTypography.labelMuted,
             ),
             const SizedBox(width: 20),
             _IconAction(
@@ -289,7 +287,7 @@ class _SocialActions extends StatelessWidget {
                   ExcludeSemantics(
                     child: Text(
                       compactCount(post.commentCount),
-                      style: AppTypography.label,
+                      style: AppTypography.labelMuted,
                     ),
                   ),
                 ],
@@ -299,12 +297,7 @@ class _SocialActions extends StatelessWidget {
             _IconAction(
               label: l10n.postShare,
               onTap: comingSoon,
-              // PROVISIONAL icon until the post frame's "send" is exported.
-              child: const Icon(
-                Icons.send_outlined,
-                size: 18,
-                color: AppColors.textMuted,
-              ),
+              child: SvgPicture.asset(AppIcons.send, width: 18, height: 18),
             ),
             const Spacer(),
             SaveButton(postId: post.id, loaded: post.engagement, iconSize: 18),
@@ -352,14 +345,8 @@ class _WithBackButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        IconButton(
-          tooltip: context.l10n.back,
-          icon: const Icon(Icons.chevron_left, color: AppColors.textPrimary),
-          onPressed: () =>
-              context.canPop() ? context.pop() : context.go(AppRoutes.home),
-        ),
+        const ScreenTopBar(),
         Expanded(child: child),
       ],
     );

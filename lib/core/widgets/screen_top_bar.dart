@@ -45,22 +45,25 @@ class ScreenTopBar extends StatelessWidget {
   }
 }
 
-/// A 36px round button for a top bar.
+/// A 36px round button for a top bar: tinted, as the product header's
+/// (2775:3085), or on the soft card colour with a faint outline, as the
+/// profile's (2775:3297).
 class TopBarButton extends StatelessWidget {
   const TopBarButton({
     super.key,
     required this.label,
     required this.onTap,
     required this.icon,
+    this.card = false,
   });
 
   final String label;
   final VoidCallback onTap;
   final Widget icon;
+  final bool card;
 
   @override
   Widget build(BuildContext context) {
-    // PROVISIONAL look until the frames' design context is cached.
     return Semantics(
       button: true,
       label: label,
@@ -73,7 +76,8 @@ class TopBarButton extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: AppColors.inputBorder),
+            color: card ? AppColors.surfaceCard : AppColors.iconButtonFill,
+            border: card ? Border.all(color: AppColors.socialBorder) : null,
           ),
           child: icon,
         ),
@@ -84,11 +88,14 @@ class TopBarButton extends StatelessWidget {
 
 /// Pops the current screen, or goes home when there's nothing to pop.
 class TopBarBackButton extends StatelessWidget {
-  const TopBarBackButton({super.key});
+  const TopBarBackButton({super.key, this.card = false});
+
+  final bool card;
 
   @override
   Widget build(BuildContext context) {
     return TopBarButton(
+      card: card,
       label: context.l10n.back,
       onTap: () =>
           context.canPop() ? context.pop() : context.go(AppRoutes.home),

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -6,7 +6,6 @@ import '../../../../app/session/sign_in_prompt.dart';
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/presentation/compact_count.dart';
-import '../../../../core/theme/app_colors.dart';
 import '../../domain/entities/post.dart';
 import '../cubits/post_engagement_cubit.dart';
 
@@ -94,11 +93,10 @@ class SaveButton extends StatelessWidget {
             engagement,
           ),
         ),
-        // PROVISIONAL icon until the post frame's "bookmark" is exported.
-        child: Icon(
-          engagement.saved ? Icons.bookmark : Icons.bookmark_border,
-          size: iconSize,
-          color: engagement.saved ? AppColors.brandRed : AppColors.textMuted,
+        child: SvgPicture.asset(
+          engagement.saved ? AppIcons.bookmarkFilled : AppIcons.bookmark,
+          width: iconSize,
+          height: iconSize,
         ),
       ),
     );

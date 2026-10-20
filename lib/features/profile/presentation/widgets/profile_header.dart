@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../app/session/sign_in_prompt.dart';
+import '../../../../core/constants/app_assets.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/presentation/compact_count.dart';
 import '../../../../core/router/tab_navigation.dart';
@@ -34,35 +36,34 @@ class ProfileTopBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     void comingSoon() => context.showMessage(l10n.comingSoon);
-    // PROVISIONAL icons until the frames' button icons are exported.
     final leading = profile.isMe
         ? TopBarButton(
+            card: true,
             label: l10n.profileShare,
             onTap: comingSoon,
-            icon: const Icon(
-              Icons.ios_share,
-              size: 18,
-              color: AppColors.textPrimary,
-            ),
+            icon: SvgPicture.asset(AppIcons.share, width: 18, height: 18),
           )
-        : const TopBarBackButton();
+        : const TopBarBackButton(card: true);
     final trailing = profile.isMe
         ? TopBarButton(
+            card: true,
             label: l10n.profileSettings,
             onTap: () => showSettingsSheet(context),
-            icon: const Icon(
-              Icons.settings_outlined,
-              size: 18,
-              color: AppColors.textPrimary,
-            ),
+            icon: SvgPicture.asset(AppIcons.settings, width: 18, height: 18),
           )
+        // Not in Figma: someone else's profile has More instead.
         : TopBarButton(
+            card: true,
             label: l10n.postMore,
             onTap: comingSoon,
-            icon: const Icon(
-              Icons.more_horiz,
-              size: 18,
-              color: AppColors.textPrimary,
+            icon: SvgPicture.asset(
+              AppIcons.moreHorizontal,
+              width: 15,
+              height: 3,
+              colorFilter: const ColorFilter.mode(
+                AppColors.textPrimary,
+                BlendMode.srcIn,
+              ),
             ),
           );
 
@@ -105,8 +106,8 @@ class _CompactIdentity extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        UserAvatar(name: profile.name, imagePath: profile.avatarPath, size: 44),
-        const SizedBox(width: 12),
+        UserAvatar(name: profile.name, imagePath: profile.avatarPath, size: 54),
+        const SizedBox(width: 16),
         Expanded(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -120,7 +121,9 @@ class _CompactIdentity extends StatelessWidget {
               ),
               Text(
                 '@${profile.handle}',
-                style: AppTypography.captionMuted,
+                style: AppTypography.captionMuted.copyWith(
+                  color: AppColors.textSecondary,
+                ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -147,26 +150,19 @@ class ProfileHero extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
-          // "avatar-shell": a brand-gradient ring around the 88px photo.
+          // "avatar-shell": a faint ring around the 88px photo.
           Container(
             width: 96,
             height: 96,
-            padding: const EdgeInsets.all(2),
-            decoration: const BoxDecoration(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              gradient: AppColors.brandGradient,
+              border: Border.all(color: AppColors.outlineSoft),
             ),
-            child: Container(
-              padding: const EdgeInsets.all(2),
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                color: AppColors.background,
-              ),
-              child: UserAvatar(
-                name: profile.name,
-                imagePath: profile.avatarPath,
-                size: 88,
-              ),
+            child: UserAvatar(
+              name: profile.name,
+              imagePath: profile.avatarPath,
+              size: 88,
             ),
           ),
           const SizedBox(height: 14),
@@ -178,12 +174,17 @@ class ProfileHero extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           const SizedBox(height: 6),
-          Text('@${profile.handle}', style: AppTypography.body),
+          Text(
+            '@${profile.handle}',
+            style: AppTypography.bodyStrong.copyWith(color: AppColors.brandRed),
+          ),
           if (profile.bio.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text(
               profile.bio,
-              style: AppTypography.labelMuted,
+              style: AppTypography.labelMuted.copyWith(
+                color: AppColors.textSecondary,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -217,13 +218,9 @@ class _Stats extends StatelessWidget {
         GestureDetector(
           behavior: HitTestBehavior.opaque,
           onTap: onTap,
-          child: Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(text: compactCount(count), style: AppTypography.label),
-                TextSpan(text: ' $label', style: AppTypography.labelMuted),
-              ],
-            ),
+          child: Text(
+            '${compactCount(count)} $label',
+            style: AppTypography.label,
           ),
         );
     const dot = SizedBox.square(
@@ -231,7 +228,7 @@ class _Stats extends StatelessWidget {
       child: DecoratedBox(
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: AppColors.textMuted,
+          color: AppColors.statDot,
         ),
       ),
     );
@@ -322,8 +319,8 @@ class _Actions extends StatelessWidget {
   }
 }
 
-/// "edit-profile-btn": a 36px pill, filled with the brand gradient or
-/// outlined.
+/// "edit-profile-btn": a 36px outlined pill, or filled with the brand
+/// gradient — dark text on both, as in Figma.
 class ProfileButton extends StatelessWidget {
   const ProfileButton({
     super.key,
@@ -338,7 +335,6 @@ class ProfileButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // PROVISIONAL look until the frame's design context is cached.
     return Semantics(
       button: true,
       child: GestureDetector(
@@ -350,14 +346,12 @@ class ProfileButton extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12),
           decoration: BoxDecoration(
             gradient: filled ? AppColors.brandGradient : null,
-            border: filled ? null : Border.all(color: AppColors.outlineStrong),
+            border: Border.all(color: AppColors.outlineMedium),
             borderRadius: const BorderRadius.all(Radius.circular(999)),
           ),
           child: Text(
             label,
-            style: AppTypography.captionStrong.copyWith(
-              color: filled ? Colors.white : null,
-            ),
+            style: AppTypography.captionStrong,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

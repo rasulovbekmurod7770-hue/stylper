@@ -826,11 +826,11 @@ abstract class AppLocalizations {
   /// **'My Wardrobe'**
   String get wardrobeTitle;
 
-  /// No description provided for @wardrobeAddItem.
+  /// No description provided for @wardrobeQuickScan.
   ///
   /// In en, this message translates to:
-  /// **'Add item'**
-  String get wardrobeAddItem;
+  /// **'Quick Scan'**
+  String get wardrobeQuickScan;
 
   /// No description provided for @wardrobeAddNewItem.
   ///

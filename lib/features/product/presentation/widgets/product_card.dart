@@ -27,8 +27,8 @@ class ProductCard extends StatelessWidget {
           // 10px to the photo in Figma, including the 1px border.
           padding: const EdgeInsets.all(9),
           decoration: BoxDecoration(
-            color: const Color(0xFFFFFFFF),
-            border: Border.all(color: AppColors.hairline),
+            color: AppColors.surfaceCard,
+            border: Border.all(color: AppColors.inputBorder),
             borderRadius: const BorderRadius.all(Radius.circular(16)),
           ),
           child: Column(
@@ -39,27 +39,32 @@ class ProductCard extends StatelessWidget {
                 width: double.infinity,
                 padding: const EdgeInsets.all(12),
                 decoration: const BoxDecoration(
-                  color: AppColors.inputFill,
-                  borderRadius: BorderRadius.all(Radius.circular(12)),
+                  color: AppColors.imageBackdrop,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
                 child: Image(
                   image: imageFromPath(product.imagePath),
                   fit: BoxFit.contain,
                 ),
               ),
-              const SizedBox(height: 7),
-              Text(product.brand, style: AppTypography.meta, maxLines: 1),
+              const SizedBox(height: 8),
+              Text(
+                product.brand.toUpperCase(),
+                style: AppTypography.overline,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               const SizedBox(height: 2),
               Text(
                 product.name,
-                style: AppTypography.captionStrong,
+                style: AppTypography.caption,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
               const SizedBox(height: 2),
               Text(
                 formatPrice(product.price, l10n.localeName),
-                style: AppTypography.label,
+                style: AppTypography.captionStrong,
               ),
             ],
           ),
