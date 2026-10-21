@@ -117,11 +117,11 @@ it", local brands first, and trust (nothing that misleads).
   54320–54329 are reserved on the dev machine
   (`/etc/sysctl.d/60-supabase-ports.conf`) so other apps can't take them.
 - **The SQL tests must pass after any schema change**, and new features add
-  tests to `supabase/tests/01_rls_and_workflows.sql`. They leave their seed
-  data behind, so always reset first:
+  tests to `supabase/tests/01_rls_and_workflows.sql`. They run in one
+  transaction that's rolled back, so they can run any time; after editing
+  migrations, `npx supabase db reset` first to apply them:
 
   ```bash
-  npx supabase db reset
   psql postgresql://postgres:postgres@127.0.0.1:54322/postgres \
     -v ON_ERROR_STOP=1 -f supabase/tests/01_rls_and_workflows.sql
   # → ALL TESTS PASSED

@@ -1,7 +1,12 @@
 -- Behaviour tests for the Stylper schema. Run after 00_supabase_stub.sql and
 -- the migration. Every check is an ASSERT; the script stops at the first failure.
+-- Everything runs in one transaction that is rolled back at the end (or when
+-- psql stops on a failure), so the database is left as it was and the script
+-- can be run again without a reset.
 \set ON_ERROR_STOP 1
 \set QUIET 1
+
+begin;
 
 -- Fixed ids:  A = Aziza (creator)   B = Bobur   C = Kamila (private account)
 --             M = COS team member   X = random user, no brand
@@ -301,3 +306,5 @@ do $$ begin
 end $$;
 
 \echo ALL TESTS PASSED
+
+rollback;
