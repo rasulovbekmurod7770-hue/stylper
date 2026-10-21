@@ -78,10 +78,11 @@ it", local brands first, and trust (nothing that misleads).
   removed on purpose): every post is public. After publishing,
   `PublishedPostsCubit` (app-wide) tells screens that list your posts to
   refresh.
-- **No backend yet, and no Firebase.** The real API will be a custom REST
-  backend (likely Node.js). Every remote call goes through a
-  `*RemoteDataSource` interface; until the API exists, a `Fake…` data source
-  calls `lib/core/fake_backend/fake_backend.dart`. A new endpoint gets a
+- **The app still runs on `FakeBackend`; no Firebase.** The real backend is
+  Supabase (see **Backend** below), not wired into the app yet. Every remote
+  call goes through a `*RemoteDataSource` interface; until it's switched to
+  Supabase, a `Fake…` data source calls
+  `lib/core/fake_backend/fake_backend.dart`. A new endpoint gets a
   `FakeBackend` method documenting its route and JSON, and is registered in
   the **Backend** block of `lib/app/di/injection.dart`.
 - Content image fields are asset paths now and URLs later; render them with
@@ -101,6 +102,34 @@ it", local brands first, and trust (nothing that misleads).
   (`AppRoutes.isMainRoute`); routing is driven by `SessionCubit` + `redirectFor`.
 - Colors and text styles live in `lib/core/theme` (`AppColors`,
   `AppTypography`); add tokens there rather than repeating values.
+
+## Backend (Supabase)
+
+- The backend lives in `supabase/`: schema, RLS, triggers and RPCs in
+  `migrations/`, behaviour tests in `tests/`, local config in `config.toml`.
+  **`STYLPER_BACKEND_SPEC.md` (repo root) is the source of truth** for what to
+  build and in what order (§10); read the migration's comments before
+  changing the schema, and add changes as new numbered migrations.
+- Local stack (Docker): `npx supabase start` applies the migrations,
+  `npx supabase db reset` re-applies them on an empty database,
+  `npx supabase stop` shuts it down. Database:
+  `postgresql://postgres:postgres@127.0.0.1:54322/postgres`. Ports
+  54320–54329 are reserved on the dev machine
+  (`/etc/sysctl.d/60-supabase-ports.conf`) so other apps can't take them.
+- **The SQL tests must pass after any schema change**, and new features add
+  tests to `supabase/tests/01_rls_and_workflows.sql`. They leave their seed
+  data behind, so always reset first:
+
+  ```bash
+  npx supabase db reset
+  psql postgresql://postgres:postgres@127.0.0.1:54322/postgres \
+    -v ON_ERROR_STOP=1 -f supabase/tests/01_rls_and_workflows.sql
+  # → ALL TESTS PASSED
+  ```
+
+  Never run `00_supabase_stub.sql` against Supabase: it stands in for the
+  real `auth` schema on plain Postgres only (spec §11). The tests are plain
+  SQL asserts, not pgTAP, so `supabase test db` doesn't apply.
 
 ## Design (Figma)
 
