@@ -10,8 +10,8 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/feed_photo.dart';
 import '../../../post/presentation/widgets/tagged_photo.dart';
-import '../../../product/domain/entities/product.dart';
 import '../../domain/entities/post_draft.dart';
+import '../../domain/entities/taggable_item.dart';
 
 /// "TopBar" of the posting steps: close (step 1) or back, the title, and
 /// "Next" when there's a next step.
@@ -151,20 +151,19 @@ class PostingSteps extends StatelessWidget {
   }
 }
 
-/// "Horizontal product card": the cut-out, name, brand and price.
-class ProductResultCard extends StatelessWidget {
-  const ProductResultCard({
-    super.key,
-    required this.product,
-    required this.onTap,
-  });
+/// "Horizontal product card": the cut-out, name, brand and price. An item
+/// the user added themselves has no photo (Figma 2978:386) and maybe no
+/// price.
+class ItemResultCard extends StatelessWidget {
+  const ItemResultCard({super.key, required this.item, required this.onTap});
 
-  final ProductSummary product;
+  final TaggableItem item;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final (image, price) = (item.imagePath, item.price);
     return Semantics(
       button: true,
       child: GestureDetector(
@@ -178,15 +177,18 @@ class ProductResultCard extends StatelessWidget {
               height: 84,
               child: Row(
                 children: [
-                  Container(
-                    width: 112,
-                    color: AppColors.imageBackdrop,
-                    padding: const EdgeInsets.all(8),
-                    child: Image(
-                      image: imageFromPath(product.imagePath),
-                      fit: BoxFit.contain,
-                    ),
-                  ),
+                  if (image != null)
+                    Container(
+                      width: 112,
+                      color: AppColors.imageBackdrop,
+                      padding: const EdgeInsets.all(8),
+                      child: Image(
+                        image: imageFromPath(image),
+                        fit: BoxFit.contain,
+                      ),
+                    )
+                  else
+                    const SizedBox(width: 10),
                   Expanded(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
@@ -194,20 +196,26 @@ class ProductResultCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            product.name,
+                            item.name,
                             style: AppTypography.label,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          Text(product.brand, style: AppTypography.meta),
-                          const Spacer(),
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              formatPrice(product.price, l10n.localeName),
-                              style: AppTypography.captionMuted,
-                            ),
+                          Text(
+                            item.brand,
+                            style: AppTypography.meta,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
+                          const Spacer(),
+                          if (price != null)
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                formatPrice(price, l10n),
+                                style: AppTypography.captionMuted,
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -367,7 +375,7 @@ class _PlacedTag extends StatelessWidget {
                   ConstrainedBox(
                     constraints: BoxConstraints(maxWidth: canvas.width * 0.5),
                     child: Text(
-                      '${tag.brand} · ${tag.label}',
+                      '${tag.item.brand} · ${tag.item.label}',
                       style: AppTypography.captionStrong,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

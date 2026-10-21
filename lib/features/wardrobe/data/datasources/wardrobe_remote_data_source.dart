@@ -8,9 +8,13 @@ abstract interface class WardrobeRemoteDataSource {
   /// GET /me/wardrobe → `{categories: [{id, count, image?}]}`
   Future<Map<String, Object?>> getCategories();
 
-  /// GET /me/wardrobe/:category → `{items: [{id, name, brand?, image,
-  /// productId?}]}`
+  /// GET /me/wardrobe/:category → `{items: [{id, name, brand?, image?,
+  /// price?, productId?}]}`
   Future<Map<String, Object?>> getItems(String category);
+
+  /// POST /me/wardrobe/items, body `{name, brand, category, price?}` → the
+  /// new item.
+  Future<Map<String, Object?>> addItem(Map<String, Object?> body);
 
   /// PUT (saved) / DELETE /me/wardrobe/items/:id → `{inWardrobe}`
   Future<Map<String, Object?>> setInWardrobe(
@@ -33,6 +37,10 @@ class FakeWardrobeRemoteDataSource implements WardrobeRemoteDataSource {
   @override
   Future<Map<String, Object?>> getItems(String category) async =>
       _backend.wardrobeCategory(await _tokenStore.read(), category);
+
+  @override
+  Future<Map<String, Object?>> addItem(Map<String, Object?> body) async =>
+      _backend.addWardrobeItem(await _tokenStore.read(), body);
 
   @override
   Future<Map<String, Object?>> setInWardrobe(

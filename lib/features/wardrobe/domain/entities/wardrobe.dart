@@ -1,5 +1,7 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../../core/domain/money.dart';
+
 /// Category ids the API uses, in display order.
 abstract final class WardrobeCategories {
   static const tops = 'tops';
@@ -32,8 +34,9 @@ class WardrobeItem extends Equatable {
   const WardrobeItem({
     required this.id,
     required this.name,
-    required this.imagePath,
+    this.imagePath,
     this.brand,
+    this.price,
     this.productId,
   });
 
@@ -41,12 +44,40 @@ class WardrobeItem extends Equatable {
   final String name;
 
   /// Bundled asset path for now; an image URL once it comes from the API.
-  final String imagePath;
+  /// Null for an item added without a photo.
+  final String? imagePath;
   final String? brand;
+
+  /// Null when the user didn't give one for an item they added.
+  final Money? price;
 
   /// Set when the item is a catalog product, which opens its product page.
   final String? productId;
 
   @override
-  List<Object?> get props => [id, name, imagePath, brand, productId];
+  List<Object?> get props => [id, name, imagePath, brand, price, productId];
+}
+
+/// Clothes the user adds to their wardrobe themselves, because no brand on
+/// Stylper sells them. Private to their wardrobe; tagged on a post, it shows
+/// everyone what the item is.
+class NewWardrobeItem extends Equatable {
+  const NewWardrobeItem({
+    required this.name,
+    required this.brand,
+    required this.category,
+    this.price,
+  });
+
+  final String name;
+  final String brand;
+
+  /// One of [WardrobeCategories].
+  final String category;
+
+  /// Optional.
+  final Money? price;
+
+  @override
+  List<Object?> get props => [name, brand, category, price];
 }

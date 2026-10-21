@@ -6,18 +6,26 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../product/domain/entities/product.dart';
 import '../../../wardrobe/domain/entities/wardrobe.dart';
+import '../../../wardrobe/presentation/cubits/add_item_cubit.dart';
+import '../../../wardrobe/presentation/cubits/wardrobe_membership_cubit.dart';
 import '../../../wardrobe/presentation/wardrobe_category_label.dart';
+import '../../../wardrobe/presentation/widgets/add_item_card.dart';
+import '../../../wardrobe/presentation/widgets/add_item_sheet.dart';
+import '../../domain/entities/taggable_item.dart';
 import '../cubits/tag_search_cubit.dart';
 import '../posting_failure_message.dart';
 import 'posting_widgets.dart';
 
 /// Opens the item search (Figma "Screen2-AddHotspotTags", sheet variants);
-/// completes with the chosen product, or null if dismissed.
-Future<ProductSummary?> showProductSearch(BuildContext context) {
+/// completes with the chosen item — maybe one the user added to their
+/// wardrobe right there because no brand sells it — or null if dismissed.
+Future<TaggableItem?> showItemSearch(BuildContext context) {
   final search = context.read<TagSearchCubit>();
-  return showModalBottomSheet<ProductSummary>(
+  // The sheet may sit on a navigator above the page's providers.
+  final addItem = context.read<AddItemCubit>();
+  final membership = context.read<WardrobeMembershipCubit>();
+  return showModalBottomSheet<TaggableItem>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
@@ -25,8 +33,14 @@ Future<ProductSummary?> showProductSearch(BuildContext context) {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
-    builder: (_) =>
-        BlocProvider.value(value: search, child: const _ProductSearch()),
+    builder: (_) => MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: search),
+        BlocProvider.value(value: addItem),
+        BlocProvider.value(value: membership),
+      ],
+      child: const _ProductSearch(),
+    ),
   );
 }
 
@@ -147,6 +161,8 @@ class _ProductSearchState extends State<_ProductSearch> {
   Widget _results(BuildContext context, TagSearchState state) {
     final l10n = context.l10n;
     final failure = state.failure;
+    // Not found in any catalog: add it to the wardrobe and tag that.
+    final addNew = AddItemCard(onTap: () => _addNew(context, state));
     if (failure != null && state.results.isEmpty) {
       return _Message(failure.message(l10n));
     }
@@ -155,20 +171,32 @@ class _ProductSearchState extends State<_ProductSearch> {
           ? const Center(
               child: CircularProgressIndicator(color: AppColors.accent),
             )
-          : _Message(l10n.postingNoResults);
+          : ListView(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              children: [_Message(l10n.postingNoResults), addNew],
+            );
     }
     return ListView.separated(
       padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-      itemCount: state.results.length,
+      itemCount: state.results.length + 1,
       separatorBuilder: (_, _) => const SizedBox(height: 9),
       itemBuilder: (context, index) {
-        final product = state.results[index];
-        return ProductResultCard(
-          product: product,
-          onTap: () => Navigator.of(context).pop(product),
+        if (index == state.results.length) return addNew;
+        final item = state.results[index];
+        return ItemResultCard(
+          item: item,
+          onTap: () => Navigator.of(context).pop(item),
         );
       },
     );
+  }
+
+  Future<void> _addNew(BuildContext context, TagSearchState state) async {
+    final added = await showAddItemSheet(context, category: state.category);
+    if (added == null || !context.mounted) return;
+    final item = TaggableItem.own(added);
+    context.read<TagSearchCubit>().addedItem(item);
+    Navigator.of(context).pop(item);
   }
 }
 

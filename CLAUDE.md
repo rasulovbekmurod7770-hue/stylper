@@ -67,8 +67,14 @@ it", local brands first, and trust (nothing that misleads).
   (`test/helpers/fake_media.dart`). Photo access is asked **once** (the
   user's requirement, iOS-style): a shared_preferences flag stops Android
   from re-prompting after a denial; afterwards it's Settings or "Manage".
-  Tagged items come from the brands' catalogs via the backend search, never
-  free text. There is **no audience setting** ("Share to followers" was
+  Tagged items come from the brands' catalogs via the backend search — or
+  from the user's own wardrobe: clothes no brand on Stylper sells are added
+  with "Add New Item" (`features/wardrobe` `showAddItemSheet`: name, brand,
+  category; price optional), private to their wardrobe and never in product
+  search. Tagged on a post they're copied into it and shown to everyone as
+  "Added by {author}", with no product page, Shop or styled count (trust:
+  nobody should take them for a brand's listing). Search's "My Wardrobe"
+  finds them for later posts. There is **no audience setting** ("Share to followers" was
   removed on purpose): every post is public. After publishing,
   `PublishedPostsCubit` (app-wide) tells screens that list your posts to
   refresh.
@@ -80,6 +86,11 @@ it", local brands first, and trust (nothing that misleads).
   the **Backend** block of `lib/app/di/injection.dart`.
 - Content image fields are asset paths now and URLs later; render them with
   `imageFromPath` (`lib/core/presentation/image_source.dart`).
+- **Prices are in Uzbek soʻm everywhere** (the user's decision), even where
+  Figma shows `$`: `Money.currency` is `appCurrency` (`'UZS'`, whole soʻm),
+  and prices are shown only through `formatPrice(price, l10n)` —
+  "1 130 000 soʻm" (uz), "1 130 000 сум" (ru), "1,130,000 UZS" (en). They're
+  long, so leave them a line of their own in narrow cards.
 - Every user-facing string goes into all three of `lib/l10n/app_{en,ru,uz}.arb`
   (Uzbek is Latin script, with `ʻ`), then `flutter gen-l10n`. Content from the
   backend (names, captions, tags) isn't localized.
@@ -112,7 +123,12 @@ it", local brands first, and trust (nothing that misleads).
   only, styling PROVISIONAL: posting `2849:1017` (media
   `2820:76`, tag items `2845:396` + search-sheet variants, details
   `2820:198`, publish `2820:253`) from the section screenshot
-  `design/figma/screens/08_posting_2849-1017.png` (per-step crops `08a`–`08d`).
+  `design/figma/screens/08_posting_2849-1017.png` (per-step crops `08a`–`08d`);
+  "Add New Item" while tagging `2974:66565` (item details sheet) and
+  `2974:67417` (item added) are from their design context (specs `08e` /
+  `08f`; the form adds a Category row, which Figma lacks). Fresh section
+  metadata: `design/figma/metadata_2849-1017.xml`. The wardrobe's own "Add
+  New Item" opens the same form.
   Not in Figma, built from the same pieces: product "See all looks",
   wardrobe category, settings sheet. **Search** (the tab) has no Figma frame:
   it follows the Search screen of the claude.ai "Stylper Prototype"

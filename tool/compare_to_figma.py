@@ -32,6 +32,10 @@ PAIRS = {
     'posting_tag': '08b_posting_tag_2845-396.png',
     'posting_details': '08c_posting_details_2820-198.png',
     'posting_publish': '08d_posting_publish_2820-253.png',
+    # "Add New Item" (2974:66565, 2974:67417); the app's form adds a
+    # Category row.
+    'posting_add_item': '08e_posting_add_item_2974-66565.png',
+    'posting_item_added': '08f_posting_item_added_2974-67417.png',
     # Fetched 2026-10-20 (311 / 248 / 303px wide renders are scaled). The
     # sample content is the app's seed data, not the Figma photos.
     'post': '09_post_2775-2840.png',

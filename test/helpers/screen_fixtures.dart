@@ -53,7 +53,6 @@ import 'package:stylper/features/posting/presentation/pages/posting_details_page
 import 'package:stylper/features/posting/presentation/pages/publish_page.dart';
 import 'package:stylper/features/posting/presentation/pages/tag_items_page.dart';
 import 'package:stylper/features/posting/presentation/widgets/posting_widgets.dart';
-import 'package:stylper/features/product/domain/entities/product.dart';
 import 'package:stylper/features/product/data/models/product_json.dart';
 import 'package:stylper/features/product/domain/usecases/get_product.dart';
 import 'package:stylper/features/product/presentation/cubits/product_detail_cubit.dart';
@@ -73,6 +72,15 @@ import 'package:stylper/features/search/domain/usecases/search_usecases.dart';
 import 'package:stylper/features/search/presentation/cubits/search_cubit.dart';
 import 'package:stylper/features/search/presentation/pages/search_page.dart';
 import 'package:stylper/features/wardrobe/data/models/wardrobe_json.dart';
+import 'package:stylper/features/posting/domain/entities/taggable_item.dart';
+import 'package:stylper/features/wardrobe/data/datasources/wardrobe_remote_data_source.dart';
+import 'package:stylper/features/wardrobe/data/repositories/wardrobe_repository_impl.dart';
+import 'package:stylper/features/wardrobe/domain/entities/wardrobe.dart';
+import 'package:stylper/features/wardrobe/domain/failures/wardrobe_failure.dart';
+import 'package:stylper/features/wardrobe/domain/repositories/wardrobe_repository.dart';
+import 'package:stylper/features/wardrobe/presentation/cubits/add_item_cubit.dart';
+import 'package:stylper/features/wardrobe/presentation/widgets/add_item_card.dart';
+import 'package:stylper/features/wardrobe/presentation/widgets/add_item_sheet.dart';
 import 'package:stylper/features/wardrobe/domain/usecases/wardrobe_usecases.dart';
 import 'package:stylper/features/wardrobe/presentation/cubits/wardrobe_cubit.dart';
 import 'package:stylper/features/wardrobe/presentation/pages/wardrobe_page.dart';
@@ -167,25 +175,29 @@ ProfileCubit _ownProfileCubit() {
 
 /// John's posting endpoints on the fake backend, signed in on first use.
 class _JohnsPosting implements PostingRepository {
-  late final Future<PostingRepository> _repository = () async {
+  /// The signed-in backend, shared with [_JohnsWardrobe].
+  late final Future<(FakeBackend, InMemoryAuthTokenStore)> session = () async {
     final (backend, token) = await _signedInBackend();
     final tokens = InMemoryAuthTokenStore();
     await tokens.save(token);
-    return PostingRepositoryImpl(
-      remote: FakePostingRemoteDataSource(backend, tokens),
-    );
+    return (backend, tokens);
   }();
 
+  late final Future<PostingRepository> _repository = session.then(
+    (s) =>
+        PostingRepositoryImpl(remote: FakePostingRemoteDataSource(s.$1, s.$2)),
+  );
+
   @override
-  Future<Either<PostingFailure, List<ProductSummary>>> searchProducts(
+  Future<Either<PostingFailure, List<TaggableItem>>> searchItems(
     String query, {
     String? category,
     bool mine = false,
   }) async =>
-      (await _repository).searchProducts(query, category: category, mine: mine);
+      (await _repository).searchItems(query, category: category, mine: mine);
 
   @override
-  Future<Either<PostingFailure, List<ProductSummary>>> recentTags() async =>
+  Future<Either<PostingFailure, List<TaggableItem>>> recentTags() async =>
       (await _repository).recentTags();
 
   @override
@@ -197,10 +209,45 @@ class _JohnsPosting implements PostingRepository {
       (await _repository).publish(draft);
 }
 
+/// John's wardrobe on the same backend as his posting endpoints, so items
+/// he adds while tagging can be found and published.
+class _JohnsWardrobe implements WardrobeRepository {
+  _JohnsWardrobe(this._posting);
+
+  final _JohnsPosting _posting;
+
+  late final Future<WardrobeRepository> _repository = _posting.session.then(
+    (s) => WardrobeRepositoryImpl(
+      remote: FakeWardrobeRemoteDataSource(s.$1, s.$2),
+    ),
+  );
+
+  @override
+  Future<Either<WardrobeFailure, List<WardrobeCategory>>>
+  getCategories() async => (await _repository).getCategories();
+
+  @override
+  Future<Either<WardrobeFailure, List<WardrobeItem>>> getItems(
+    String category,
+  ) async => (await _repository).getItems(category);
+
+  @override
+  Future<Either<WardrobeFailure, bool>> setInWardrobe(
+    String itemId, {
+    required bool saved,
+  }) async => (await _repository).setInWardrobe(itemId, saved: saved);
+
+  @override
+  Future<Either<WardrobeFailure, WardrobeItem>> addItem(
+    NewWardrobeItem item,
+  ) async => (await _repository).addItem(item);
+}
+
 /// The Figma posting sample: John's grey knit with two tagged items, posted
 /// in Tashkent as Minimal / Casual, filled in up to [step] (0–3).
 Widget _posting(Widget page, {required int step}) {
   final posting = _JohnsPosting();
+  final wardrobe = _JohnsWardrobe(posting);
   final draft = PostDraftCubit(GetPostStyles(posting), PublishPost(posting))
     ..loadStyles();
   if (step >= 1) draft.setPhoto('assets/images/posts/john_knit.webp');
@@ -208,20 +255,26 @@ Widget _posting(Widget page, {required int step}) {
     draft
       ..addTag(
         const DraftTag(
-          productId: 'p_polo_arket',
-          brand: 'ARKET',
-          label: 'Sweater',
-          imagePath: AppImages.quizRugbyPoloSweater,
+          item: TaggableItem(
+            id: 'p_polo_arket',
+            name: 'Rugby Polo Sweater',
+            label: 'Sweater',
+            brand: 'ARKET',
+            imagePath: AppImages.quizRugbyPoloSweater,
+          ),
           x: 0.42,
           y: 0.24,
         ),
       )
       ..addTag(
         const DraftTag(
-          productId: 'p_jeans_kink',
-          brand: 'Kink',
-          label: 'Jeans',
-          imagePath: AppImages.quizBaggyJeans,
+          item: TaggableItem(
+            id: 'p_jeans_kink',
+            name: 'Baggy Jeans',
+            label: 'Jeans',
+            brand: 'Kink',
+            imagePath: AppImages.quizBaggyJeans,
+          ),
           x: 0.5,
           y: 0.62,
         ),
@@ -243,9 +296,10 @@ Widget _posting(Widget page, {required int step}) {
           BlocProvider.value(value: draft),
           BlocProvider(
             create: (_) =>
-                TagSearchCubit(SearchProducts(posting), GetRecentTags(posting))
+                TagSearchCubit(SearchItems(posting), GetRecentTags(posting))
                   ..load(),
           ),
+          BlocProvider(create: (_) => AddItemCubit(AddWardrobeItem(wardrobe))),
           BlocProvider(
             create: (_) => MediaPickerCubit(FakeMediaRepository())..start(),
           ),
@@ -279,6 +333,89 @@ Widget _search() {
 
 /// Types [query] into Search and waits for the results; [keyboard] is the
 /// on-screen keyboard's height, if it's up.
+/// John's wardrobe in the Profile tab.
+Widget _wardrobe() {
+  final getWardrobe = _MockGetWardrobe();
+  when(() => getWardrobe(any())).thenAnswer((_) async {
+    final (backend, token) = await _signedInBackend();
+    return Right(WardrobeJson.categories(await backend.wardrobe(token)));
+  });
+  return _inShell(
+    MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => WardrobeCubit(getWardrobe)..load()),
+        BlocProvider(
+          create: (_) =>
+              AddItemCubit(AddWardrobeItem(_JohnsWardrobe(_JohnsPosting()))),
+        ),
+      ],
+      child: const WardrobePage(),
+    ),
+    tab: MainTab.profile,
+  );
+}
+
+/// Opens "Add New Item" (while tagging, or on the wardrobe) and fills in the
+/// Figma sample (Grey
+/// Cardigan by TIMEOFLESS, a top, 350 000 soʻm), with the keyboard up if given.
+Future<void> _fillAddItem(WidgetTester tester, {double keyboard = 0}) async {
+  final card = find.byType(AddItemCard);
+  await tester.ensureVisible(card);
+  await tester.pump();
+  await tester.tap(card);
+  await settleState(tester);
+  final fields = find.descendant(
+    of: find.byType(BottomSheet),
+    matching: find.byType(TextField),
+  );
+  await tester.enterText(fields.at(0), 'Grey Cardigan');
+  await tester.enterText(fields.at(1), 'TIMEOFLESS');
+  await tester.enterText(fields.at(2), '350000');
+  final tops = find.byKey(const ValueKey(WardrobeCategories.tops));
+  await tester.ensureVisible(tops);
+  await tester.pump();
+  await tester.tap(tops);
+  if (keyboard > 0) {
+    tester.view.viewInsets = FakeViewPadding(bottom: keyboard);
+  } else {
+    FocusManager.instance.primaryFocus?.unfocus();
+  }
+  await settleState(tester);
+}
+
+/// John's post tagging the cardigan he added himself (TIMEOFLESS, 350 000 soʻm) and
+/// Kink's jeans.
+Widget _postWithOwnItem() {
+  final getPost = _MockGetPost();
+  when(() => getPost(any())).thenAnswer((_) async {
+    final (backend, token) = await _signedInBackend();
+    final item = await backend.addWardrobeItem(token, {
+      'name': 'Grey Cardigan',
+      'brand': 'TIMEOFLESS',
+      'category': 'tops',
+      'price': {'amount': 350000, 'currency': 'UZS'},
+    });
+    return Right(
+      PostJson.post(
+        await backend.publishPost(token, {
+          'image': 'assets/images/posts/john_knit.webp',
+          'styles': ['Minimal'],
+          'tags': [
+            {'itemId': item['id'], 'x': 0.42, 'y': 0.24},
+            {'productId': 'p_jeans_kink', 'x': 0.5, 'y': 0.62},
+          ],
+        }),
+      ),
+    );
+  });
+  return _inShell(
+    BlocProvider(
+      create: (_) => PostDetailCubit(getPost, postId: 'own')..load(),
+      child: const PostDetailPage(),
+    ),
+  );
+}
+
 Future<void> _typeSearch(
   WidgetTester tester,
   String query, {
@@ -589,21 +726,17 @@ List<ScreenFixture> screenFixtures() {
     ),
     ScreenFixture(
       name: 'wardrobe',
-      build: () {
-        final getWardrobe = _MockGetWardrobe();
-        when(() => getWardrobe(any())).thenAnswer((_) async {
-          final (backend, token) = await _signedInBackend();
-          return Right(WardrobeJson.categories(await backend.wardrobe(token)));
-        });
-        return _inShell(
-          BlocProvider(
-            create: (_) => WardrobeCubit(getWardrobe)..load(),
-            child: const WardrobePage(),
-          ),
-          tab: MainTab.profile,
-        );
-      },
+      build: _wardrobe,
       images: _allContentImages,
+    ),
+    // Not in Figma: the wardrobe's "Add New Item" opens the item details
+    // sheet (2974:66565) over the tab bar. With the keyboard up it looks as
+    // in posting_add_item_keyboard, so that one covers both.
+    ScreenFixture(
+      name: 'wardrobe_add_item',
+      build: _wardrobe,
+      images: _allContentImages,
+      fillIn: _fillAddItem,
     ),
     // Not in Figma: the claude.ai prototype's Search screen. Before typing,
     // then "k" (brands Kink and ARKET, people katty_miller and zokir).
@@ -642,6 +775,48 @@ List<ScreenFixture> screenFixtures() {
         tester.view.viewInsets = const FakeViewPadding(bottom: 300);
         await settleState(tester);
         await settleAssets(tester, precacheImages: _allContentImages);
+      },
+    ),
+    // Figma 2974:66565 / 2974:67417: "Add New Item" while tagging — the
+    // item details sheet, and the item added and tagged.
+    ScreenFixture(
+      name: 'posting_add_item',
+      build: () => _posting(const TagItemsPage(), step: 1),
+      images: _allContentImages,
+      fillIn: _fillAddItem,
+    ),
+    ScreenFixture(
+      name: 'posting_add_item_keyboard',
+      build: () => _posting(const TagItemsPage(), step: 1),
+      images: _allContentImages,
+      fillIn: (tester) => _fillAddItem(tester, keyboard: 300),
+    ),
+    ScreenFixture(
+      name: 'posting_item_added',
+      build: () => _posting(const TagItemsPage(), step: 1),
+      images: _allContentImages,
+      fillIn: (tester) async {
+        await _fillAddItem(tester);
+        await tester.tap(find.byKey(addItemSubmitKey));
+        await settleState(tester);
+        await settleState(tester);
+        // Back to the top, as the Figma frame.
+        tester
+            .state<ScrollableState>(find.byType(Scrollable).first)
+            .position
+            .jumpTo(0);
+        await settleState(tester);
+      },
+    ),
+    // Not in Figma: a post with an item its author added, its card open.
+    ScreenFixture(
+      name: 'post_own_item',
+      goldenSize: const Size(390, 1287),
+      build: _postWithOwnItem,
+      images: _allContentImages,
+      fillIn: (tester) async {
+        await tester.tap(find.text('TIMEOFLESS · Grey Cardigan'));
+        await settleState(tester);
       },
     ),
     ScreenFixture(

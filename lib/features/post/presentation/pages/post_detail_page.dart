@@ -122,7 +122,10 @@ class _PostView extends StatelessWidget {
           SliverPadding(
             padding: const EdgeInsets.only(top: 16),
             sliver: SliverToBoxAdapter(
-              child: OutfitDetails(products: post.products),
+              child: OutfitDetails(
+                products: post.products,
+                authorName: post.author.name,
+              ),
             ),
           ),
         if (post.similar.isNotEmpty)

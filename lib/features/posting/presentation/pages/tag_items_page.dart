@@ -5,16 +5,20 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_typography.dart';
-import '../../../product/domain/entities/product.dart';
+import '../../../wardrobe/presentation/widgets/add_item_card.dart';
+import '../../../wardrobe/presentation/widgets/add_item_sheet.dart';
 import '../../domain/entities/post_draft.dart';
+import '../../domain/entities/taggable_item.dart';
 import '../cubits/post_draft_cubit.dart';
 import '../cubits/tag_search_cubit.dart';
+import '../widgets/item_search_sheet.dart';
 import '../widgets/posting_widgets.dart';
-import '../widgets/product_search_sheet.dart';
 
 /// Figma: "Screen2-AddHotspotTags" (2845:396 and variants) — tap the photo
 /// where a piece of clothing is, then find that exact item from the brands'
-/// catalogs. Styling is PROVISIONAL (from the frame's screenshot).
+/// catalogs, or (2974:66565) add clothes no brand on Stylper sells to your
+/// wardrobe and tag those. Styling is PROVISIONAL (from the frame's
+/// screenshot), except "Add New Item" and the item details sheet.
 class TagItemsPage extends StatefulWidget {
   const TagItemsPage({super.key});
 
@@ -30,26 +34,30 @@ class _TagItemsPageState extends State<TagItemsPage> {
   /// spot down the middle.
   Future<void> _tag({Offset? at}) async {
     setState(() => _pending = at);
-    final product = await showProductSearch(context);
+    final item = await showItemSearch(context);
     if (!mounted) return;
     setState(() => _pending = null);
-    if (product != null) _add(product, at);
+    if (item != null) _add(item, at);
   }
 
-  void _add(ProductSummary product, Offset? at) {
+  /// "Add New Item": adds clothes to the wardrobe, then tags them.
+  Future<void> _addNew() async {
+    final search = context.read<TagSearchCubit>();
+    final added = await showAddItemSheet(
+      context,
+      category: search.state.category,
+    );
+    if (added == null || !mounted) return;
+    final item = TaggableItem.own(added);
+    search.addedItem(item);
+    _add(item, null);
+  }
+
+  void _add(TaggableItem item, Offset? at) {
     final draft = context.read<PostDraftCubit>();
     final spot =
         at ?? Offset(0.5, 0.3 + 0.12 * (draft.state.draft.tags.length % 5));
-    draft.addTag(
-      DraftTag(
-        productId: product.id,
-        brand: product.brand,
-        label: product.shortName,
-        imagePath: product.imagePath,
-        x: spot.dx,
-        y: spot.dy,
-      ),
-    );
+    draft.addTag(DraftTag(item: item, x: spot.dx, y: spot.dy));
   }
 
   @override
@@ -58,6 +66,7 @@ class _TagItemsPageState extends State<TagItemsPage> {
     final draft = context.watch<PostDraftCubit>();
     final photo = draft.state.draft.photoPath;
     final recent = context.select((TagSearchCubit cubit) => cubit.state.recent);
+    final added = context.select((TagSearchCubit cubit) => cubit.state.added);
 
     return Scaffold(
       body: SafeArea(
@@ -88,6 +97,13 @@ class _TagItemsPageState extends State<TagItemsPage> {
                     ),
                   const SizedBox(height: 16),
                   PostingSearchField(onTap: _tag),
+                  // Added here: listed right under the search (2974:67417).
+                  for (final item in added) ...[
+                    const SizedBox(height: 10),
+                    ItemResultCard(item: item, onTap: () => _add(item, null)),
+                  ],
+                  const SizedBox(height: 10),
+                  AddItemCard(onTap: _addNew),
                   if (recent.isNotEmpty) ...[
                     const SizedBox(height: 16),
                     Text(
@@ -95,11 +111,8 @@ class _TagItemsPageState extends State<TagItemsPage> {
                       style: AppTypography.bodyStrong,
                     ),
                     const SizedBox(height: 8),
-                    for (final product in recent.take(3)) ...[
-                      ProductResultCard(
-                        product: product,
-                        onTap: () => _add(product, null),
-                      ),
+                    for (final item in recent.take(3)) ...[
+                      ItemResultCard(item: item, onTap: () => _add(item, null)),
                       const SizedBox(height: 8),
                     ],
                   ],

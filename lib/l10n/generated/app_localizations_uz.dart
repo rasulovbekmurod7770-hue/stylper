@@ -422,6 +422,56 @@ class AppLocalizationsUz extends AppLocalizations {
   String get wardrobeAddNewItem => 'Yangi narsa qoʻshish';
 
   @override
+  String get addItemTitle => 'Kiyim maʼlumotlari';
+
+  @override
+  String get addItemSubtitle =>
+      'Garderobingizda uni faqat siz koʻrasiz. Postda belgilasangiz, hamma bu qanday kiyim ekanini biladi.';
+
+  @override
+  String get addItemName => 'Nomi';
+
+  @override
+  String get addItemNameHint => 'Masalan, kulrang kardigan';
+
+  @override
+  String get addItemBrand => 'Brend';
+
+  @override
+  String get addItemBrandHint => 'Brend yoki sotib olgan doʻkoningiz';
+
+  @override
+  String get addItemCategory => 'Turkum';
+
+  @override
+  String get addItemPrice => 'Narxi';
+
+  @override
+  String get addItemOptional => 'Ixtiyoriy';
+
+  @override
+  String get addItemPriceHint => 'Masalan, 350 000';
+
+  @override
+  String get addItemPriceInvalid => '0 dan katta narx kiriting';
+
+  @override
+  String get addItemSubmit => 'Qoʻshish';
+
+  @override
+  String priceInSom(String amount) {
+    return '$amount soʻm';
+  }
+
+  @override
+  String get currencySom => 'soʻm';
+
+  @override
+  String postAddedBy(String name) {
+    return 'Qoʻshgan: $name';
+  }
+
+  @override
   String get wardrobeTops => 'Ustki kiyim';
 
   @override
@@ -619,10 +669,6 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get postingRemoveTag => 'Belgini olib tashlash';
-
-  @override
-  String get postingWardrobeOnlyCatalog =>
-      'Faqat brend kiyimlarini belgilash mumkin.';
 
   @override
   String get postingReadyToPublish => 'Eʼlon qilishga tayyor!';

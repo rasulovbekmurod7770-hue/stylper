@@ -76,7 +76,7 @@ class _TaggedPhotoState extends State<TaggedPhoto> {
               for (final (index, product) in products.indexed)
                 ..._tag(product, size, selected: index == open, index: index),
               if (open != null && open < products.length)
-                _cardFor(products[open], size),
+                _cardFor(products[open], size, widget.post.author.name),
               const Positioned(left: 19, top: 12, child: _BackButton()),
             ],
           );
@@ -138,8 +138,12 @@ class _TaggedPhotoState extends State<TaggedPhoto> {
 
   /// The expanded card sits under the tag's label, or above the tag when
   /// there's no room below.
-  Widget _cardFor(TaggedProduct product, Size size) {
-    const height = 142.0;
+  Widget _cardFor(TaggedProduct product, Size size, String authorName) {
+    // Padding, brand, name, (price), then the styled count and buttons — or
+    // just "Added by …" for an item the author added.
+    final height = product.addedByAuthor
+        ? 14 + 18 + 4 + 21 + (product.price == null ? 0 : 4 + 20) + 4 + 17 + 14
+        : 142.0;
     final y = product.tagY * size.height;
     final below = y + 45;
     return Positioned(
@@ -147,7 +151,9 @@ class _TaggedPhotoState extends State<TaggedPhoto> {
       right: 16,
       top: below + height <= size.height - 8 ? below : null,
       bottom: below + height <= size.height - 8 ? null : size.height - y + 20,
-      child: _TagCard(product: product),
+      child: product.addedByAuthor
+          ? _AddedTagCard(product: product, by: authorName)
+          : _TagCard(product: product),
     );
   }
 }
@@ -231,7 +237,79 @@ class _TagCard extends StatelessWidget {
       loaded: product.inWardrobe,
     );
 
+    return _TagCardFrame(
+      product: product,
+      children: [
+        Text(
+          l10n.postStyledCount(product.styledCount),
+          style: AppTypography.meta.copyWith(color: AppColors.onDarkMuted),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          spacing: 8,
+          children: [
+            Expanded(
+              child: _CardButton(
+                label: l10n.postSeeLooks,
+                filled: false,
+                onTap: () => context.openProductLooks(product.id),
+              ),
+            ),
+            Expanded(
+              // Saves the item to the wardrobe.
+              child: _CardButton(
+                label: inWardrobe ? l10n.postSaved : l10n.postSave,
+                filled: true,
+                onTap: () => toggleInWardrobe(
+                  context,
+                  product.id,
+                  inWardrobe: inWardrobe,
+                  announce: true,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// The card for an item the author added themselves: what it is, and who
+/// added it — so nobody takes it for a brand's listing. Nothing to open.
+class _AddedTagCard extends StatelessWidget {
+  const _AddedTagCard({required this.product, required this.by});
+
+  final TaggedProduct product;
+  final String by;
+
+  @override
+  Widget build(BuildContext context) {
+    return _TagCardFrame(
+      product: product,
+      children: [
+        Text(
+          context.l10n.postAddedBy(by),
+          style: AppTypography.meta.copyWith(color: AppColors.onDarkMuted),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
+    );
+  }
+}
+
+/// The glass card's brand, name and price (when known), then [children].
+class _TagCardFrame extends StatelessWidget {
+  const _TagCardFrame({required this.product, required this.children});
+
+  final TaggedProduct product;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
     const onGlass = AppColors.background;
+    final price = product.price;
     return _Glass(
       radius: 18,
       blur: 9,
@@ -259,42 +337,15 @@ class _TagCard extends StatelessWidget {
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
+            if (price != null) ...[
+              const SizedBox(height: 4),
+              Text(
+                formatPrice(price, context.l10n),
+                style: AppTypography.label.copyWith(color: onGlass),
+              ),
+            ],
             const SizedBox(height: 4),
-            Text(
-              formatPrice(product.price, l10n.localeName),
-              style: AppTypography.label.copyWith(color: onGlass),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              l10n.postStyledCount(product.styledCount),
-              style: AppTypography.meta.copyWith(color: AppColors.onDarkMuted),
-            ),
-            const SizedBox(height: 12),
-            Row(
-              spacing: 8,
-              children: [
-                Expanded(
-                  child: _CardButton(
-                    label: l10n.postSeeLooks,
-                    filled: false,
-                    onTap: () => context.openProductLooks(product.id),
-                  ),
-                ),
-                Expanded(
-                  // Saves the item to the wardrobe.
-                  child: _CardButton(
-                    label: inWardrobe ? l10n.postSaved : l10n.postSave,
-                    filled: true,
-                    onTap: () => toggleInWardrobe(
-                      context,
-                      product.id,
-                      inWardrobe: inWardrobe,
-                      announce: true,
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            ...children,
           ],
         ),
       ),

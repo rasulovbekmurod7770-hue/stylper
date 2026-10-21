@@ -120,10 +120,18 @@ class _ItemCard extends StatelessWidget {
                       color: AppColors.inputFill,
                       borderRadius: BorderRadius.all(Radius.circular(16)),
                     ),
-                    child: Image(
-                      image: imageFromPath(item.imagePath),
-                      fit: BoxFit.contain,
-                    ),
+                    child: switch (item.imagePath) {
+                      final path? => Image(
+                        image: imageFromPath(path),
+                        fit: BoxFit.contain,
+                      ),
+                      // Added without a photo.
+                      null => const Icon(
+                        Icons.checkroom_outlined,
+                        size: 32,
+                        color: AppColors.textMuted,
+                      ),
+                    },
                   ),
                   Positioned(
                     top: 6,

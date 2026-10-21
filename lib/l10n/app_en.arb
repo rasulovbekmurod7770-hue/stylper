@@ -229,6 +229,32 @@
   "wardrobeTitle": "My Wardrobe",
   "wardrobeQuickScan": "Quick Scan",
   "wardrobeAddNewItem": "Add new item",
+  "addItemTitle": "Item details",
+  "addItemSubtitle": "Only you see it in your wardrobe. Tag it on a post and everyone sees what it is.",
+  "addItemName": "Item name",
+  "addItemNameHint": "e.g. Grey cardigan",
+  "addItemBrand": "Brand name",
+  "addItemBrandHint": "The brand, or the shop you got it from",
+  "addItemCategory": "Category",
+  "addItemPrice": "Price",
+  "addItemOptional": "Optional",
+  "addItemPriceHint": "e.g. 350,000",
+  "addItemPriceInvalid": "Enter a price above 0",
+  "addItemSubmit": "Add Item",
+  "priceInSom": "{amount} UZS",
+  "@priceInSom": {
+    "description": "A price in Uzbek soʻm; amount is already grouped, e.g. 1,130,000.",
+    "placeholders": {
+      "amount": {"type": "String"}
+    }
+  },
+  "currencySom": "UZS",
+  "postAddedBy": "Added by {name}",
+  "@postAddedBy": {
+    "placeholders": {
+      "name": {"type": "String"}
+    }
+  },
   "wardrobeTops": "Tops",
   "wardrobeBottoms": "Bottoms",
   "wardrobeShoes": "Shoes",
@@ -320,7 +346,6 @@
   "postingTip": "Tip: Tag specific items rather than just the brand for better visibility",
   "postingNoResults": "No items found",
   "postingRemoveTag": "Remove tag",
-  "postingWardrobeOnlyCatalog": "Only items from brands can be tagged.",
   "postingReadyToPublish": "Ready to publish!",
   "postingCaption": "Caption",
   "postingCaptionHint": "Write a caption...",

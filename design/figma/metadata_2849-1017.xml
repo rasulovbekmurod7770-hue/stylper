@@ -1,0 +1,932 @@
+<frame id="2849:1017" name="Posting" x="6171" y="6806" width="3658" height="2292">
+  <frame id="2820:76" name="Screen1-MediaSelection – Light" x="130" y="226" width="390" height="844">
+    <frame id="2820:77" name="StatusBar" x="0" y="0" width="390" height="44">
+      <text id="2820:78" name="Time" x="20" y="13.5" width="30" height="17" />
+      <frame id="2820:79" name="Icons" x="290" y="12" width="80" height="20">
+        <frame id="2820:80" name="ios-signal" x="0" y="0" width="20" height="20" />
+        <frame id="2820:82" name="ios-wifi-signal" x="26" y="0" width="20" height="20" />
+        <frame id="2820:84" name="ios-battery-full" x="52" y="0" width="28" height="20" />
+      </frame>
+    </frame>
+    <frame id="2820:86" name="TopBar" x="0" y="44" width="390" height="36">
+      <frame id="2820:87" name="Left" x="20" y="8" width="60" height="20">
+        <frame id="2820:88" name="x-circle" x="0" y="0" width="20" height="20" />
+      </frame>
+      <text id="2820:90" name="Title" x="158" y="6" width="74" height="24" />
+      <frame id="2820:91" name="Right" x="310" y="8.5" width="60" height="19">
+        <text id="2820:92" name="Action" x="23" y="0" width="37" height="19" />
+      </frame>
+    </frame>
+    <frame id="2820:93" name="StepIndicator" x="0" y="80" width="390" height="19">
+      <rounded-rectangle id="2820:94" name="dot-0" x="159" y="8" width="24" height="3" />
+      <rounded-rectangle id="2820:95" name="dot-1" x="191" y="8" width="8" height="3" />
+      <rounded-rectangle id="2820:96" name="dot-2" x="207" y="8" width="8" height="3" />
+      <rounded-rectangle id="2820:97" name="dot-3" x="223" y="8" width="8" height="3" />
+    </frame>
+    <frame id="2820:98" name="Body" x="0" y="99" width="390" height="705">
+      <rounded-rectangle id="2820:99" name="MainPreview" x="20" y="0" width="350" height="311" />
+      <frame id="2820:100" name="GallerySection" x="20" y="327" width="350" height="302">
+        <frame id="2820:101" name="GalleryHeader" x="0" y="0" width="350" height="21">
+          <text id="2820:102" name="Label" x="0" y="0" width="102" height="21" />
+          <frame id="2820:103" name="chevron-down" x="334" y="0" width="16" height="16" />
+        </frame>
+        <frame id="2820:105" name="CameraRollGrid" x="0" y="33" width="350" height="312">
+          <frame id="2820:106" name="ImageCard-0" x="0" y="0" width="114.66666412353516" height="101">
+            <rounded-rectangle id="2820:107" name="Thumbnail" x="0" y="0" width="114.66666412353516" height="101" />
+            <rounded-rectangle id="2820:108" name="OverlayMask" x="0" y="0" width="115.33333587646484" height="101" />
+            <frame id="2820:109" name="SelectedCheck" x="87.33203125" y="8" width="20" height="20">
+              <frame id="2820:110" name="check" x="4" y="4" width="12" height="12" />
+            </frame>
+          </frame>
+          <frame id="2820:112" name="ImageCard-1" x="117.66666412353516" y="0" width="114.66666412353516" height="101">
+            <rounded-rectangle id="2820:113" name="Thumbnail" x="0" y="0" width="114.66666412353516" height="101" />
+          </frame>
+          <frame id="2820:114" name="ImageCard-2" x="235.3333282470703" y="0" width="114.66666412353516" height="101">
+            <rounded-rectangle id="2820:115" name="Thumbnail" x="0" y="0" width="114.66666412353516" height="101" />
+          </frame>
+          <frame id="2820:116" name="ImageCard-3" x="0" y="104" width="114.66666412353516" height="101">
+            <rounded-rectangle id="2820:117" name="Thumbnail" x="0" y="0" width="114.66666412353516" height="101" />
+          </frame>
+          <frame id="2820:118" name="ImageCard-4" x="117.66666412353516" y="104" width="114.66666412353516" height="101">
+            <rounded-rectangle id="2820:119" name="Thumbnail" x="0" y="0" width="114.66666412353516" height="101" />
+          </frame>
+          <frame id="2820:120" name="ImageCard-5" x="235.3333282470703" y="104" width="114.66666412353516" height="101">
+            <rounded-rectangle id="2820:121" name="Thumbnail" x="0" y="0" width="114.66666412353516" height="101" />
+          </frame>
+          <frame id="2820:122" name="ImageCard-6" x="0" y="208" width="114.66666412353516" height="101">
+            <rounded-rectangle id="2820:123" name="Thumbnail" x="0" y="0" width="114.66666412353516" height="101" />
+          </frame>
+          <frame id="2820:124" name="ImageCard-7" x="117.66666412353516" y="208" width="114.66666412353516" height="101">
+            <rounded-rectangle id="2820:125" name="Thumbnail" x="0" y="0" width="114.66666412353516" height="101" />
+          </frame>
+          <frame id="2820:126" name="ImageCard-8" x="235.3333282470703" y="208" width="114.66666412353516" height="109">
+            <rounded-rectangle id="2820:127" name="Thumbnail" x="0" y="0" width="114.66666412353516" height="109" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="2820:128" name="BottomTabs" x="20" y="645" width="350" height="60">
+        <frame id="2820:129" name="Tab1" x="0" y="0" width="168" height="44">
+          <text id="2820:130" name="Camera Roll" x="43" y="13.5" width="82" height="17" />
+        </frame>
+        <frame id="2820:131" name="Tab2" x="180" y="0" width="170" height="44">
+          <frame id="2820:132" name="camera" x="35" y="14" width="16" height="16" />
+          <text id="2820:134" name="Take Photo" x="59" y="13.5" width="76" height="17" />
+        </frame>
+      </frame>
+    </frame>
+    <frame id="2820:135" name="HomeIndicatorContainer" x="0" y="804" width="390" height="34">
+      <rounded-rectangle id="2820:136" name="HomeIndicator" x="125" y="21" width="140" height="5" />
+    </frame>
+  </frame>
+  <frame id="2845:396" name="Screen2-AddHotspotTags – Light" x="555" y="226" width="390" height="844">
+    <frame id="2845:397" name="StatusBar" x="0" y="0" width="390" height="44">
+      <text id="2845:398" name="Time" x="20" y="13.5" width="30" height="17" />
+      <frame id="2845:399" name="Icons" x="290" y="12" width="80" height="20">
+        <frame id="2845:400" name="ios-signal" x="0" y="0" width="20" height="20" />
+        <frame id="2845:402" name="ios-wifi-signal" x="26" y="0" width="20" height="20" />
+        <frame id="2845:404" name="ios-battery-full" x="52" y="0" width="28" height="20" />
+      </frame>
+    </frame>
+    <frame id="2845:406" name="TopBar" x="0" y="44" width="390" height="48">
+      <frame id="2845:407" name="Left" x="20" y="14" width="60" height="20">
+        <frame id="2845:408" name="arrow-left" x="0" y="0" width="20" height="20" />
+      </frame>
+      <text id="2845:410" name="Title" x="157" y="14.5" width="76" height="19" />
+      <frame id="2845:411" name="Right" x="310" y="14.5" width="60" height="19">
+        <text id="2845:412" name="Action" x="23" y="0" width="37" height="19" />
+      </frame>
+    </frame>
+    <frame id="2845:413" name="StepIndicator" x="0" y="92" width="390" height="19">
+      <rounded-rectangle id="2845:414" name="dot-0" x="159" y="8" width="8" height="3" />
+      <rounded-rectangle id="2845:415" name="dot-1" x="175" y="8" width="24" height="3" />
+      <rounded-rectangle id="2845:416" name="dot-2" x="207" y="8" width="8" height="3" />
+      <rounded-rectangle id="2845:417" name="dot-3" x="223" y="8" width="8" height="3" />
+    </frame>
+    <frame id="2845:418" name="Body" x="0" y="142" width="390" height="668">
+      <frame id="2845:419" name="ImageCanvas" x="20" y="0" width="350" height="400" />
+      <frame id="2845:433" name="BrandSection" x="20" y="416" width="350" height="187">
+        <frame id="2845:434" name="SearchBar" x="0" y="0" width="350" height="41">
+          <frame id="2845:435" name="search" x="16" y="12.5" width="16" height="16" />
+          <text id="2845:437" name="Search brand or item..." x="44" y="12" width="151" height="17" />
+        </frame>
+        <frame id="2974:66559" name="add-item-card" x="0" y="51" width="350" height="72">
+          <frame id="2974:66560" name="plus-wrap" x="103" y="20" width="32" height="32">
+            <frame id="2974:66561" name="plus" x="8" y="8" width="16" height="16" />
+          </frame>
+          <text id="2974:66563" name="lbl" x="147" y="25.5" width="100" height="21" />
+        </frame>
+      </frame>
+      <frame id="2845:445" name="TipBox" x="20" y="619" width="350" height="49">
+        <frame id="2845:446" name="info" x="8" y="16.5" width="16" height="16" />
+        <text id="2845:448" name="Tip: Tag specific items rather than just the brand for better visibility" x="34" y="11.5" width="316" height="26" />
+      </frame>
+    </frame>
+    <frame id="2845:449" name="HomeIndicatorContainer" x="0" y="810" width="390" height="34">
+      <rounded-rectangle id="2845:450" name="HomeIndicator" x="125" y="21" width="140" height="5" />
+    </frame>
+  </frame>
+  <frame id="2974:66565" name="Screen2-AddHotspotTags – Light" x="555" y="1094" width="390" height="844">
+    <frame id="2974:66566" name="StatusBar" x="0" y="0" width="390" height="44">
+      <text id="2974:66567" name="Time" x="20" y="13.5" width="30" height="17" />
+      <frame id="2974:66568" name="Icons" x="290" y="12" width="80" height="20">
+        <frame id="2974:66569" name="ios-signal" x="0" y="0" width="20" height="20" />
+        <frame id="2974:66571" name="ios-wifi-signal" x="26" y="0" width="20" height="20" />
+        <frame id="2974:66573" name="ios-battery-full" x="52" y="0" width="28" height="20" />
+      </frame>
+    </frame>
+    <frame id="2974:66575" name="TopBar" x="0" y="44" width="390" height="48">
+      <frame id="2974:66576" name="Left" x="20" y="14" width="60" height="20">
+        <frame id="2974:66577" name="arrow-left" x="0" y="0" width="20" height="20" />
+      </frame>
+      <text id="2974:66579" name="Title" x="157" y="14.5" width="76" height="19" />
+      <frame id="2974:66580" name="Right" x="310" y="14.5" width="60" height="19">
+        <text id="2974:66581" name="Action" x="23" y="0" width="37" height="19" />
+      </frame>
+    </frame>
+    <frame id="2974:66582" name="StepIndicator" x="0" y="92" width="390" height="19">
+      <rounded-rectangle id="2974:66583" name="dot-0" x="159" y="8" width="8" height="3" />
+      <rounded-rectangle id="2974:66584" name="dot-1" x="175" y="8" width="24" height="3" />
+      <rounded-rectangle id="2974:66585" name="dot-2" x="207" y="8" width="8" height="3" />
+      <rounded-rectangle id="2974:66586" name="dot-3" x="223" y="8" width="8" height="3" />
+    </frame>
+    <frame id="2974:66587" name="Body" x="0" y="142" width="390" height="668">
+      <frame id="2974:66588" name="ImageCanvas" x="20" y="0" width="350" height="400" />
+      <frame id="2974:66598" name="BrandSection" x="20" y="416" width="350" height="187">
+        <frame id="2974:66599" name="SearchBar" x="0" y="0" width="350" height="41">
+          <frame id="2974:66600" name="search" x="16" y="12.5" width="16" height="16" />
+          <text id="2974:66602" name="Search brand or item..." x="44" y="12" width="151" height="17" />
+        </frame>
+        <frame id="2974:66603" name="add-item-card" x="0" y="51" width="350" height="72">
+          <frame id="2974:66604" name="plus-wrap" x="103" y="20" width="32" height="32">
+            <frame id="2974:66605" name="plus" x="8" y="8" width="16" height="16" />
+          </frame>
+          <text id="2974:66607" name="lbl" x="147" y="25.5" width="100" height="21" />
+        </frame>
+      </frame>
+      <frame id="2974:66608" name="TipBox" x="20" y="619" width="350" height="49">
+        <frame id="2974:66609" name="info" x="8" y="16.5" width="16" height="16" />
+        <text id="2974:66611" name="Tip: Tag specific items rather than just the brand for better visibility" x="34" y="11.5" width="316" height="26" />
+      </frame>
+    </frame>
+    <frame id="2974:66612" name="HomeIndicatorContainer" x="0" y="810" width="390" height="34">
+      <rounded-rectangle id="2974:66613" name="HomeIndicator" x="125" y="21" width="140" height="5" />
+    </frame>
+    <rounded-rectangle id="2974:66623" name="Rectangle 43632" x="0" y="318" width="390" height="526" />
+    <frame id="2974:66627" name="Public brand identity" x="0" y="350" width="390" height="359">
+      <frame id="2974:66628" name="Section introduction" x="20" y="0" width="350" height="47">
+        <text id="2974:66629" name="Section title" x="0" y="0" width="350" height="24" />
+        <text id="2974:66630" name="Section description" x="0" y="29" width="350" height="18" />
+      </frame>
+      <frame id="2974:66631" name="Identity fields" x="20" y="67" width="350" height="264">
+        <frame id="2974:66652" name="Profile field" x="0" y="0" width="350" height="76">
+          <frame id="2974:66653" name="Field label" x="0" y="0" width="350" height="16">
+            <text id="2974:66654" name="Label" x="0" y="0" width="66" height="16" />
+          </frame>
+          <frame id="2974:66655" name="Input surface" x="0" y="24" width="350" height="52">
+            <text id="2974:66656" name="Field value" x="14" y="15" width="322" height="22" />
+          </frame>
+        </frame>
+        <frame id="2974:66632" name="Profile field" x="0" y="94" width="350" height="76">
+          <frame id="2974:66633" name="Field label" x="0" y="0" width="350" height="16">
+            <text id="2974:66634" name="Label" x="0" y="0" width="75" height="16" />
+          </frame>
+          <frame id="2974:66635" name="Input surface" x="0" y="24" width="350" height="52">
+            <text id="2974:66636" name="Field value" x="14" y="15" width="322" height="22" />
+          </frame>
+        </frame>
+        <frame id="2974:66657" name="Profile field" x="0" y="188" width="350" height="76">
+          <frame id="2974:66658" name="Field label" x="0" y="0" width="350" height="16">
+            <text id="2974:66659" name="Label" x="0" y="0" width="32" height="16" />
+          </frame>
+          <frame id="2974:66660" name="Input surface" x="0" y="24" width="350" height="52">
+            <text id="2974:66661" name="Field value" x="14" y="15" width="322" height="22" />
+          </frame>
+        </frame>
+      </frame>
+    </frame>
+    <frame id="2974:66662" name="CTAButton" x="20" y="768" width="350" height="52">
+      <text id="2974:66663" name="Add Item" x="140" y="16.5" width="70" height="19" />
+    </frame>
+  </frame>
+  <frame id="2974:67417" name="Screen2-AddHotspotTags – Light" x="980" y="1097" width="390" height="844">
+    <frame id="2974:67418" name="StatusBar" x="0" y="0" width="390" height="44">
+      <text id="2974:67419" name="Time" x="20" y="13.5" width="30" height="17" />
+      <frame id="2974:67420" name="Icons" x="290" y="12" width="80" height="20">
+        <frame id="2974:67421" name="ios-signal" x="0" y="0" width="20" height="20" />
+        <frame id="2974:67423" name="ios-wifi-signal" x="26" y="0" width="20" height="20" />
+        <frame id="2974:67425" name="ios-battery-full" x="52" y="0" width="28" height="20" />
+      </frame>
+    </frame>
+    <frame id="2974:67427" name="TopBar" x="0" y="44" width="390" height="48">
+      <frame id="2974:67428" name="Left" x="20" y="14" width="60" height="20">
+        <frame id="2974:67429" name="arrow-left" x="0" y="0" width="20" height="20" />
+      </frame>
+      <text id="2974:67431" name="Title" x="157" y="14.5" width="76" height="19" />
+      <frame id="2974:67432" name="Right" x="310" y="14.5" width="60" height="19">
+        <text id="2974:67433" name="Action" x="23" y="0" width="37" height="19" />
+      </frame>
+    </frame>
+    <frame id="2974:67434" name="StepIndicator" x="0" y="92" width="390" height="19">
+      <rounded-rectangle id="2974:67435" name="dot-0" x="159" y="8" width="8" height="3" />
+      <rounded-rectangle id="2974:67436" name="dot-1" x="175" y="8" width="24" height="3" />
+      <rounded-rectangle id="2974:67437" name="dot-2" x="207" y="8" width="8" height="3" />
+      <rounded-rectangle id="2974:67438" name="dot-3" x="223" y="8" width="8" height="3" />
+    </frame>
+    <frame id="2974:67439" name="Body" x="0" y="142" width="390" height="668">
+      <frame id="2974:67440" name="ImageCanvas" x="20" y="0" width="350" height="400" />
+      <frame id="2974:67450" name="BrandSection" x="20" y="416" width="350" height="187">
+        <frame id="2974:67451" name="SearchBar" x="0" y="0" width="350" height="41">
+          <frame id="2974:67452" name="search" x="16" y="12.5" width="16" height="16" />
+          <text id="2974:67454" name="Search brand or item..." x="44" y="12" width="151" height="17" />
+        </frame>
+        <frame id="2978:386" name="Horizontal product card" x="0" y="51" width="350" height="84">
+          <frame id="2978:390" name="Product information" x="10" y="0" width="340" height="84">
+            <frame id="2978:391" name="Product identity" x="14" y="14" width="312" height="38">
+              <text id="2978:392" name="Name" x="0" y="0" width="312" height="18" />
+              <text id="2978:393" name="Variant" x="0" y="22" width="312" height="16" />
+            </frame>
+            <text id="2978:394" name="Price" x="14" y="53" width="312" height="17" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="2974:67460" name="TipBox" x="20" y="619" width="350" height="49">
+        <frame id="2974:67461" name="info" x="8" y="16.5" width="16" height="16" />
+        <text id="2974:67463" name="Tip: Tag specific items rather than just the brand for better visibility" x="34" y="11.5" width="316" height="26" />
+      </frame>
+    </frame>
+    <frame id="2974:67464" name="HomeIndicatorContainer" x="0" y="810" width="390" height="34">
+      <rounded-rectangle id="2974:67465" name="HomeIndicator" x="125" y="21" width="140" height="5" />
+    </frame>
+    <frame id="2974:67467" name="Public brand identity" x="0" y="350" width="390" height="179">
+      <frame id="2974:67468" name="Section introduction" x="20" y="0" width="350" height="47" />
+      <frame id="2974:67471" name="Identity fields" x="20" y="67" width="350" height="84">
+        <frame id="2974:67472" name="Profile field" x="0" y="0" width="350" height="16">
+          <frame id="2974:67473" name="Field label" x="0" y="0" width="350" height="16" />
+        </frame>
+        <frame id="2974:67477" name="Profile field" x="0" y="34" width="350" height="16">
+          <frame id="2974:67478" name="Field label" x="0" y="0" width="350" height="16" />
+        </frame>
+        <frame id="2974:67482" name="Profile field" x="0" y="68" width="350" height="16">
+          <frame id="2974:67483" name="Field label" x="0" y="0" width="350" height="16" />
+        </frame>
+      </frame>
+    </frame>
+  </frame>
+  <frame id="2848:659" name="Screen2-AddHotspotTags – Light" x="1405" y="226" width="390" height="844">
+    <frame id="2848:660" name="StatusBar" x="0" y="0" width="390" height="44">
+      <text id="2848:661" name="Time" x="20" y="13.5" width="30" height="17" />
+      <frame id="2848:662" name="Icons" x="290" y="12" width="80" height="20">
+        <frame id="2848:663" name="ios-signal" x="0" y="0" width="20" height="20" />
+        <frame id="2848:665" name="ios-wifi-signal" x="26" y="0" width="20" height="20" />
+        <frame id="2848:667" name="ios-battery-full" x="52" y="0" width="28" height="20" />
+      </frame>
+    </frame>
+    <frame id="2848:669" name="TopBar" x="0" y="44" width="390" height="48">
+      <frame id="2848:670" name="Left" x="20" y="14" width="60" height="20">
+        <frame id="2848:671" name="arrow-left" x="0" y="0" width="20" height="20" />
+      </frame>
+      <text id="2848:673" name="Title" x="157" y="14.5" width="76" height="19" />
+      <frame id="2848:674" name="Right" x="310" y="14.5" width="60" height="19">
+        <text id="2848:675" name="Action" x="23" y="0" width="37" height="19" />
+      </frame>
+    </frame>
+    <frame id="2848:676" name="StepIndicator" x="0" y="92" width="390" height="19">
+      <rounded-rectangle id="2848:677" name="dot-0" x="159" y="8" width="8" height="3" />
+      <rounded-rectangle id="2848:678" name="dot-1" x="175" y="8" width="24" height="3" />
+      <rounded-rectangle id="2848:679" name="dot-2" x="207" y="8" width="8" height="3" />
+      <rounded-rectangle id="2848:680" name="dot-3" x="223" y="8" width="8" height="3" />
+    </frame>
+    <frame id="2848:681" name="Body" x="0" y="142" width="390" height="668">
+      <frame id="2848:682" name="ImageCanvas" x="20" y="0" width="350" height="400" />
+      <frame id="2848:691" name="BrandSection" x="20" y="416" width="350" height="187">
+        <frame id="2848:692" name="SearchBar" x="0" y="0" width="350" height="41">
+          <frame id="2848:693" name="search" x="16" y="12.5" width="16" height="16" />
+          <text id="2848:695" name="Search brand or item..." x="44" y="12" width="151" height="17" />
+        </frame>
+        <frame id="2850:1134" name="Horizontal product card" x="0" y="79" width="350" height="84">
+          <frame id="2850:1135" name="Product image" x="0" y="0" width="112" height="84">
+            <rounded-rectangle id="2850:1136" name="Garment" x="0" y="0" width="112" height="84" />
+            <rounded-rectangle id="2850:1137" name="Image backdrop" x="0" y="0" width="112" height="84" />
+          </frame>
+          <frame id="2850:1138" name="Product information" x="112" y="0" width="238" height="84">
+            <frame id="2850:1139" name="Product identity" x="14" y="14" width="210" height="38">
+              <text id="2850:1140" name="Name" x="0" y="0" width="210" height="18" />
+              <text id="2850:1141" name="Variant" x="0" y="22" width="210" height="16" />
+            </frame>
+            <text id="2850:1142" name="Price" x="14" y="53" width="210" height="17" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="2848:714" name="TipBox" x="20" y="619" width="350" height="49">
+        <frame id="2848:715" name="info" x="8" y="16.5" width="16" height="16" />
+        <text id="2848:717" name="Tip: Tag specific items rather than just the brand for better visibility" x="34" y="11.5" width="316" height="26" />
+      </frame>
+    </frame>
+    <frame id="2848:718" name="HomeIndicatorContainer" x="0" y="810" width="390" height="34">
+      <rounded-rectangle id="2848:719" name="HomeIndicator" x="125" y="21" width="140" height="5" />
+    </frame>
+    <text id="2850:1132" name="Label" x="20" y="609" width="100" height="21" />
+  </frame>
+  <frame id="2848:832" name="Screen2-AddHotspotTags – Light" x="1843" y="226" width="390" height="844">
+    <frame id="2848:833" name="StatusBar" x="0" y="0" width="390" height="44">
+      <text id="2848:834" name="Time" x="20" y="13.5" width="30" height="17" />
+      <frame id="2848:835" name="Icons" x="290" y="12" width="80" height="20">
+        <frame id="2848:836" name="ios-signal" x="0" y="0" width="20" height="20" />
+        <frame id="2848:838" name="ios-wifi-signal" x="26" y="0" width="20" height="20" />
+        <frame id="2848:840" name="ios-battery-full" x="52" y="0" width="28" height="20" />
+      </frame>
+    </frame>
+    <frame id="2848:842" name="TopBar" x="0" y="44" width="390" height="48">
+      <frame id="2848:843" name="Left" x="20" y="14" width="60" height="20">
+        <frame id="2848:844" name="arrow-left" x="0" y="0" width="20" height="20" />
+      </frame>
+      <text id="2848:846" name="Title" x="157" y="14.5" width="76" height="19" />
+      <frame id="2848:847" name="Right" x="310" y="14.5" width="60" height="19">
+        <text id="2848:848" name="Action" x="23" y="0" width="37" height="19" />
+      </frame>
+    </frame>
+    <frame id="2848:849" name="StepIndicator" x="0" y="92" width="390" height="19">
+      <rounded-rectangle id="2848:850" name="dot-0" x="159" y="8" width="8" height="3" />
+      <rounded-rectangle id="2848:851" name="dot-1" x="175" y="8" width="24" height="3" />
+      <rounded-rectangle id="2848:852" name="dot-2" x="207" y="8" width="8" height="3" />
+      <rounded-rectangle id="2848:853" name="dot-3" x="223" y="8" width="8" height="3" />
+    </frame>
+    <frame id="2848:854" name="Body" x="0" y="142" width="390" height="668">
+      <frame id="2848:855" name="ImageCanvas" x="20" y="0" width="350" height="400" />
+      <frame id="2848:864" name="BrandSection" x="20" y="416" width="350" height="187">
+        <frame id="2848:865" name="SearchBar" x="0" y="0" width="350" height="41">
+          <frame id="2848:866" name="search" x="16" y="12.5" width="16" height="16" />
+          <text id="2848:868" name="Search brand or item..." x="44" y="12" width="151" height="17" />
+        </frame>
+      </frame>
+      <frame id="2848:869" name="TipBox" x="20" y="619" width="350" height="49">
+        <frame id="2848:870" name="info" x="8" y="16.5" width="16" height="16" />
+        <text id="2848:872" name="Tip: Tag specific items rather than just the brand for better visibility" x="34" y="11.5" width="316" height="26" />
+      </frame>
+    </frame>
+    <frame id="2848:873" name="HomeIndicatorContainer" x="0" y="810" width="390" height="34">
+      <rounded-rectangle id="2848:874" name="HomeIndicator" x="125" y="21" width="140" height="5" />
+    </frame>
+    <rounded-rectangle id="2850:1143" name="Rectangle 43632" x="1" y="457" width="390" height="376" />
+    <frame id="2850:1144" name="Horizontal product card" x="21" y="576" width="350" height="84">
+      <frame id="2850:1145" name="Product image" x="0" y="0" width="112" height="84">
+        <rounded-rectangle id="2850:1146" name="Garment" x="0" y="0" width="112" height="84" />
+        <rounded-rectangle id="2850:1147" name="Image backdrop" x="0" y="0" width="112" height="84" />
+        <rounded-rectangle id="2850:1186" name="Image backdrop" x="19" y="0" width="74" height="88" />
+      </frame>
+      <frame id="2850:1148" name="Product information" x="112" y="0" width="238" height="84">
+        <frame id="2850:1149" name="Product identity" x="14" y="14" width="210" height="38">
+          <text id="2850:1150" name="Name" x="0" y="0" width="210" height="18" />
+          <text id="2850:1151" name="Variant" x="0" y="22" width="210" height="16" />
+        </frame>
+        <text id="2850:1152" name="Price" x="14" y="53" width="210" height="17" />
+      </frame>
+    </frame>
+    <frame id="2850:1153" name="Horizontal product card" x="21" y="669" width="350" height="84">
+      <frame id="2850:1154" name="Product image" x="0" y="0" width="112" height="84">
+        <rounded-rectangle id="2850:1155" name="Garment" x="0" y="0" width="112" height="84" />
+        <rounded-rectangle id="2850:1156" name="Image backdrop" x="0" y="0" width="112" height="84" />
+        <rounded-rectangle id="2850:1188" name="Image backdrop" x="17" y="-3" width="78" height="89" />
+      </frame>
+      <frame id="2850:1157" name="Product information" x="112" y="0" width="238" height="84">
+        <frame id="2850:1158" name="Product identity" x="14" y="14" width="210" height="38">
+          <text id="2850:1159" name="Name" x="0" y="0" width="210" height="18" />
+          <text id="2850:1160" name="Variant" x="0" y="22" width="210" height="16" />
+        </frame>
+        <text id="2850:1161" name="Price" x="14" y="53" width="210" height="17" />
+      </frame>
+    </frame>
+    <frame id="2850:1162" name="Horizontal product card" x="21" y="762" width="350" height="84">
+      <frame id="2850:1163" name="Product image" x="0" y="0" width="112" height="84">
+        <rounded-rectangle id="2850:1164" name="Garment" x="0" y="0" width="112" height="84" />
+        <rounded-rectangle id="2850:1165" name="Image backdrop" x="19" y="0" width="74" height="82" />
+      </frame>
+      <frame id="2850:1166" name="Product information" x="112" y="0" width="238" height="84">
+        <frame id="2850:1167" name="Product identity" x="14" y="14" width="210" height="58">
+          <text id="2850:1168" name="Name" x="0" y="0" width="210" height="54" />
+          <text id="2850:1169" name="Variant" x="0" y="42" width="210" height="16" />
+        </frame>
+        <text id="2850:1170" name="Price" x="14" y="72" width="210" height="17" />
+      </frame>
+    </frame>
+    <frame id="2850:1171" name="SearchBar" x="21" y="527" width="350" height="35">
+      <frame id="2850:1172" name="search" x="16" y="9.5" width="16" height="16" />
+      <text id="2850:1174" name="Jeans zara|" x="44" y="9" width="77" height="17" />
+    </frame>
+    <frame id="2850:1175" name="SearchBar" x="24" y="488" width="53" height="26">
+      <text id="2850:1176" name="Tops" x="12" y="5" width="29" height="15" />
+    </frame>
+    <frame id="2850:1177" name="SearchBar" x="84" y="488" width="65" height="26">
+      <text id="2850:1178" name="Bottoms" x="8" y="5" width="49" height="15" />
+    </frame>
+    <frame id="2850:1179" name="SearchBar" x="156" y="488" width="53" height="26">
+      <text id="2850:1180" name="Tops" x="12" y="5" width="29" height="15" />
+    </frame>
+    <frame id="2850:1181" name="SearchBar" x="216" y="488" width="55" height="26">
+      <text id="2850:1182" name="Shoes" x="9" y="5" width="37" height="15" />
+    </frame>
+    <frame id="2850:1183" name="SearchBar" x="276" y="488" width="95" height="26">
+      <text id="2850:1184" name="My Wardrobe" x="8" y="5" width="78" height="15" />
+    </frame>
+  </frame>
+  <frame id="2849:949" name="Screen2-AddHotspotTags – Light" x="2268" y="228" width="390" height="844">
+    <frame id="2849:950" name="StatusBar" x="0" y="0" width="390" height="44">
+      <text id="2849:951" name="Time" x="20" y="13.5" width="30" height="17" />
+      <frame id="2849:952" name="Icons" x="290" y="12" width="80" height="20">
+        <frame id="2849:953" name="ios-signal" x="0" y="0" width="20" height="20" />
+        <frame id="2849:955" name="ios-wifi-signal" x="26" y="0" width="20" height="20" />
+        <frame id="2849:957" name="ios-battery-full" x="52" y="0" width="28" height="20" />
+      </frame>
+    </frame>
+    <frame id="2849:959" name="TopBar" x="0" y="44" width="390" height="48">
+      <frame id="2849:960" name="Left" x="20" y="14" width="60" height="20">
+        <frame id="2849:961" name="arrow-left" x="0" y="0" width="20" height="20" />
+      </frame>
+      <text id="2849:963" name="Title" x="157" y="14.5" width="76" height="19" />
+      <frame id="2849:964" name="Right" x="310" y="14.5" width="60" height="19">
+        <text id="2849:965" name="Action" x="23" y="0" width="37" height="19" />
+      </frame>
+    </frame>
+    <frame id="2849:966" name="StepIndicator" x="0" y="92" width="390" height="19">
+      <rounded-rectangle id="2849:967" name="dot-0" x="159" y="8" width="8" height="3" />
+      <rounded-rectangle id="2849:968" name="dot-1" x="175" y="8" width="24" height="3" />
+      <rounded-rectangle id="2849:969" name="dot-2" x="207" y="8" width="8" height="3" />
+      <rounded-rectangle id="2849:970" name="dot-3" x="223" y="8" width="8" height="3" />
+    </frame>
+    <frame id="2849:971" name="Body" x="0" y="142" width="390" height="668">
+      <frame id="2849:972" name="ImageCanvas" x="20" y="0" width="350" height="400" />
+      <frame id="2849:986" name="BrandSection" x="20" y="416" width="350" height="245">
+        <frame id="2849:987" name="SearchBar" x="0" y="0" width="350" height="41">
+          <frame id="2849:988" name="search" x="16" y="12.5" width="16" height="16" />
+          <text id="2849:990" name="Search brand or item..." x="44" y="12" width="151" height="17" />
+        </frame>
+        <frame id="2850:1193" name="Horizontal product card" x="0" y="82" width="350" height="84">
+          <frame id="2850:1194" name="Product image" x="0" y="0" width="112" height="84">
+            <rounded-rectangle id="2850:1195" name="Garment" x="0" y="0" width="112" height="84" />
+            <rounded-rectangle id="2850:1196" name="Image backdrop" x="0" y="0" width="112" height="84" />
+          </frame>
+          <frame id="2850:1197" name="Product information" x="112" y="0" width="238" height="84">
+            <frame id="2850:1198" name="Product identity" x="14" y="14" width="210" height="38">
+              <text id="2850:1199" name="Name" x="0" y="0" width="210" height="18" />
+              <text id="2850:1200" name="Variant" x="0" y="22" width="210" height="16" />
+            </frame>
+            <text id="2850:1201" name="Price" x="14" y="53" width="210" height="17" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="2850:1213" name="Horizontal product card" x="20" y="589" width="350" height="84">
+        <frame id="2850:1214" name="Product image" x="0" y="0" width="112" height="84">
+          <rounded-rectangle id="2850:1215" name="Garment" x="0" y="0" width="112" height="84" />
+          <rounded-rectangle id="2850:1216" name="Image backdrop" x="0" y="0" width="112" height="84" />
+          <rounded-rectangle id="2850:1217" name="Image backdrop" x="19" y="0" width="74" height="88" />
+        </frame>
+        <frame id="2850:1218" name="Product information" x="112" y="0" width="238" height="84">
+          <frame id="2850:1219" name="Product identity" x="14" y="14" width="210" height="38">
+            <text id="2850:1220" name="Name" x="0" y="0" width="210" height="18" />
+            <text id="2850:1221" name="Variant" x="0" y="22" width="210" height="16" />
+          </frame>
+          <text id="2850:1222" name="Price" x="14" y="53" width="210" height="17" />
+        </frame>
+      </frame>
+      <frame id="2849:1010" name="TipBox" x="20" y="619" width="350" height="49">
+        <frame id="2849:1011" name="info" x="8" y="16.5" width="16" height="16" />
+        <text id="2849:1013" name="Tip: Tag specific items rather than just the brand for better visibility" x="34" y="11.5" width="316" height="26" />
+      </frame>
+    </frame>
+    <frame id="2849:1014" name="HomeIndicatorContainer" x="0" y="810" width="390" height="34">
+      <rounded-rectangle id="2849:1015" name="HomeIndicator" x="125" y="21" width="140" height="5" />
+    </frame>
+    <text id="2850:1192" name="Label" x="20" y="609" width="100" height="21" />
+  </frame>
+  <frame id="2820:198" name="Screen3-PostDetails – Light" x="2707" y="228" width="390" height="844">
+    <frame id="2820:199" name="StatusBar" x="0" y="0" width="390" height="44">
+      <text id="2820:200" name="Time" x="20" y="13.5" width="30" height="17" />
+      <frame id="2820:201" name="Icons" x="290" y="12" width="80" height="20">
+        <frame id="2820:202" name="ios-signal" x="0" y="0" width="20" height="20" />
+        <frame id="2820:204" name="ios-wifi-signal" x="26" y="0" width="20" height="20" />
+        <frame id="2820:206" name="ios-battery-full" x="52" y="0" width="28" height="20" />
+      </frame>
+    </frame>
+    <frame id="2820:208" name="TopBar" x="0" y="44" width="390" height="48">
+      <frame id="2820:209" name="Left" x="20" y="14" width="60" height="20">
+        <frame id="2820:210" name="arrow-left" x="0" y="0" width="20" height="20" />
+      </frame>
+      <text id="2820:212" name="Title" x="168" y="14.5" width="54" height="19" />
+      <frame id="2820:213" name="Right" x="310" y="14.5" width="60" height="19">
+        <text id="2820:214" name="Action" x="23" y="0" width="37" height="19" />
+      </frame>
+    </frame>
+    <frame id="2820:215" name="StepIndicator" x="0" y="92" width="390" height="19">
+      <rounded-rectangle id="2820:216" name="dot-0" x="159" y="8" width="8" height="3" />
+      <rounded-rectangle id="2820:217" name="dot-1" x="175" y="8" width="8" height="3" />
+      <rounded-rectangle id="2820:218" name="dot-2" x="191" y="8" width="24" height="3" />
+      <rounded-rectangle id="2820:219" name="dot-3" x="223" y="8" width="8" height="3" />
+    </frame>
+    <frame id="2820:220" name="Body" x="0" y="111" width="390" height="699">
+      <frame id="2820:221" name="MiniPreviewCard" x="20" y="0" width="350" height="104">
+        <rounded-rectangle id="2820:222" name="MiniPhoto" x="12" y="12" width="80" height="80" />
+        <frame id="2820:223" name="DetailsInfo" x="108" y="33" width="230" height="38">
+          <text id="2820:224" name="Ready to publish!" x="0" y="0" width="117" height="17" />
+          <text id="2820:225" name="2 items tagged in this outfit" x="0" y="23" width="156" height="15" />
+        </frame>
+      </frame>
+      <frame id="2820:226" name="CaptionField" x="20" y="128" width="350" height="133">
+        <text id="2820:227" name="Caption" x="0" y="0" width="55" height="15" />
+        <frame id="2820:228" name="TextArea" x="0" y="23" width="350" height="110">
+          <text id="2820:229" name="Write a caption..." x="14" y="14" width="322" height="17" />
+        </frame>
+      </frame>
+      <frame id="2820:230" name="LocationField" x="20" y="285" width="350" height="64">
+        <text id="2820:231" name="Location" x="0" y="0" width="62" height="15" />
+        <frame id="2820:232" name="InputBox" x="0" y="23" width="350" height="41">
+          <frame id="2820:233" name="map-pin" x="14" y="12.5" width="16" height="16" />
+          <text id="2820:235" name="Tashkent" x="40" y="12" width="296" height="17" />
+        </frame>
+      </frame>
+      <frame id="2820:236" name="StyleDnaSection" x="20" y="373" width="350" height="99">
+        <text id="2820:237" name="Style DNA" x="0" y="0" width="68" height="15" />
+        <frame id="2820:238" name="PillsGrid" x="0" y="27" width="350" height="72">
+          <frame id="2820:239" name="Pill-Minimal" x="0" y="0" width="77" height="32">
+            <text id="2820:240" name="Minimal" x="14" y="8" width="49" height="16" />
+          </frame>
+          <frame id="2820:241" name="Pill-Casual" x="85" y="0" width="71" height="32">
+            <text id="2820:242" name="Casual" x="14" y="8" width="43" height="16" />
+          </frame>
+          <frame id="2820:243" name="Pill-Streetwear" x="164" y="0" width="97" height="32">
+            <text id="2820:244" name="Streetwear" x="14" y="8" width="69" height="16" />
+          </frame>
+          <frame id="2820:245" name="Pill-Neutral" x="269" y="0" width="74" height="32">
+            <text id="2820:246" name="Neutral" x="14" y="8" width="46" height="16" />
+          </frame>
+          <frame id="2820:247" name="Pill-Oversized" x="0" y="40" width="91" height="32">
+            <text id="2820:248" name="Oversized" x="14" y="8" width="63" height="16" />
+          </frame>
+          <frame id="2820:249" name="Pill-Smart Casual" x="99" y="40" width="112" height="32">
+            <text id="2820:250" name="Smart Casual" x="14" y="8" width="84" height="16" />
+          </frame>
+        </frame>
+      </frame>
+      <text id="2852:1223" name="Mentioned Brands" x="20" y="496" width="126" height="15" />
+    </frame>
+    <frame id="2820:251" name="HomeIndicatorContainer" x="0" y="810" width="390" height="34">
+      <rounded-rectangle id="2820:252" name="HomeIndicator" x="125" y="21" width="140" height="5" />
+    </frame>
+  </frame>
+  <frame id="2820:253" name="Screen4-FinalizePublish – Light" x="3137" y="228" width="390" height="844">
+    <frame id="2820:254" name="StatusBar" x="0" y="0" width="390" height="44">
+      <text id="2820:255" name="Time" x="20" y="13.5" width="30" height="17" />
+      <frame id="2820:256" name="Icons" x="290" y="12" width="80" height="20">
+        <frame id="2820:257" name="ios-signal" x="0" y="0" width="20" height="20" />
+        <frame id="2820:259" name="ios-wifi-signal" x="26" y="0" width="20" height="20" />
+        <frame id="2820:261" name="ios-battery-full" x="52" y="0" width="28" height="20" />
+      </frame>
+    </frame>
+    <frame id="2820:263" name="TopBar" x="0" y="44" width="390" height="48">
+      <frame id="2820:264" name="Left" x="20" y="14" width="60" height="20">
+        <frame id="2820:265" name="arrow-left" x="0" y="0" width="20" height="20" />
+      </frame>
+      <text id="2820:267" name="Title" x="166" y="14.5" width="58" height="19" />
+      <frame id="2820:268" name="Right" x="310" y="-26" width="60" height="100" />
+    </frame>
+    <frame id="2820:269" name="StepIndicator" x="0" y="92" width="390" height="19">
+      <rounded-rectangle id="2820:270" name="dot-0" x="159" y="8" width="8" height="3" />
+      <rounded-rectangle id="2820:271" name="dot-1" x="175" y="8" width="8" height="3" />
+      <rounded-rectangle id="2820:272" name="dot-2" x="191" y="8" width="8" height="3" />
+      <rounded-rectangle id="2820:273" name="dot-3" x="207" y="8" width="24" height="3" />
+    </frame>
+    <frame id="2820:274" name="Body" x="0" y="111" width="390" height="699">
+      <frame id="2820:275" name="PreviewCard" x="20" y="0" width="350" height="534">
+        <frame id="2820:276" name="UserMeta" x="0" y="0" width="350" height="56">
+          <ellipse id="2820:277" name="Ellipse" x="12" y="12" width="32" height="32" />
+          <frame id="2820:278" name="UserTexts" x="54" y="12" width="284" height="32">
+            <text id="2820:279" name="John B" x="0" y="0" width="47" height="17" />
+            <text id="2820:280" name="@john · Tashkent" x="0" y="19" width="89" height="13" />
+          </frame>
+        </frame>
+        <rounded-rectangle id="2820:281" name="OutfitPhoto" x="0" y="56" width="350" height="389" />
+        <frame id="2820:282" name="CardDetails" x="0" y="445" width="350" height="89">
+          <text id="2820:283" name="Minimal tones for autumn season. Soft layering makes it easy." x="14" y="14" width="322" height="32" />
+          <frame id="2820:284" name="CardDNA" x="14" y="54" width="322" height="21">
+            <frame id="2820:285" name="Frame" x="0" y="0" width="63" height="21">
+              <text id="2820:286" name="#Minimal" x="8" y="4" width="47" height="13" />
+            </frame>
+            <frame id="2820:287" name="Frame" x="69" y="0" width="59" height="21">
+              <text id="2820:288" name="#Casual" x="8" y="4" width="43" height="13" />
+            </frame>
+          </frame>
+        </frame>
+      </frame>
+      <frame id="2820:289" name="TogglesSection" x="20" y="554" width="350" height="74">
+        <frame id="2820:290" name="ToggleRow1" x="0" y="0" width="350" height="34">
+          <frame id="2820:291" name="ToggleText" x="0" y="0" width="306" height="34">
+            <text id="2820:292" name="Allow brands to feature this" x="0" y="0" width="187" height="17" />
+            <text id="2820:293" name="Brands can showcase your look in their showroom" x="0" y="21" width="261" height="13" />
+          </frame>
+          <frame id="2820:294" name="Switch" x="306" y="5" width="44" height="24">
+            <ellipse id="2820:295" name="Ellipse" x="2" y="2" width="20" height="20" />
+          </frame>
+        </frame>
+        <frame id="2820:296" name="ToggleRow2" x="0" y="50" width="350" height="24">
+          <frame id="2820:297" name="ToggleText" x="0" y="3.5" width="306" height="17">
+            <text id="2820:298" name="Share to followers" x="0" y="0" width="123" height="17" />
+          </frame>
+          <frame id="2820:299" name="SwitchActive" x="306" y="0" width="44" height="24">
+            <ellipse id="2820:300" name="Ellipse" x="22" y="2" width="20" height="20" />
+          </frame>
+        </frame>
+      </frame>
+      <frame id="2820:301" name="PublishFooter" x="20" y="648" width="350" height="97">
+        <frame id="2820:302" name="CTAButton" x="0" y="0" width="350" height="52">
+          <text id="2820:303" name="Publish to Stylper" x="106.5" y="16.5" width="137" height="19" />
+        </frame>
+        <text id="2820:304" name="Your post will be visible to everyone" x="0" y="64" width="350" height="13" />
+      </frame>
+    </frame>
+    <frame id="2820:305" name="HomeIndicatorContainer" x="0" y="810" width="390" height="34">
+      <rounded-rectangle id="2820:306" name="HomeIndicator" x="125" y="21" width="140" height="5" />
+    </frame>
+  </frame>
+  <frame id="2850:1035" name="Screen2-AddHotspotTags – Light" x="980" y="226" width="390" height="844">
+    <frame id="2850:1036" name="StatusBar" x="0" y="0" width="390" height="44">
+      <text id="2850:1037" name="Time" x="20" y="13.5" width="30" height="17" />
+      <frame id="2850:1038" name="Icons" x="290" y="12" width="80" height="20">
+        <frame id="2850:1039" name="ios-signal" x="0" y="0" width="20" height="20" />
+        <frame id="2850:1041" name="ios-wifi-signal" x="26" y="0" width="20" height="20" />
+        <frame id="2850:1043" name="ios-battery-full" x="52" y="0" width="28" height="20" />
+      </frame>
+    </frame>
+    <frame id="2850:1045" name="TopBar" x="0" y="44" width="390" height="48">
+      <frame id="2850:1046" name="Left" x="20" y="14" width="60" height="20">
+        <frame id="2850:1047" name="arrow-left" x="0" y="0" width="20" height="20" />
+      </frame>
+      <text id="2850:1049" name="Title" x="157" y="14.5" width="76" height="19" />
+      <frame id="2850:1050" name="Right" x="310" y="14.5" width="60" height="19">
+        <text id="2850:1051" name="Action" x="23" y="0" width="37" height="19" />
+      </frame>
+    </frame>
+    <frame id="2850:1052" name="StepIndicator" x="0" y="92" width="390" height="19">
+      <rounded-rectangle id="2850:1053" name="dot-0" x="159" y="8" width="8" height="3" />
+      <rounded-rectangle id="2850:1054" name="dot-1" x="175" y="8" width="24" height="3" />
+      <rounded-rectangle id="2850:1055" name="dot-2" x="207" y="8" width="8" height="3" />
+      <rounded-rectangle id="2850:1056" name="dot-3" x="223" y="8" width="8" height="3" />
+    </frame>
+    <frame id="2850:1057" name="Body" x="0" y="125" width="390" height="668">
+      <frame id="2850:1058" name="ImageCanvas" x="20" y="0" width="350" height="400" />
+      <frame id="2850:1068" name="BrandSection" x="20" y="416" width="350" height="187">
+        <frame id="2850:1069" name="SearchBar" x="0" y="0" width="350" height="41">
+          <frame id="2850:1070" name="search" x="16" y="12.5" width="16" height="16" />
+          <text id="2850:1072" name="Search brand or item..." x="44" y="12" width="151" height="17" />
+        </frame>
+      </frame>
+      <frame id="2850:1073" name="TipBox" x="20" y="619" width="350" height="49">
+        <frame id="2850:1074" name="info" x="8" y="16.5" width="16" height="16" />
+        <text id="2850:1076" name="Tip: Tag specific items rather than just the brand for better visibility" x="34" y="11.5" width="316" height="26" />
+      </frame>
+      <rounded-rectangle id="2850:1083" name="Rectangle 43632" x="0" y="326" width="390" height="376" />
+      <frame id="2850:1104" name="Horizontal product card" x="20" y="445" width="350" height="84">
+        <frame id="2850:1105" name="Product image" x="0" y="0" width="112" height="84">
+          <rounded-rectangle id="2850:1106" name="Garment" x="0" y="0" width="112" height="84" />
+          <rounded-rectangle id="2850:1107" name="Image backdrop" x="0" y="0" width="112" height="84" />
+        </frame>
+        <frame id="2850:1108" name="Product information" x="112" y="0" width="238" height="84">
+          <frame id="2850:1109" name="Product identity" x="14" y="14" width="210" height="38">
+            <text id="2850:1110" name="Name" x="0" y="0" width="210" height="18" />
+            <text id="2850:1111" name="Variant" x="0" y="22" width="210" height="16" />
+          </frame>
+          <text id="2850:1112" name="Price" x="14" y="53" width="210" height="17" />
+        </frame>
+      </frame>
+      <frame id="2850:1113" name="Horizontal product card" x="20" y="538" width="350" height="84">
+        <frame id="2850:1114" name="Product image" x="0" y="0" width="112" height="84">
+          <rounded-rectangle id="2850:1115" name="Garment" x="0" y="0" width="112" height="84" />
+          <rounded-rectangle id="2850:1116" name="Image backdrop" x="0" y="0" width="112" height="84" />
+        </frame>
+        <frame id="2850:1117" name="Product information" x="112" y="0" width="238" height="84">
+          <frame id="2850:1118" name="Product identity" x="14" y="14" width="210" height="38">
+            <text id="2850:1119" name="Name" x="0" y="0" width="210" height="18" />
+            <text id="2850:1120" name="Variant" x="0" y="22" width="210" height="16" />
+          </frame>
+          <text id="2850:1121" name="Price" x="14" y="53" width="210" height="17" />
+        </frame>
+      </frame>
+      <frame id="2850:1123" name="Horizontal product card" x="20" y="631" width="350" height="84">
+        <frame id="2850:1124" name="Product image" x="0" y="0" width="112" height="84">
+          <rounded-rectangle id="2850:1125" name="Garment" x="0" y="0" width="112" height="84" />
+          <rounded-rectangle id="2850:1126" name="Image backdrop" x="15" y="-4" width="82" height="90" />
+        </frame>
+        <frame id="2850:1127" name="Product information" x="112" y="0" width="238" height="84">
+          <frame id="2850:1128" name="Product identity" x="14" y="14" width="210" height="38">
+            <text id="2850:1129" name="Name" x="0" y="0" width="210" height="18" />
+            <text id="2850:1130" name="Variant" x="0" y="22" width="210" height="16" />
+          </frame>
+          <text id="2850:1131" name="Price" x="14" y="53" width="210" height="17" />
+        </frame>
+      </frame>
+      <frame id="2850:1099" name="SearchBar" x="20" y="396" width="350" height="35">
+        <frame id="2850:1100" name="search" x="16" y="9.5" width="16" height="16" />
+        <text id="2850:1102" name="Sweater Uniqlo|" x="44" y="9" width="106" height="17" />
+      </frame>
+      <rounded-rectangle id="2850:1084" name="HomeIndicator" x="170" y="334" width="50" height="4" />
+      <frame id="2850:1030" name="SearchBar" x="23" y="357" width="53" height="26">
+        <text id="2850:1033" name="Tops" x="12" y="5" width="29" height="15" />
+      </frame>
+      <frame id="2850:1086" name="SearchBar" x="83" y="357" width="65" height="26">
+        <text id="2850:1087" name="Bottoms" x="8" y="5" width="49" height="15" />
+      </frame>
+      <frame id="2850:1088" name="SearchBar" x="155" y="357" width="53" height="26">
+        <text id="2850:1089" name="Tops" x="12" y="5" width="29" height="15" />
+      </frame>
+      <frame id="2850:1090" name="SearchBar" x="215" y="357" width="55" height="26">
+        <text id="2850:1091" name="Shoes" x="9" y="5" width="37" height="15" />
+      </frame>
+      <frame id="2850:1092" name="SearchBar" x="275" y="357" width="95" height="26">
+        <text id="2850:1093" name="My Wardrobe" x="8" y="5" width="78" height="15" />
+      </frame>
+    </frame>
+    <frame id="2850:1077" name="HomeIndicatorContainer" x="0" y="810" width="390" height="34">
+      <rounded-rectangle id="2850:1078" name="HomeIndicator" x="125" y="21" width="140" height="5" />
+    </frame>
+  </frame>
+  <frame id="2856:1563" name="Screen2-AddHotspotTags – Light" x="2700" y="1146" width="390" height="844">
+    <frame id="2856:1564" name="StatusBar" x="0" y="0" width="390" height="44">
+      <text id="2856:1565" name="Time" x="20" y="13.5" width="30" height="17" />
+      <frame id="2856:1566" name="Icons" x="290" y="12" width="80" height="20">
+        <frame id="2856:1567" name="ios-signal" x="0" y="0" width="20" height="20" />
+        <frame id="2856:1569" name="ios-wifi-signal" x="26" y="0" width="20" height="20" />
+        <frame id="2856:1571" name="ios-battery-full" x="52" y="0" width="28" height="20" />
+      </frame>
+    </frame>
+    <frame id="2856:1573" name="TopBar" x="0" y="44" width="390" height="48">
+      <frame id="2856:1574" name="Left" x="20" y="14" width="60" height="20">
+        <frame id="2856:1575" name="arrow-left" x="0" y="0" width="20" height="20" />
+      </frame>
+      <text id="2856:1577" name="Title" x="157" y="14.5" width="76" height="19" />
+      <frame id="2856:1578" name="Right" x="310" y="14.5" width="60" height="19">
+        <text id="2856:1579" name="Action" x="23" y="0" width="37" height="19" />
+      </frame>
+    </frame>
+    <frame id="2856:1580" name="StepIndicator" x="0" y="92" width="390" height="19">
+      <rounded-rectangle id="2856:1581" name="dot-0" x="159" y="8" width="8" height="3" />
+      <rounded-rectangle id="2856:1582" name="dot-1" x="175" y="8" width="24" height="3" />
+      <rounded-rectangle id="2856:1583" name="dot-2" x="207" y="8" width="8" height="3" />
+      <rounded-rectangle id="2856:1584" name="dot-3" x="223" y="8" width="8" height="3" />
+    </frame>
+    <frame id="2856:1585" name="Body" x="0" y="125" width="390" height="668">
+      <frame id="2856:1586" name="ImageCanvas" x="20" y="0" width="350" height="400" />
+      <frame id="2856:1596" name="BrandSection" x="20" y="416" width="350" height="187">
+        <frame id="2856:1597" name="SearchBar" x="0" y="0" width="350" height="41">
+          <frame id="2856:1598" name="search" x="16" y="12.5" width="16" height="16" />
+          <text id="2856:1600" name="Search brand or item..." x="44" y="12" width="151" height="17" />
+        </frame>
+      </frame>
+      <frame id="2856:1601" name="TipBox" x="20" y="619" width="350" height="49">
+        <frame id="2856:1602" name="info" x="8" y="16.5" width="16" height="16" />
+        <text id="2856:1604" name="Tip: Tag specific items rather than just the brand for better visibility" x="34" y="11.5" width="316" height="26" />
+      </frame>
+      <rounded-rectangle id="2856:1605" name="Rectangle 43632" x="0" y="326" width="390" height="376" />
+      <frame id="2856:1606" name="Horizontal product card" x="20" y="445" width="350" height="84">
+        <frame id="2856:1607" name="Product image" x="0" y="0" width="112" height="84">
+          <rounded-rectangle id="2856:1608" name="Garment" x="0" y="0" width="112" height="84" />
+          <rounded-rectangle id="2856:1609" name="Image backdrop" x="0" y="0" width="112" height="84" />
+        </frame>
+        <frame id="2856:1610" name="Product information" x="112" y="0" width="238" height="84">
+          <frame id="2856:1611" name="Product identity" x="14" y="14" width="210" height="38">
+            <text id="2856:1612" name="Name" x="0" y="0" width="210" height="18" />
+            <text id="2856:1613" name="Variant" x="0" y="22" width="210" height="16" />
+          </frame>
+          <text id="2856:1614" name="Price" x="14" y="53" width="210" height="17" />
+        </frame>
+      </frame>
+      <frame id="2856:1615" name="Horizontal product card" x="20" y="538" width="350" height="84">
+        <frame id="2856:1616" name="Product image" x="0" y="0" width="112" height="84">
+          <rounded-rectangle id="2856:1617" name="Garment" x="0" y="0" width="112" height="84" />
+          <rounded-rectangle id="2856:1618" name="Image backdrop" x="0" y="0" width="112" height="84" />
+        </frame>
+        <frame id="2856:1619" name="Product information" x="112" y="0" width="238" height="84">
+          <frame id="2856:1620" name="Product identity" x="14" y="14" width="210" height="38">
+            <text id="2856:1621" name="Name" x="0" y="0" width="210" height="18" />
+            <text id="2856:1622" name="Variant" x="0" y="22" width="210" height="16" />
+          </frame>
+          <text id="2856:1623" name="Price" x="14" y="53" width="210" height="17" />
+        </frame>
+      </frame>
+      <frame id="2856:1624" name="Horizontal product card" x="20" y="631" width="350" height="84">
+        <frame id="2856:1625" name="Product image" x="0" y="0" width="112" height="84">
+          <rounded-rectangle id="2856:1626" name="Garment" x="0" y="0" width="112" height="84" />
+          <rounded-rectangle id="2856:1627" name="Image backdrop" x="15" y="-4" width="82" height="90" />
+        </frame>
+        <frame id="2856:1628" name="Product information" x="112" y="0" width="238" height="84">
+          <frame id="2856:1629" name="Product identity" x="14" y="14" width="210" height="38">
+            <text id="2856:1630" name="Name" x="0" y="0" width="210" height="18" />
+            <text id="2856:1631" name="Variant" x="0" y="22" width="210" height="16" />
+          </frame>
+          <text id="2856:1632" name="Price" x="14" y="53" width="210" height="17" />
+        </frame>
+      </frame>
+      <frame id="2856:1633" name="SearchBar" x="20" y="396" width="350" height="35">
+        <frame id="2856:1634" name="search" x="16" y="9.5" width="16" height="16" />
+        <text id="2856:1636" name="Search brand or item..." x="44" y="9" width="151" height="17" />
+      </frame>
+      <rounded-rectangle id="2856:1637" name="HomeIndicator" x="170" y="334" width="50" height="4" />
+      <frame id="2856:1638" name="SearchBar" x="23" y="357" width="53" height="26">
+        <text id="2856:1639" name="Tops" x="12" y="5" width="29" height="15" />
+      </frame>
+      <frame id="2856:1640" name="SearchBar" x="83" y="357" width="65" height="26">
+        <text id="2856:1641" name="Bottoms" x="8" y="5" width="49" height="15" />
+      </frame>
+      <frame id="2856:1642" name="SearchBar" x="155" y="357" width="53" height="26">
+        <text id="2856:1643" name="Tops" x="12" y="5" width="29" height="15" />
+      </frame>
+      <frame id="2856:1644" name="SearchBar" x="215" y="357" width="55" height="26">
+        <text id="2856:1645" name="Shoes" x="9" y="5" width="37" height="15" />
+      </frame>
+      <frame id="2856:1646" name="SearchBar" x="275" y="357" width="95" height="26">
+        <text id="2856:1647" name="My Wardrobe" x="8" y="5" width="78" height="15" />
+      </frame>
+    </frame>
+    <frame id="2856:1648" name="HomeIndicatorContainer" x="0" y="810" width="390" height="34">
+      <rounded-rectangle id="2856:1649" name="HomeIndicator" x="125" y="21" width="140" height="5" />
+    </frame>
+  </frame>
+  <frame id="2856:1650" name="Screen2-AddHotspotTags – Light" x="3137" y="1146" width="390" height="844">
+    <frame id="2856:1651" name="StatusBar" x="0" y="0" width="390" height="44">
+      <text id="2856:1652" name="Time" x="20" y="13.5" width="30" height="17" />
+      <frame id="2856:1653" name="Icons" x="290" y="12" width="80" height="20">
+        <frame id="2856:1654" name="ios-signal" x="0" y="0" width="20" height="20" />
+        <frame id="2856:1656" name="ios-wifi-signal" x="26" y="0" width="20" height="20" />
+        <frame id="2856:1658" name="ios-battery-full" x="52" y="0" width="28" height="20" />
+      </frame>
+    </frame>
+    <frame id="2856:1660" name="TopBar" x="0" y="44" width="390" height="48">
+      <frame id="2856:1661" name="Left" x="20" y="14" width="60" height="20">
+        <frame id="2856:1662" name="arrow-left" x="0" y="0" width="20" height="20" />
+      </frame>
+      <text id="2856:1664" name="Title" x="157" y="14.5" width="76" height="19" />
+      <frame id="2856:1665" name="Right" x="310" y="14.5" width="60" height="19">
+        <text id="2856:1666" name="Action" x="23" y="0" width="37" height="19" />
+      </frame>
+    </frame>
+    <frame id="2856:1667" name="StepIndicator" x="0" y="92" width="390" height="19">
+      <rounded-rectangle id="2856:1668" name="dot-0" x="159" y="8" width="8" height="3" />
+      <rounded-rectangle id="2856:1669" name="dot-1" x="175" y="8" width="24" height="3" />
+      <rounded-rectangle id="2856:1670" name="dot-2" x="207" y="8" width="8" height="3" />
+      <rounded-rectangle id="2856:1671" name="dot-3" x="223" y="8" width="8" height="3" />
+    </frame>
+    <frame id="2856:1672" name="Body" x="0" y="125" width="390" height="668">
+      <frame id="2856:1673" name="ImageCanvas" x="20" y="0" width="350" height="400" />
+      <frame id="2856:1683" name="BrandSection" x="20" y="416" width="350" height="187">
+        <frame id="2856:1684" name="SearchBar" x="0" y="0" width="350" height="41">
+          <frame id="2856:1685" name="search" x="16" y="12.5" width="16" height="16" />
+          <text id="2856:1687" name="Search brand or item..." x="44" y="12" width="151" height="17" />
+        </frame>
+      </frame>
+      <frame id="2856:1688" name="TipBox" x="20" y="619" width="350" height="49">
+        <frame id="2856:1689" name="info" x="8" y="16.5" width="16" height="16" />
+        <text id="2856:1691" name="Tip: Tag specific items rather than just the brand for better visibility" x="34" y="11.5" width="316" height="26" />
+      </frame>
+      <rounded-rectangle id="2856:1692" name="Rectangle 43632" x="0" y="146" width="390" height="573" />
+      <rounded-rectangle id="2856:1724" name="HomeIndicator" x="170" y="154" width="50" height="4" />
+      <frame id="2856:1733" name="SearchBar" x="148" y="176" width="95" height="26">
+        <text id="2856:1734" name="My Wardrobe" x="8" y="5" width="78" height="15" />
+      </frame>
+      <frame id="2856:1781" name="scroll-content" x="0" y="219" width="390" height="544">
+        <frame id="2856:1782" name="grid-row" x="20" y="0" width="350" height="204">
+          <frame id="2856:1783" name="category-card" x="0" y="0" width="167" height="204">
+            <rounded-rectangle id="2856:1784" name="card-thumb" x="12" y="12" width="143" height="130" />
+            <frame id="2856:1785" name="card-meta" x="12" y="154" width="143" height="38">
+              <text id="2856:1786" name="lbl" x="0" y="0" width="35" height="21" />
+              <text id="2856:1787" name="cnt" x="0" y="23" width="49" height="15" />
+            </frame>
+          </frame>
+          <frame id="2856:1788" name="category-card" x="183" y="0" width="167" height="204">
+            <rounded-rectangle id="2856:1789" name="card-thumb" x="12" y="12" width="143" height="130" />
+            <frame id="2856:1790" name="card-meta" x="12" y="154" width="143" height="38">
+              <text id="2856:1791" name="lbl" x="0" y="0" width="61" height="21" />
+              <text id="2856:1792" name="cnt" x="0" y="23" width="48" height="15" />
+            </frame>
+          </frame>
+        </frame>
+        <frame id="2856:1793" name="grid-row" x="20" y="220" width="350" height="204">
+          <frame id="2856:1794" name="category-card" x="0" y="0" width="167" height="204">
+            <rounded-rectangle id="2856:1795" name="card-thumb" x="12" y="12" width="143" height="130" />
+            <frame id="2856:1796" name="card-meta" x="12" y="154" width="143" height="38">
+              <text id="2856:1797" name="lbl" x="0" y="0" width="43" height="21" />
+              <text id="2856:1798" name="cnt" x="0" y="23" width="48" height="15" />
+            </frame>
+          </frame>
+          <frame id="2856:1799" name="category-card" x="183" y="0" width="167" height="204">
+            <rounded-rectangle id="2856:1800" name="card-thumb" x="12" y="12" width="143" height="130" />
+            <frame id="2856:1801" name="card-meta" x="12" y="154" width="143" height="38">
+              <text id="2856:1802" name="lbl" x="0" y="0" width="86" height="21" />
+              <text id="2856:1803" name="cnt" x="0" y="23" width="42" height="15" />
+            </frame>
+          </frame>
+        </frame>
+      </frame>
+    </frame>
+    <frame id="2856:1735" name="HomeIndicatorContainer" x="0" y="810" width="390" height="34">
+      <rounded-rectangle id="2856:1736" name="HomeIndicator" x="125" y="21" width="140" height="5" />
+    </frame>
+  </frame>
+  <rounded-rectangle id="2974:66625" name="HomeIndicator" x="678" y="1422" width="140" height="5" />
+</frame>IMPORTANT: After you call this tool, you MUST call get_design_context if trying to implement the design, since this tool only returns metadata. If you do not call get_design_context, the agent will not be able to implement the design.

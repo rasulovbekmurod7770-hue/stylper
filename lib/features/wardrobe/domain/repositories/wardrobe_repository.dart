@@ -15,4 +15,7 @@ abstract interface class WardrobeRepository {
     String itemId, {
     required bool saved,
   });
+
+  /// Adds clothes that aren't in any catalog; returns the new item.
+  Future<Either<WardrobeFailure, WardrobeItem>> addItem(NewWardrobeItem item);
 }

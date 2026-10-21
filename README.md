@@ -46,7 +46,8 @@ lib/
     post/               outfit post screen, likes / saves, post grid
     product/            product page, "See all looks"
     profile/            profiles (own + others), follow, saved posts
-    wardrobe/           wardrobe categories and items, save to wardrobe
+    wardrobe/           wardrobe categories and items, save to wardrobe,
+                        add your own items (clothes no brand here sells)
   l10n/                 app_en.arb, app_ru.arb, app_uz.arb
 ```
 

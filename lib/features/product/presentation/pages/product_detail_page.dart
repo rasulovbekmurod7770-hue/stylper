@@ -149,7 +149,8 @@ class _ProductImage extends StatelessWidget {
   }
 }
 
-/// "PriceRow": the price, and "Available at {store}" linking to the store.
+/// "PriceRow": the price, and "Available at {store}" linking to the store —
+/// on the next line when a long price leaves it no room.
 class _PriceRow extends StatelessWidget {
   const _PriceRow({required this.detail});
 
@@ -159,37 +160,35 @@ class _PriceRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final store = detail.store;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 12,
+      runSpacing: 4,
       children: [
         Text(
-          formatPrice(detail.product.price, l10n.localeName),
+          formatPrice(detail.product.price, l10n),
           style: AppTypography.heading,
         ),
-        const Spacer(),
         if (store != null)
-          Flexible(
-            child: Semantics(
-              link: true,
-              child: GestureDetector(
-                onTap: () => _openStore(context, store),
-                child: Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: '${l10n.productAvailableAt} ',
-                        style: AppTypography.labelMuted,
+          Semantics(
+            link: true,
+            child: GestureDetector(
+              onTap: () => _openStore(context, store),
+              child: Text.rich(
+                TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '${l10n.productAvailableAt} ',
+                      style: AppTypography.labelMuted,
+                    ),
+                    TextSpan(
+                      text: store.name,
+                      style: AppTypography.label.copyWith(
+                        decoration: TextDecoration.underline,
                       ),
-                      TextSpan(
-                        text: store.name,
-                        style: AppTypography.label.copyWith(
-                          decoration: TextDecoration.underline,
-                        ),
-                      ),
-                    ],
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
               ),
             ),

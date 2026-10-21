@@ -60,6 +60,10 @@ class WardrobeMembershipCubit extends Cubit<WardrobeMembershipState> {
   /// the category screen).
   void removed(String itemId) => _put(itemId, false);
 
+  /// Records an item the user just added themselves, so screens that list
+  /// the wardrobe refresh.
+  void added(String itemId) => _put(itemId, true);
+
   /// Forgets this session's changes, e.g. when another user signs in.
   void reset() {
     _inFlight.clear();

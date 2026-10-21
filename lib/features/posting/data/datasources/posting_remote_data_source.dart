@@ -5,7 +5,8 @@ import '../../../../core/network/auth_token_store.dart';
 ///
 /// Implementations throw `ServerException` / `NetworkException`.
 abstract interface class PostingRemoteDataSource {
-  /// GET /products/search?q=&category=&mine= → `{products}`
+  /// GET /products/search?q=&category=&mine= → `{products, items}` (`items`:
+  /// the user's own wardrobe items, only with `mine`)
   Future<Map<String, Object?>> searchProducts(
     String query, {
     String? category,

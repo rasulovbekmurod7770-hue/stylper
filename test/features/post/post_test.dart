@@ -58,7 +58,7 @@ void main() {
       ]);
       expect(
         post.products.first.price,
-        const Money(amount: 89, currency: 'USD'),
+        const Money(amount: 1130000, currency: 'UZS'),
       );
       expect(post.similar, hasLength(4));
       expect(post.engagement, const PostEngagement(likeCount: 412));
@@ -85,7 +85,7 @@ void main() {
         for (final path in {
           post.imagePath,
           ?post.author.avatarPath,
-          ...post.products.map((p) => p.imagePath),
+          ...post.products.map((p) => p.imagePath).nonNulls,
           ...post.similar.map((p) => p.imagePath),
         }) {
           expect(

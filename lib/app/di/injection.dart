@@ -48,6 +48,7 @@ import '../../features/wardrobe/data/repositories/wardrobe_repository_impl.dart'
 import '../../features/wardrobe/domain/repositories/wardrobe_repository.dart';
 import '../../features/wardrobe/domain/usecases/wardrobe_usecases.dart';
 import '../../features/wardrobe/presentation/cubits/wardrobe_cubit.dart';
+import '../../features/wardrobe/presentation/cubits/add_item_cubit.dart';
 import '../../features/wardrobe/presentation/cubits/wardrobe_items_cubit.dart';
 import '../../features/wardrobe/presentation/cubits/wardrobe_membership_cubit.dart';
 import '../../features/post/data/repositories/post_repository_impl.dart';
@@ -173,7 +174,8 @@ void configureDependencies({
     ..registerFactory(() => GetWardrobe(sl()))
     ..registerFactory(() => GetWardrobeItems(sl()))
     ..registerFactory(() => SetInWardrobe(sl()))
-    ..registerFactory(() => SearchProducts(sl()))
+    ..registerFactory(() => AddWardrobeItem(sl()))
+    ..registerFactory(() => SearchItems(sl()))
     ..registerFactory(() => GetRecentTags(sl()))
     ..registerFactory(() => GetPostStyles(sl()))
     ..registerFactory(() => PublishPost(sl()))
@@ -211,6 +213,7 @@ void configureDependencies({
     // App-wide, so every "save to wardrobe" control agrees.
     ..registerLazySingleton(() => WardrobeMembershipCubit(sl()))
     ..registerFactory(() => WardrobeCubit(sl()))
+    ..registerFactory(() => AddItemCubit(sl()))
     ..registerFactoryParam<WardrobeItemsCubit, String, void>(
       (category, _) => WardrobeItemsCubit(sl(), category: category),
     )

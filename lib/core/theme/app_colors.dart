@@ -58,6 +58,7 @@ abstract final class AppColors {
   static const outlineMedium = Color(0x241A1A1A); // 14%: profile buttons
   static const outlineButton = Color(0x261A1A1A); // 15%: buttons, pills
   static const statDot = Color(0x261A1A1A); // 15%
+  static const sheetBorder = Color(0xFFD1D1D1); // "Item details" sheet
 
   /// A photo's bottom edge darkening into its frame ("Gradient-Fade").
   static const photoFade = [Color(0x000E0816), Color(0xCC0E0816)];

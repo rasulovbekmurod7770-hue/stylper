@@ -33,6 +33,14 @@ class WardrobeRepositoryImpl implements WardrobeRepository {
             as bool,
   );
 
+  @override
+  Future<Either<WardrobeFailure, WardrobeItem>> addItem(NewWardrobeItem item) =>
+      _guard(
+        () async => WardrobeJson.item(
+          await _remote.addItem(WardrobeJson.newItem(item)),
+        ),
+      );
+
   Future<Either<WardrobeFailure, T>> _guard<T>(
     Future<T> Function() request,
   ) async {

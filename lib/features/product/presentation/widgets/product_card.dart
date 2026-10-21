@@ -63,7 +63,7 @@ class ProductCard extends StatelessWidget {
               ),
               const SizedBox(height: 2),
               Text(
-                formatPrice(product.price, l10n.localeName),
+                formatPrice(product.price, l10n),
                 style: AppTypography.captionStrong,
               ),
             ],

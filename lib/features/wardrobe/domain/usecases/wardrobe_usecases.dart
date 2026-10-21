@@ -44,6 +44,21 @@ final class WardrobeToggle extends Equatable {
   List<Object?> get props => [itemId, saved];
 }
 
+class AddWardrobeItem
+    implements
+        UseCase<
+          Future<Either<WardrobeFailure, WardrobeItem>>,
+          NewWardrobeItem
+        > {
+  const AddWardrobeItem(this._wardrobe);
+
+  final WardrobeRepository _wardrobe;
+
+  @override
+  Future<Either<WardrobeFailure, WardrobeItem>> call(NewWardrobeItem item) =>
+      _wardrobe.addItem(item);
+}
+
 class SetInWardrobe
     implements UseCase<Future<Either<WardrobeFailure, bool>>, WardrobeToggle> {
   const SetInWardrobe(this._wardrobe);

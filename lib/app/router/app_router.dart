@@ -41,6 +41,7 @@ import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/search/presentation/cubits/search_cubit.dart';
 import '../../features/search/presentation/pages/search_page.dart';
 import '../../features/wardrobe/presentation/cubits/wardrobe_cubit.dart';
+import '../../features/wardrobe/presentation/cubits/add_item_cubit.dart';
 import '../../features/wardrobe/presentation/cubits/wardrobe_items_cubit.dart';
 import '../../features/wardrobe/presentation/pages/wardrobe_category_page.dart';
 import '../../features/wardrobe/presentation/pages/wardrobe_page.dart';
@@ -116,8 +117,12 @@ GoRouter createRouter(SessionCubit session) {
       ShellRoute(
         builder: (context, state, child) => RepositoryProvider.value(
           value: sl<GalleryThumbnails>(),
-          child: BlocProvider(
-            create: (_) => sl<PostDraftCubit>()..loadStyles(),
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => sl<PostDraftCubit>()..loadStyles()),
+              // "Add New Item" while tagging.
+              BlocProvider(create: (_) => sl<AddItemCubit>()),
+            ],
             child: DiscardGuard(child: child),
           ),
         ),
@@ -209,8 +214,13 @@ GoRouter createRouter(SessionCubit session) {
                 routes: [
                   GoRoute(
                     path: 'wardrobe',
-                    builder: (context, state) => BlocProvider(
-                      create: (_) => sl<WardrobeCubit>()..load(),
+                    builder: (context, state) => MultiBlocProvider(
+                      providers: [
+                        BlocProvider(
+                          create: (_) => sl<WardrobeCubit>()..load(),
+                        ),
+                        BlocProvider(create: (_) => sl<AddItemCubit>()),
+                      ],
                       child: const WardrobePage(),
                     ),
                     routes: [

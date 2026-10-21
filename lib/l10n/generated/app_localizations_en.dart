@@ -421,6 +421,56 @@ class AppLocalizationsEn extends AppLocalizations {
   String get wardrobeAddNewItem => 'Add new item';
 
   @override
+  String get addItemTitle => 'Item details';
+
+  @override
+  String get addItemSubtitle =>
+      'Only you see it in your wardrobe. Tag it on a post and everyone sees what it is.';
+
+  @override
+  String get addItemName => 'Item name';
+
+  @override
+  String get addItemNameHint => 'e.g. Grey cardigan';
+
+  @override
+  String get addItemBrand => 'Brand name';
+
+  @override
+  String get addItemBrandHint => 'The brand, or the shop you got it from';
+
+  @override
+  String get addItemCategory => 'Category';
+
+  @override
+  String get addItemPrice => 'Price';
+
+  @override
+  String get addItemOptional => 'Optional';
+
+  @override
+  String get addItemPriceHint => 'e.g. 350,000';
+
+  @override
+  String get addItemPriceInvalid => 'Enter a price above 0';
+
+  @override
+  String get addItemSubmit => 'Add Item';
+
+  @override
+  String priceInSom(String amount) {
+    return '$amount UZS';
+  }
+
+  @override
+  String get currencySom => 'UZS';
+
+  @override
+  String postAddedBy(String name) {
+    return 'Added by $name';
+  }
+
+  @override
   String get wardrobeTops => 'Tops';
 
   @override
@@ -621,10 +671,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get postingRemoveTag => 'Remove tag';
-
-  @override
-  String get postingWardrobeOnlyCatalog =>
-      'Only items from brands can be tagged.';
 
   @override
   String get postingReadyToPublish => 'Ready to publish!';

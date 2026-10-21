@@ -72,6 +72,8 @@ class PostEngagement extends Equatable {
 }
 
 /// A clothing item tagged on a post photo — "what is it and where to get it".
+/// Usually a catalog product; or clothes no brand on Stylper sells, which
+/// the author added to their own wardrobe ([addedByAuthor]).
 class TaggedProduct extends Equatable {
   const TaggedProduct({
     required this.id,
@@ -84,8 +86,11 @@ class TaggedProduct extends Equatable {
     required this.tagX,
     required this.tagY,
     this.inWardrobe = false,
+    this.addedByAuthor = false,
   });
 
+  /// The product's id; for [addedByAuthor] items, the author's wardrobe
+  /// item (there's no product page to open).
   final String id;
 
   /// Full product name, e.g. "Oversized Wool Cardigan".
@@ -94,8 +99,12 @@ class TaggedProduct extends Equatable {
   /// Item type for compact labels, e.g. "Cardigan".
   final String shortName;
   final String brand;
-  final Money price;
-  final String imagePath;
+
+  /// Null when the author added the item without one.
+  final Money? price;
+
+  /// Null for items the author added (they have no photo).
+  final String? imagePath;
 
   /// How many people posted outfits with this item.
   final int styledCount;
@@ -106,6 +115,9 @@ class TaggedProduct extends Equatable {
 
   /// Whether it's in the signed-in user's wardrobe.
   final bool inWardrobe;
+
+  /// Not from a brand's catalog: the post's author added it themselves.
+  final bool addedByAuthor;
 
   @override
   List<Object?> get props => [
@@ -118,6 +130,7 @@ class TaggedProduct extends Equatable {
     styledCount,
     tagX,
     tagY,
+    addedByAuthor,
     inWardrobe,
   ];
 }

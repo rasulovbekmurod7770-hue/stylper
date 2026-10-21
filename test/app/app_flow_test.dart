@@ -20,6 +20,8 @@ import 'package:stylper/features/posting/presentation/pages/media_selection_page
 import 'package:stylper/features/posting/presentation/pages/posting_details_page.dart';
 import 'package:stylper/features/posting/presentation/pages/publish_page.dart';
 import 'package:stylper/features/posting/presentation/pages/tag_items_page.dart';
+import 'package:stylper/features/wardrobe/presentation/widgets/add_item_card.dart';
+import 'package:stylper/features/wardrobe/presentation/widgets/add_item_sheet.dart';
 import 'package:stylper/features/posting/presentation/widgets/posting_widgets.dart';
 import 'package:stylper/features/product/presentation/pages/product_detail_page.dart';
 import 'package:stylper/features/profile/presentation/pages/profile_page.dart';
@@ -64,6 +66,25 @@ void main() {
     await tester.ensureVisible(find.text(text).last);
     await tester.tap(find.text(text).last);
     await tester.pumpAndSettle();
+  }
+
+  /// "Add New Item" → TIMEOFLESS's grey cardigan, a top, 350 000 soʻm.
+  Future<void> addGreyCardigan(WidgetTester tester) async {
+    await tester.ensureVisible(find.byType(AddItemCard).last);
+    await tester.tap(find.byType(AddItemCard).last);
+    await tester.pumpAndSettle();
+    final fields = find.descendant(
+      of: find.byType(BottomSheet).last,
+      matching: find.byType(TextField),
+    );
+    await tester.enterText(fields.at(0), 'Grey Cardigan');
+    await tester.enterText(fields.at(1), 'TIMEOFLESS');
+    await tester.enterText(fields.at(2), '350000');
+    await tapText(tester, 'Tops');
+    await tester.ensureVisible(find.byKey(addItemSubmitKey));
+    await tester.tap(find.byKey(addItemSubmitKey));
+    await tester.pumpAndSettle();
+    expect(find.byType(BottomSheet), findsNothing);
   }
 
   Future<void> openTab(WidgetTester tester, String label) async {
@@ -365,11 +386,15 @@ void main() {
     expect(find.text('Baggy Jeans'), findsNothing);
     await tapText(tester, 'Vintage Jeans');
     expect(find.text('ZARA · Jeans'), findsOneWidget);
+
+    // A cardigan no brand here sells: added to the wardrobe and tagged.
+    await addGreyCardigan(tester);
+    expect(find.text('TIMEOFLESS · Grey Cardigan'), findsOneWidget);
     await tapText(tester, 'Next');
 
     expect(find.byType(PostingDetailsPage), findsOneWidget);
     expect(find.byType(AppTabBar), findsNothing);
-    expect(find.text('1 item tagged in this outfit'), findsOneWidget);
+    expect(find.text('2 items tagged in this outfit'), findsOneWidget);
     await type(tester, 0, 'Weekend denim');
     await type(tester, 1, 'Tashkent');
     await tapText(tester, 'Casual');
@@ -405,6 +430,22 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('ZARA · Jeans'), findsOneWidget);
+    expect(find.text('TIMEOFLESS · Grey Cardigan'), findsOneWidget);
+    expect(find.text('Added by John. B'), findsOneWidget);
+  });
+
+  testWidgets('the wardrobe\'s "Add New Item" adds to the category', (
+    tester,
+  ) async {
+    await signInAsDemo(tester);
+    await openTab(tester, 'Profile');
+    await tapText(tester, 'My Wardrobe');
+    expect(find.text('3 items'), findsOneWidget, reason: 'tops');
+
+    await addGreyCardigan(tester);
+    expect(find.text('4 items'), findsOneWidget);
+    await tapText(tester, 'Tops');
+    expect(find.text('Grey Cardigan'), findsOneWidget);
   });
 
   testWidgets('closing posting returns to the tab; a started post asks first', (

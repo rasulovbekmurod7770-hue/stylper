@@ -838,6 +838,96 @@ abstract class AppLocalizations {
   /// **'Add new item'**
   String get wardrobeAddNewItem;
 
+  /// No description provided for @addItemTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Item details'**
+  String get addItemTitle;
+
+  /// No description provided for @addItemSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Only you see it in your wardrobe. Tag it on a post and everyone sees what it is.'**
+  String get addItemSubtitle;
+
+  /// No description provided for @addItemName.
+  ///
+  /// In en, this message translates to:
+  /// **'Item name'**
+  String get addItemName;
+
+  /// No description provided for @addItemNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Grey cardigan'**
+  String get addItemNameHint;
+
+  /// No description provided for @addItemBrand.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand name'**
+  String get addItemBrand;
+
+  /// No description provided for @addItemBrandHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The brand, or the shop you got it from'**
+  String get addItemBrandHint;
+
+  /// No description provided for @addItemCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get addItemCategory;
+
+  /// No description provided for @addItemPrice.
+  ///
+  /// In en, this message translates to:
+  /// **'Price'**
+  String get addItemPrice;
+
+  /// No description provided for @addItemOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get addItemOptional;
+
+  /// No description provided for @addItemPriceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. 350,000'**
+  String get addItemPriceHint;
+
+  /// No description provided for @addItemPriceInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a price above 0'**
+  String get addItemPriceInvalid;
+
+  /// No description provided for @addItemSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Item'**
+  String get addItemSubmit;
+
+  /// A price in Uzbek soʻm; amount is already grouped, e.g. 1,130,000.
+  ///
+  /// In en, this message translates to:
+  /// **'{amount} UZS'**
+  String priceInSom(String amount);
+
+  /// No description provided for @currencySom.
+  ///
+  /// In en, this message translates to:
+  /// **'UZS'**
+  String get currencySom;
+
+  /// No description provided for @postAddedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Added by {name}'**
+  String postAddedBy(String name);
+
   /// No description provided for @wardrobeTops.
   ///
   /// In en, this message translates to:
@@ -1155,12 +1245,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Remove tag'**
   String get postingRemoveTag;
-
-  /// No description provided for @postingWardrobeOnlyCatalog.
-  ///
-  /// In en, this message translates to:
-  /// **'Only items from brands can be tagged.'**
-  String get postingWardrobeOnlyCatalog;
 
   /// No description provided for @postingReadyToPublish.
   ///

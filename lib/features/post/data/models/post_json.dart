@@ -55,22 +55,25 @@ abstract final class PostJson {
   ];
 
   static TaggedProduct _product(JsonMap json) {
-    final price = json['price']! as JsonMap;
+    final price = json['price'] as JsonMap?;
     final tag = json['tag']! as JsonMap;
     return TaggedProduct(
       id: json['id']! as String,
       name: json['name']! as String,
       shortName: json['shortName']! as String,
       brand: json['brand']! as String,
-      price: Money(
-        amount: price['amount']! as num,
-        currency: price['currency']! as String,
-      ),
-      imagePath: json['image']! as String,
+      price: price == null
+          ? null
+          : Money(
+              amount: price['amount']! as num,
+              currency: price['currency']! as String,
+            ),
+      imagePath: json['image'] as String?,
       styledCount: json['styledCount']! as int,
       tagX: (tag['x']! as num).toDouble(),
       tagY: (tag['y']! as num).toDouble(),
       inWardrobe: json['inWardrobe'] as bool? ?? false,
+      addedByAuthor: json['addedByAuthor'] as bool? ?? false,
     );
   }
 }

@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/usecase/usecase.dart';
-import '../../../product/domain/entities/product.dart';
+import '../../domain/entities/taggable_item.dart';
 import '../../domain/failures/posting_failure.dart';
 import '../../domain/usecases/posting_usecases.dart';
 
@@ -15,6 +15,7 @@ final class TagSearchState extends Equatable {
     this.mine = false,
     this.results = const [],
     this.recent = const [],
+    this.added = const [],
     this.searching = false,
     this.failure,
   });
@@ -26,10 +27,13 @@ final class TagSearchState extends Equatable {
 
   /// Only items in the user's wardrobe ("My Wardrobe").
   final bool mine;
-  final List<ProductSummary> results;
+  final List<TaggableItem> results;
 
   /// Products the user tagged before.
-  final List<ProductSummary> recent;
+  final List<TaggableItem> recent;
+
+  /// Items the user added to their wardrobe while tagging, newest first.
+  final List<TaggableItem> added;
   final bool searching;
   final PostingFailure? failure;
 
@@ -40,18 +44,20 @@ final class TagSearchState extends Equatable {
     mine,
     results,
     recent,
+    added,
     searching,
     failure,
   ];
 }
 
-/// Finding the item to tag: brand and business catalogs, searched by words,
-/// narrowed by category.
+/// Finding the item to tag: brand and business catalogs (and, under "My
+/// Wardrobe", the user's own items), searched by words, narrowed by
+/// category.
 class TagSearchCubit extends Cubit<TagSearchState> {
   TagSearchCubit(this._search, this._recentTags)
     : super(const TagSearchState());
 
-  final SearchProducts _search;
+  final SearchItems _search;
   final GetRecentTags _recentTags;
   Timer? _debounce;
 
@@ -77,6 +83,13 @@ class TagSearchCubit extends Cubit<TagSearchState> {
     _run();
   }
 
+  /// Records an item the user just added to their wardrobe, to list under
+  /// the search; "My Wardrobe" results include it from now on.
+  void addedItem(TaggableItem item) {
+    emit(_copy(added: [item, ...state.added]));
+    if (state.mine) _run();
+  }
+
   /// Picks [category], or clears it when it's already picked.
   void toggleCategory(String category) {
     emit(_copy(category: () => state.category == category ? null : category));
@@ -99,15 +112,16 @@ class TagSearchCubit extends Cubit<TagSearchState> {
     );
   }
 
-  ProductQuery get _query =>
-      ProductQuery(state.query, category: state.category, mine: state.mine);
+  ItemQuery get _query =>
+      ItemQuery(state.query, category: state.category, mine: state.mine);
 
   TagSearchState _copy({
     String? query,
     String? Function()? category,
     bool? mine,
-    List<ProductSummary>? results,
-    List<ProductSummary>? recent,
+    List<TaggableItem>? results,
+    List<TaggableItem>? recent,
+    List<TaggableItem>? added,
     bool? searching,
     PostingFailure? Function()? failure,
   }) => TagSearchState(
@@ -116,6 +130,7 @@ class TagSearchCubit extends Cubit<TagSearchState> {
     mine: mine ?? state.mine,
     results: results ?? state.results,
     recent: recent ?? state.recent,
+    added: added ?? state.added,
     searching: searching ?? state.searching,
     failure: failure == null ? state.failure : failure(),
   );

@@ -421,6 +421,56 @@ class AppLocalizationsRu extends AppLocalizations {
   String get wardrobeAddNewItem => 'Добавить вещь';
 
   @override
+  String get addItemTitle => 'Детали вещи';
+
+  @override
+  String get addItemSubtitle =>
+      'В гардеробе её видите только вы. Отметьте её в посте — и все узнают, что это за вещь.';
+
+  @override
+  String get addItemName => 'Название';
+
+  @override
+  String get addItemNameHint => 'Например, серый кардиган';
+
+  @override
+  String get addItemBrand => 'Бренд';
+
+  @override
+  String get addItemBrandHint => 'Бренд или магазин, где купили';
+
+  @override
+  String get addItemCategory => 'Категория';
+
+  @override
+  String get addItemPrice => 'Цена';
+
+  @override
+  String get addItemOptional => 'Необязательно';
+
+  @override
+  String get addItemPriceHint => 'Например, 350 000';
+
+  @override
+  String get addItemPriceInvalid => 'Укажите цену больше 0';
+
+  @override
+  String get addItemSubmit => 'Добавить';
+
+  @override
+  String priceInSom(String amount) {
+    return '$amount сум';
+  }
+
+  @override
+  String get currencySom => 'сум';
+
+  @override
+  String postAddedBy(String name) {
+    return 'Добавлено: $name';
+  }
+
+  @override
   String get wardrobeTops => 'Верх';
 
   @override
@@ -627,10 +677,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get postingRemoveTag => 'Удалить отметку';
-
-  @override
-  String get postingWardrobeOnlyCatalog =>
-      'Отметить можно только вещи брендов.';
 
   @override
   String get postingReadyToPublish => 'Готово к публикации!';

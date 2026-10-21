@@ -1,3 +1,4 @@
+import '../domain/money.dart';
 import '../error/exceptions.dart';
 import 'fake_content.dart';
 
@@ -35,6 +36,10 @@ class FakeBackend {
   final _wardrobes =
       <String, List<String>>{}; // userId → item ids, newest first
 
+  /// Items users added to their wardrobes themselves (not catalog products),
+  /// by id; only their owner has the id in their wardrobe.
+  final _ownItems = <String, Map<String, Object?>>{};
+
   /// Every post, newest first: the seeded ones plus those published here.
   var _posts = <String, Map<String, Object?>>{};
   var _nextId = 1;
@@ -60,6 +65,9 @@ class FakeBackend {
     for (final MapEntry(key: user, value: items)
         in FakeContent.wardrobes.entries) {
       _wardrobes[user] = [...items];
+    }
+    for (final MapEntry(key: id, value: item) in FakeContent.ownItems.entries) {
+      _ownItems[id] = Map.of(item);
     }
     // The demo accounts own the seeded profiles `a_john` / `a_katty`.
     _createUser(
@@ -249,7 +257,9 @@ class FakeBackend {
   /// `author` is `{id, name, handle, avatar?, followers, followedByMe,
   /// isMe}`, so the post can offer Follow. Each product carries
   /// `{id, name, shortName, brand, price: {amount, currency}, image,
-  /// styledCount, tag: {x, y}}`, the tag as fractions of the photo.
+  /// styledCount, tag: {x, y}}`, the tag as fractions of the photo. An item
+  /// the author added themselves (not from a catalog) has
+  /// `addedByAuthor: true`, no `image`, and `price` only if they gave one.
   Future<Map<String, Object?>> post(String id, {String? token}) async {
     await _delay();
     _postOr404(id);
@@ -382,6 +392,18 @@ class FakeBackend {
     Map<String, Object?> tag,
     String? viewer,
   ) {
+    if (tag['item'] case final Map<String, Object?> item) {
+      return {
+        'id': item['id'],
+        'name': item['name'],
+        'shortName': item['name'],
+        'brand': item['brand'],
+        if (item['price'] != null) 'price': item['price'],
+        'addedByAuthor': true,
+        'styledCount': 0,
+        'tag': {'x': tag['x'], 'y': tag['y']},
+      };
+    }
     final id = tag['product']! as String;
     return {
       ..._productSummary(id),
@@ -400,7 +422,7 @@ class FakeBackend {
       'brand': product['brand'],
       'brandId': product['brandId'],
       'category': product['category'],
-      'price': {'amount': product['price'], 'currency': 'USD'},
+      'price': {'amount': product['price'], 'currency': appCurrency},
       'image': product['image'],
     };
   }
@@ -539,7 +561,7 @@ class FakeBackend {
   }
 
   /// GET /me/wardrobe → `{categories: [{id, count, image?}]}`, in display
-  /// order; `image` is the newest item's.
+  /// order; `image` is the newest photo among the category's items.
   Future<Map<String, Object?>> wardrobe(String? token) async {
     await _delay();
     final items = _wardrobeItems(_userIdFor(token ?? ''));
@@ -550,7 +572,7 @@ class FakeBackend {
             'id': category,
             'count': items.where((i) => i['category'] == category).length,
             'image': items
-                .where((i) => i['category'] == category)
+                .where((i) => i['category'] == category && i['image'] != null)
                 .firstOrNull?['image'],
           },
       ],
@@ -558,7 +580,8 @@ class FakeBackend {
   }
 
   /// GET /me/wardrobe/:category → `{items: [{id, name, brand?, category,
-  /// image, productId?}]}`, newest first.
+  /// image?, price?, productId?}]}`, newest first. Items the user added
+  /// themselves have no `productId`, and no `image` unless seeded with one.
   Future<Map<String, Object?>> wardrobeCategory(
     String? token,
     String category,
@@ -597,12 +620,52 @@ class FakeBackend {
     return {'inWardrobe': saved};
   }
 
+  /// POST /me/wardrobe/items — body `{name, brand, category, price?:
+  /// {amount, currency}}` → the item, as in GET /me/wardrobe/:category
+  /// (without `image`). For clothes no brand on Stylper sells: the item is
+  /// private to the user's wardrobe and never in product search; tagged on
+  /// a post, its name, brand and price are shown to everyone. 422 when
+  /// `name` / `brand` are blank, `category` is unknown or `price` isn't
+  /// positive.
+  Future<Map<String, Object?>> addWardrobeItem(
+    String? token,
+    Map<String, Object?> body,
+  ) async {
+    await _delay();
+    final userId = _userIdFor(token ?? '');
+    final name = (body['name'] as String?)?.trim() ?? '';
+    final brand = (body['brand'] as String?)?.trim() ?? '';
+    final category = body['category'] as String?;
+    final price = body['price'] as Map<String, Object?>?;
+    final amount = price?['amount'] as num?;
+    if (name.isEmpty ||
+        brand.isEmpty ||
+        !FakeContent.wardrobeCategories.contains(category) ||
+        (price != null &&
+            (amount == null || amount <= 0 || price['currency'] is! String))) {
+      throw const ServerException(
+        statusCode: 422,
+        code: ApiErrorCodes.validation,
+      );
+    }
+    final id = 'w_${_nextId++}';
+    _ownItems[id] = {
+      'category': category,
+      'name': name,
+      'brand': brand,
+      if (price != null)
+        'price': {'amount': amount, 'currency': price['currency']},
+    };
+    _wardrobes.putIfAbsent(userId, () => []).insert(0, id);
+    return {'id': id, ..._ownItems[id]!};
+  }
+
   List<Map<String, Object?>> _wardrobeItems(String userId) => [
     for (final id in _wardrobes[userId] ?? const <String>[])
       if (FakeContent.products.containsKey(id))
         {..._productSummary(id), 'productId': id}
-      else
-        {'id': id, ...FakeContent.ownItems[id]!},
+      else if (_ownItems[id] case final item?)
+        {'id': id, ...item},
   ];
 
   /// GET /search/discover → `{city, brands, trending}`: what Search shows
@@ -709,11 +772,13 @@ class FakeBackend {
     return {'styles': FakeContent.allStyles};
   }
 
-  /// GET /products/search?q=&category=&mine= → `{products}`. Public. Every
-  /// word of `q` must appear in the brand, name or item type, so "jeans
-  /// zara" finds ZARA's jeans; `category` (tops / bottoms / shoes /
+  /// GET /products/search?q=&category=&mine= → `{products, items}`. Public.
+  /// Every word of `q` must appear in the brand, name or item type, so
+  /// "jeans zara" finds ZARA's jeans; `category` (tops / bottoms / shoes /
   /// accessories) narrows it down; `mine` keeps only the signed-in user's
   /// wardrobe. Products belong to brand and business profiles (`brandId`).
+  /// `items` are the items the user added to their wardrobe themselves
+  /// (as in GET /me/wardrobe/:category), newest first — only with `mine`.
   Future<Map<String, Object?>> searchProducts({
     String query = '',
     String? category,
@@ -726,7 +791,19 @@ class FakeBackend {
         : null;
     final words = query.toLowerCase().split(RegExp(r'\s+'))
       ..removeWhere((word) => word.isEmpty);
+    bool matches(Map<String, Object?> item, List<String> fields) =>
+        (category == null || item['category'] == category) &&
+        words.every(
+          (word) => fields.any(
+            (field) => '${item[field] ?? ''}'.toLowerCase().contains(word),
+          ),
+        );
     return {
+      'items': [
+        for (final id in wardrobe ?? const <String>[])
+          if (_ownItems[id] case final item?)
+            if (matches(item, const ['brand', 'name'])) {'id': id, ...item},
+      ],
       'products': [
         for (final MapEntry(key: id, value: product)
             in FakeContent.products.entries)
@@ -744,8 +821,8 @@ class FakeBackend {
     };
   }
 
-  /// GET /me/recent-tags → `{products}`: products the user tagged in their
-  /// own posts, most recent first, without repeats.
+  /// GET /me/recent-tags → `{products}`: catalog products the user tagged in
+  /// their own posts, most recent first, without repeats.
   Future<Map<String, Object?>> recentTags(String? token) async {
     await _delay();
     final userId = _userIdFor(token ?? '');
@@ -757,17 +834,20 @@ class FakeBackend {
             for (final tag
                 in (post['products']! as List<Object?>)
                     .cast<Map<String, Object?>>())
-              if (seen.add(tag['product']! as String))
-                _productSummary(tag['product']! as String),
+              if (tag['product'] case final String id)
+                if (seen.add(id)) _productSummary(id),
       ],
     };
   }
 
   /// POST /posts — body `{image, caption?, location?, styles, tags:
-  /// [{productId, x, y}], allowBrandFeature}` → the new post, as from
-  /// GET /posts/:id. Signed-in users only; every post is public (there's no
-  /// audience setting). The real API takes the photo as a multipart upload
-  /// and returns its URL; here `image` stays the local file path.
+  /// [{productId | itemId, x, y}], allowBrandFeature}` → the new post, as
+  /// from GET /posts/:id. Signed-in users only; every post is public (there's
+  /// no audience setting). A tag names a catalog product, or (`itemId`) an
+  /// item the author added to their own wardrobe, copied into the post so it
+  /// stays even if they later remove it. The real API takes the photo as a
+  /// multipart upload and returns its URL; here `image` stays the local file
+  /// path.
   Future<Map<String, Object?>> publishPost(
     String? token,
     Map<String, Object?> body,
@@ -777,11 +857,14 @@ class FakeBackend {
     final image = body['image'] as String?;
     final tags = (body['tags'] as List<Object?>? ?? const [])
         .cast<Map<String, Object?>>();
-    if (image == null ||
-        image.isEmpty ||
-        tags.any(
-          (tag) => !FakeContent.products.containsKey(tag['productId']),
-        )) {
+    final wardrobe = _wardrobes[userId] ?? const <String>[];
+    bool valid(Map<String, Object?> tag) => switch (tag) {
+      {'productId': final String id} => FakeContent.products.containsKey(id),
+      {'itemId': final String id} =>
+        wardrobe.contains(id) && _ownItems.containsKey(id),
+      _ => false,
+    };
+    if (image == null || image.isEmpty || !tags.every(valid)) {
       throw const ServerException(
         statusCode: 422,
         code: ApiErrorCodes.validation,
@@ -805,7 +888,19 @@ class FakeBackend {
         'allowBrandFeature': body['allowBrandFeature'] ?? false,
         'products': [
           for (final tag in tags)
-            {'product': tag['productId'], 'x': tag['x'], 'y': tag['y']},
+            if (tag['itemId'] case final String itemId)
+              {
+                'item': {
+                  'id': itemId,
+                  'name': _ownItems[itemId]!['name'],
+                  'brand': _ownItems[itemId]!['brand'],
+                  'price': _ownItems[itemId]!['price'],
+                },
+                'x': tag['x'],
+                'y': tag['y'],
+              }
+            else
+              {'product': tag['productId'], 'x': tag['x'], 'y': tag['y']},
         ],
         'similar': similar,
       },

@@ -16,6 +16,8 @@ import '../cubits/wardrobe_cubit.dart';
 import '../cubits/wardrobe_membership_cubit.dart';
 import '../wardrobe_category_label.dart';
 import '../wardrobe_failure_message.dart';
+import '../widgets/add_item_card.dart';
+import '../widgets/add_item_sheet.dart';
 
 /// Figma: "Wardrobe — Light" (2789:226) — the signed-in user's clothes by
 /// category. Styled from the frame's design context
@@ -100,7 +102,9 @@ class WardrobePage extends StatelessWidget {
                       MediaQuery.paddingOf(context).bottom + 24,
                     ),
                     sliver: SliverToBoxAdapter(
-                      child: _AddItemCard(onTap: comingSoon),
+                      child: AddItemCard(
+                        onTap: () => showAddItemSheet(context),
+                      ),
                     ),
                   ),
                 ] else if (state.status == WardrobeStatus.failure)
@@ -225,52 +229,6 @@ class _CategoryCard extends StatelessWidget {
               Text(
                 l10n.wardrobeItemCount(category.itemCount),
                 style: AppTypography.captionMuted,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-/// "add-item-card": a wide card with a red "+" disc to add a new item.
-class _AddItemCard extends StatelessWidget {
-  const _AddItemCard({required this.onTap});
-
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      button: true,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onTap,
-        child: Container(
-          height: 72,
-          decoration: BoxDecoration(
-            color: AppColors.surfaceMuted,
-            border: Border.all(color: AppColors.socialBorder),
-            borderRadius: const BorderRadius.all(Radius.circular(20)),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 32,
-                height: 32,
-                alignment: Alignment.center,
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: AppColors.brandRed,
-                ),
-                child: SvgPicture.asset(AppIcons.plus, width: 16, height: 16),
-              ),
-              const SizedBox(width: 12),
-              Text(
-                context.l10n.wardrobeAddNewItem,
-                style: AppTypography.bodyStrong,
               ),
             ],
           ),

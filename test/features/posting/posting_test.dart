@@ -7,6 +7,7 @@ import 'package:stylper/features/posting/data/datasources/posting_remote_data_so
 import 'package:stylper/features/posting/data/repositories/posting_repository_impl.dart';
 import 'package:stylper/features/posting/domain/entities/media.dart';
 import 'package:stylper/features/posting/domain/entities/post_draft.dart';
+import 'package:stylper/features/posting/domain/entities/taggable_item.dart';
 import 'package:stylper/features/posting/domain/failures/posting_failure.dart';
 import 'package:stylper/features/posting/domain/usecases/posting_usecases.dart';
 import 'package:stylper/features/posting/presentation/cubits/media_picker_cubit.dart';
@@ -15,16 +16,23 @@ import 'package:stylper/features/posting/presentation/cubits/tag_search_cubit.da
 import 'package:stylper/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:stylper/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:stylper/features/profile/domain/repositories/profile_repository.dart';
+import 'package:stylper/core/domain/money.dart';
+import 'package:stylper/features/wardrobe/data/datasources/wardrobe_remote_data_source.dart';
+import 'package:stylper/features/wardrobe/data/repositories/wardrobe_repository_impl.dart';
+import 'package:stylper/features/wardrobe/domain/entities/wardrobe.dart';
 
 import '../../helpers/fake_media.dart';
 
 const _photo = 'assets/images/posts/john_knit.webp';
 
 const _sweaterTag = DraftTag(
-  productId: 'p_polo_arket',
-  brand: 'ARKET',
-  label: 'Sweater',
-  imagePath: 'assets/images/style_quiz/rugby_polo_sweater_arket.webp',
+  item: TaggableItem(
+    id: 'p_polo_arket',
+    name: 'Rugby Polo Sweater',
+    label: 'Sweater',
+    brand: 'ARKET',
+    imagePath: 'assets/images/style_quiz/rugby_polo_sweater_arket.webp',
+  ),
   x: 0.4,
   y: 0.25,
 );
@@ -54,7 +62,7 @@ void main() {
     String query, {
     String? category,
     bool mine = false,
-  }) async => (await posting.searchProducts(
+  }) async => (await posting.searchItems(
     query,
     category: category,
     mine: mine,
@@ -79,19 +87,26 @@ void main() {
       );
     });
 
-    test('"My Wardrobe" keeps only your saved items', () async {
-      await signIn();
-      final wardrobe =
-          (await backend.searchProducts(
-                mine: true,
-                token: await tokens.read(),
-              ))['products']!
-              as List<Object?>;
-      final mine = await search('', mine: true);
-      expect(mine, hasLength(wardrobe.length));
-      expect(mine, isNotEmpty);
-      expect(await search(''), containsAll(mine));
-    });
+    test(
+      '"My Wardrobe" keeps only your wardrobe, your own items first',
+      () async {
+        await signIn();
+        final json = await backend.searchProducts(
+          mine: true,
+          token: await tokens.read(),
+        );
+        final products = (json['products']! as List<Object?>).length;
+        final mine = await search('', mine: true);
+        expect(mine.take(3), ['w_sneakers', 'w_sunglasses', 'w_watches']);
+        expect(mine, hasLength(products + 3));
+        final catalog = await search('');
+        expect(catalog, containsAll(mine.skip(3)));
+        // Items people add themselves never show in the catalog.
+        expect(catalog, isNot(contains('w_sneakers')));
+        // Brand and name match own items too.
+        expect((await search('kink watch', mine: true)).first, 'w_watches');
+      },
+    );
 
     test('recent tags are items from your own posts', () async {
       await signIn();
@@ -154,10 +169,149 @@ void main() {
           photoPath: _photo,
           tags: [
             DraftTag(
-              productId: 'p_missing',
-              brand: 'X',
-              label: 'Y',
-              imagePath: _photo,
+              item: TaggableItem(
+                id: 'p_missing',
+                name: 'Y',
+                label: 'Y',
+                brand: 'X',
+              ),
+              x: 0.5,
+              y: 0.5,
+            ),
+          ],
+        ),
+      );
+      expect(
+        result.getLeft().toNullable(),
+        const PostingFailure(PostingFailureReason.invalid),
+      );
+    });
+  });
+
+  group('your own items (not in any catalog)', () {
+    late WardrobeRepositoryImpl wardrobe;
+    late PostRepositoryImpl posts;
+
+    setUp(() {
+      wardrobe = WardrobeRepositoryImpl(
+        remote: FakeWardrobeRemoteDataSource(backend, tokens),
+      );
+      posts = PostRepositoryImpl(
+        remote: FakePostRemoteDataSource(backend, tokens),
+      );
+    });
+
+    Future<WardrobeItem> add({Money? price}) async => (await wardrobe.addItem(
+      NewWardrobeItem(
+        name: 'Grey Cardigan',
+        brand: 'TIMEOFLESS',
+        category: 'tops',
+        price: price,
+      ),
+    )).getOrElse((f) => throw StateError('$f'));
+
+    Future<String> publishWith(TaggableItem item) async =>
+        (await posting.publish(
+          PostDraft(
+            photoPath: _photo,
+            tags: [DraftTag(item: item, x: 0.5, y: 0.4)],
+          ),
+        )).getOrElse((f) => throw StateError('$f'));
+
+    test('go to your wardrobe, and only "My Wardrobe" finds them', () async {
+      await signIn();
+      final item = await add(
+        price: const Money(amount: 350000, currency: 'UZS'),
+      );
+      expect(item.name, 'Grey Cardigan');
+      expect(item.imagePath, isNull);
+      expect(item.productId, isNull);
+
+      final tops = (await wardrobe.getItems('tops'))
+          .getOrElse((f) => throw StateError('$f'));
+      expect(tops.first, item);
+      expect((await search('cardigan', mine: true)).first, item.id);
+      expect(await search('cardigan'), isNot(contains(item.id)));
+    });
+
+    test(
+      'need a name, a brand and a category; the price is optional',
+      () async {
+        await signIn();
+        expect((await add()).price, isNull);
+        final blank = await wardrobe.addItem(
+          const NewWardrobeItem(name: ' ', brand: 'X', category: 'tops'),
+        );
+        expect(blank.isLeft(), isTrue);
+        final free = await wardrobe.addItem(
+          const NewWardrobeItem(
+            name: 'Scarf',
+            brand: 'Bazaar',
+            category: 'accessories',
+            price: Money(amount: 0, currency: 'UZS'),
+          ),
+        );
+        expect(free.isLeft(), isTrue);
+      },
+    );
+
+    test('tagged on a post, everyone sees what they are', () async {
+      await signIn();
+      final item = await add(
+        price: const Money(amount: 350000, currency: 'UZS'),
+      );
+      final id = await publishWith(TaggableItem.own(item));
+
+      // Gone from the wardrobe later, the post still shows it.
+      await wardrobe.setInWardrobe(item.id, saved: false);
+      await tokens.clear();
+      final post = (await posts.getPost(id))
+          .getOrElse((f) => throw StateError('$f'));
+      final tagged = post.products.single;
+      expect(tagged.addedByAuthor, isTrue);
+      expect(tagged.name, 'Grey Cardigan');
+      expect(tagged.brand, 'TIMEOFLESS');
+      expect(tagged.price, const Money(amount: 350000, currency: 'UZS'));
+      expect(tagged.imagePath, isNull);
+      expect(tagged.tagY, 0.4);
+    });
+
+    test('without a price, the post shows none', () async {
+      await signIn();
+      final id = await publishWith(TaggableItem.own(await add()));
+      final post = (await posts.getPost(id))
+          .getOrElse((f) => throw StateError('$f'));
+      expect(post.products.single.price, isNull);
+    });
+
+    test('recent tags keep to catalog products', () async {
+      await signIn();
+      await publishWith(TaggableItem.own(await add()));
+      final recent = (await posting.recentTags()).getOrElse(
+        (f) => throw StateError('$f'),
+      );
+      expect(recent, isNotEmpty);
+      expect(recent.any((item) => item.own), isFalse);
+    });
+
+    test("nobody can tag someone else's item", () async {
+      final session = await backend.login(
+        'katty.miller@stylper.ai',
+        FakeBackend.demoPassword,
+      );
+      await tokens.save(session['accessToken']! as String);
+      final result = await posting.publish(
+        const PostDraft(
+          photoPath: _photo,
+          tags: [
+            DraftTag(
+              item: TaggableItem(
+                id: 'w_sneakers', // John's
+                name: 'Suede Sneakers',
+                label: 'Suede Sneakers',
+                brand: 'Terra Pro',
+                own: true,
+              ),
               x: 0.5,
               y: 0.5,
             ),
@@ -310,7 +464,7 @@ void main() {
     test('searches once the user pauses typing', () async {
       await signIn();
       final search = TagSearchCubit(
-        SearchProducts(posting),
+        SearchItems(posting),
         GetRecentTags(posting),
       );
       await search.load();
@@ -332,7 +486,7 @@ void main() {
 
     test('closing cancels a pending search', () async {
       final search = TagSearchCubit(
-        SearchProducts(posting),
+        SearchItems(posting),
         GetRecentTags(posting),
       )..setQuery('jeans');
       await search.close();
@@ -342,12 +496,6 @@ void main() {
 }
 
 extension on DraftTag {
-  DraftTag copyWithPosition(double x, double y) => DraftTag(
-    productId: productId,
-    brand: brand,
-    label: label,
-    imagePath: imagePath,
-    x: x,
-    y: y,
-  );
+  DraftTag copyWithPosition(double x, double y) =>
+      DraftTag(item: item, x: x, y: y);
 }

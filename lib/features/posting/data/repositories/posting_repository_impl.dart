@@ -3,8 +3,9 @@ import 'package:fpdart/fpdart.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../post/data/models/post_json.dart';
 import '../../../product/data/models/product_json.dart';
-import '../../../product/domain/entities/product.dart';
+import '../../../wardrobe/data/models/wardrobe_json.dart';
 import '../../domain/entities/post_draft.dart';
+import '../../domain/entities/taggable_item.dart';
 import '../../domain/failures/posting_failure.dart';
 import '../../domain/repositories/posting_repository.dart';
 import '../datasources/posting_remote_data_source.dart';
@@ -15,28 +16,33 @@ class PostingRepositoryImpl implements PostingRepository {
   final PostingRemoteDataSource _remote;
 
   @override
-  Future<Either<PostingFailure, List<ProductSummary>>> searchProducts(
+  Future<Either<PostingFailure, List<TaggableItem>>> searchItems(
     String query, {
     String? category,
     bool mine = false,
-  }) => _guard(
-    () async => PostJson.list(
-      (await _remote.searchProducts(
-        query,
-        category: category,
-        mine: mine,
-      ))['products'],
-      ProductJson.summary,
-    ),
-  );
+  }) => _guard(() async {
+    final json = await _remote.searchProducts(
+      query,
+      category: category,
+      mine: mine,
+    );
+    return [
+      ...PostJson.list(json['items'], _ownItem),
+      ...PostJson.list(json['products'], _product),
+    ];
+  });
 
   @override
-  Future<Either<PostingFailure, List<ProductSummary>>> recentTags() => _guard(
-    () async => PostJson.list(
-      (await _remote.recentTags())['products'],
-      ProductJson.summary,
-    ),
+  Future<Either<PostingFailure, List<TaggableItem>>> recentTags() => _guard(
+    () async =>
+        PostJson.list((await _remote.recentTags())['products'], _product),
   );
+
+  static TaggableItem _product(JsonMap json) =>
+      TaggableItem.product(ProductJson.summary(json));
+
+  static TaggableItem _ownItem(JsonMap json) =>
+      TaggableItem.own(WardrobeJson.item(json));
 
   @override
   Future<Either<PostingFailure, List<String>>> styles() =>
@@ -53,8 +59,8 @@ class PostingRepositoryImpl implements PostingRepository {
                 'location': draft.location.trim(),
               'styles': draft.styles,
               'tags': [
-                for (final tag in draft.tags)
-                  {'productId': tag.productId, 'x': tag.x, 'y': tag.y},
+                for (final DraftTag(:item, :x, :y) in draft.tags)
+                  {item.own ? 'itemId' : 'productId': item.id, 'x': x, 'y': y},
               ],
               'allowBrandFeature': draft.allowBrandFeature,
             }))['id']!
