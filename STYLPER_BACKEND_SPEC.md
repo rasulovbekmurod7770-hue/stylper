@@ -32,7 +32,7 @@ stylper-backend/
     migrations/
       0001_stylper_schema.sql      ← DONE: tables, RLS, triggers, RPCs
       0002_cron.sql                ← TODO: schedule nightly job
-      0003_seed_styles_brands.sql  ← TODO: seed data for local dev only
+    seed.sql                       ← DONE: demo data for local dev only (loaded by `supabase db reset`; never a migration)
     functions/
       create-upload/index.ts       ← TODO
       finalize-upload/index.ts     ← TODO

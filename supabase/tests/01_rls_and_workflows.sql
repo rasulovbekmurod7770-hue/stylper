@@ -8,6 +8,14 @@
 
 begin;
 
+-- Start from an empty database, since the local one holds the demo data from
+-- seed.sql; the rollback brings it back.
+do $$ begin
+  execute (select 'truncate table ' || string_agg(format('%I.%I', schemaname, tablename), ', ') || ' cascade'
+           from pg_tables where schemaname = 'public');
+end $$;
+delete from auth.users;
+
 -- Fixed ids:  A = Aziza (creator)   B = Bobur   C = Kamila (private account)
 --             M = COS team member   X = random user, no brand
 -- helper: act as a user (or guest when uid is null)

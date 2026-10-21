@@ -116,9 +116,16 @@ it", local brands first, and trust (nothing that misleads).
   `postgresql://postgres:postgres@127.0.0.1:54322/postgres`. Ports
   54320–54329 are reserved on the dev machine
   (`/etc/sysctl.d/60-supabase-ports.conf`) so other apps can't take them.
+- `supabase/seed.sql` is local demo data (`db reset` loads it; never a
+  migration): COS, UNIQLO, ZARA and ARKET with products, variants and a COS
+  store, five people and eight tagged posts. Sign in as
+  `developer@stylper.ai` (john), `katty.miller@`, `leo@`, `mina@` or
+  `fozil@stylper.ai`, password `stylper123`. Media keys are `seed/…`
+  placeholders until R2 exists.
 - **The SQL tests must pass after any schema change**, and new features add
   tests to `supabase/tests/01_rls_and_workflows.sql`. They run in one
-  transaction that's rolled back, so they can run any time; after editing
+  transaction that empties the database first and is rolled back at the end,
+  so they can run any time and the demo data survives; after editing
   migrations, `npx supabase db reset` first to apply them:
 
   ```bash
