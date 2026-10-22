@@ -32,7 +32,9 @@ stylper-backend/
     migrations/
       0001_stylper_schema.sql      ← DONE: tables, RLS, triggers, RPCs
       0002_handles.sql             ← DONE: usernames, brand slugs and reserved names share one namespace
-      0003_cron.sql                ← TODO: schedule nightly job
+      0003_style_keys.sql          ← TODO: styles become fixed keys (see §4)
+      0004_tag_limit.sql           ← TODO: at most 10 tags per photo (see "Layered outfits", §7)
+      0005_cron.sql                ← TODO: schedule nightly job
     seed.sql                       ← DONE: demo data for local dev only (loaded by `supabase db reset`; never a migration)
     functions/
       create-upload/index.ts       ← TODO
@@ -136,9 +138,18 @@ Use `supabase_flutter`. Table reads go through PostgREST (`.from('table').select
 | Brand · Overview (analytics) | `brand_daily_stats` for the last 7/30 days |
 | Delete my post | `rpc delete_post(id)`. This also removes brand features and revokes reuse rights. |
 
+### Layered outfits (tagging)
+
+People wear layers (a jacket over a t-shirt, a scarf over a coat) and must be able to tag each layer, so tags often sit close together on the photo.
+
+- Every tag has the category of its product or wardrobe item (`item_category_t`); label-only tags count as `other`. The tag picker and the wardrobe offer every category, including **Outerwear** and **Accessories**.
+- **At most 10 tags per photo** (per `post_image_id`), enforced in the database by `0004_tag_limit.sql`. The app stops at 10 as well.
+- **Outfit details** (the list of tagged items on the post) is ordered outside-in: outerwear, tops, bottoms, shoes, accessories, then `other`; within a category, in the order they were tagged.
+- **Close-together dots** stay readable and tappable: no dot hides another and no labels overlap.
+
 ## 8. Jobs
 
-`0003_cron.sql`:
+`0005_cron.sql`:
 ```sql
 select cron.schedule('nightly-rollup', '15 19 * * *', $$select rollup_brand_stats()$$);  -- 00:15 Tashkent time
 ```
@@ -156,7 +167,7 @@ It rolls up yesterday's events (Tashkent calendar day), deletes events older tha
 
 1. `supabase init`, link the project, apply 0001, enable Google + Apple auth. **Done when:** tests pass locally (see §11) and a Flutter user can sign up and see their profile row.
 2. R2 bucket + custom domain + `create-upload` / `finalize-upload`. **Done when:** an avatar upload works end to end and loads from `img.stylper.app`.
-3. Posting flow + post detail + tags. **Done when:** a post with 2 tagged items appears on another account's feed with working tag dots.
+3. Posting flow + post detail + tags. **Done when:** a post with 2 tagged items appears on another account's feed with working tag dots, and a layered outfit (jacket over a t-shirt, tagged separately) shows both tags readable and tappable.
 4. Feed, likes, saves, comments, follows, notifications (Realtime). **Done when:** counters and notifications update live on a second device.
 5. Product pages, search, wardrobe, boards.
 6. Brand workspace: catalog, stores and stock, community hub, features, rights, rewards.
