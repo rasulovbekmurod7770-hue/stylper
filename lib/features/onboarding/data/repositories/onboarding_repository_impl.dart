@@ -37,8 +37,13 @@ class OnboardingRepositoryImpl implements OnboardingRepository {
   Future<Either<OnboardingFailure, Unit>> completeOnboarding({
     required OutfitItem top,
     required OutfitItem bottom,
+    required List<String> styleDna,
   }) => _guard(
-    () => _remote.completeOnboarding(topId: top.id, bottomId: bottom.id),
+    () => _remote.completeOnboarding(
+      topId: top.id,
+      bottomId: bottom.id,
+      styleDna: styleDna,
+    ),
   );
 
   Future<Either<OnboardingFailure, Unit>> _guard(

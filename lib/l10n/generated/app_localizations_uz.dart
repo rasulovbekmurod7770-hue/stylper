@@ -535,6 +535,27 @@ class AppLocalizationsUz extends AppLocalizations {
   String get profileStyleDna => 'Uslub DNKsi';
 
   @override
+  String get styleMinimal => 'Minimalizm';
+
+  @override
+  String get styleCasual => 'Kundalik';
+
+  @override
+  String get styleStreetwear => 'Koʻcha uslubi';
+
+  @override
+  String get styleStreetwearShort => 'Koʻcha';
+
+  @override
+  String get styleNeutral => 'Neytral';
+
+  @override
+  String get styleOversized => 'Oversayz';
+
+  @override
+  String get styleSmartCasual => 'Yarim rasmiy';
+
+  @override
   String get profileMyStyle => 'Mening uslubim';
 
   @override
@@ -560,6 +581,65 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get profileSettings => 'Sozlamalar';
+
+  @override
+  String get editProfileTitle => 'Profilni tahrirlash';
+
+  @override
+  String get profileNameLabel => 'Ism';
+
+  @override
+  String get profileNameHint => 'Ismingiz';
+
+  @override
+  String get profileBioLabel => 'Haqingizda';
+
+  @override
+  String get profileBioHint => 'Uslubingiz haqida bir-ikki soʻz';
+
+  @override
+  String get profileSave => 'Saqlash';
+
+  @override
+  String get settingsPrivacy => 'Maxfiylik';
+
+  @override
+  String get settingsPrivateAccount => 'Yopiq hisob';
+
+  @override
+  String get settingsPrivateAccountHint =>
+      'Postlaringizni faqat obunachilaringiz koʻradi.';
+
+  @override
+  String get settingsBrandFeatures => 'Brendlar postlarimni koʻrsata oladi';
+
+  @override
+  String get settingsBrandFeaturesHint =>
+      'Yangi postlar uchun, faqat ularda belgilangan brendlarga.';
+
+  @override
+  String get settingsShowLikeCounts => 'Layklar sonini koʻrsatish';
+
+  @override
+  String get settingsNotifications => 'Bildirishnomalar';
+
+  @override
+  String get settingsNotifyBrandActivity => 'Brendlar faolligi';
+
+  @override
+  String get settingsNotifyBrandActivityHint =>
+      'Brend postingizni koʻrsatganda yoki sizga sovgʻa yuborganda.';
+
+  @override
+  String get settingsNotifyDrops => 'Yangi kolleksiyalar';
+
+  @override
+  String get settingsNotifyDropsHint =>
+      'Obuna boʻlgan brendlaringizdan yangi buyumlar.';
+
+  @override
+  String get settingsSaveFailed =>
+      'Oʻzgarishni saqlab boʻlmadi. Qayta urinib koʻring.';
 
   @override
   String get profileShare => 'Profilni ulashish';

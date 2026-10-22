@@ -1042,6 +1042,48 @@ abstract class AppLocalizations {
   /// **'Style DNA'**
   String get profileStyleDna;
 
+  /// No description provided for @styleMinimal.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimal'**
+  String get styleMinimal;
+
+  /// No description provided for @styleCasual.
+  ///
+  /// In en, this message translates to:
+  /// **'Casual'**
+  String get styleCasual;
+
+  /// No description provided for @styleStreetwear.
+  ///
+  /// In en, this message translates to:
+  /// **'Streetwear'**
+  String get styleStreetwear;
+
+  /// The streetwear style where space is tight: Home's style chips.
+  ///
+  /// In en, this message translates to:
+  /// **'Street'**
+  String get styleStreetwearShort;
+
+  /// No description provided for @styleNeutral.
+  ///
+  /// In en, this message translates to:
+  /// **'Neutral'**
+  String get styleNeutral;
+
+  /// No description provided for @styleOversized.
+  ///
+  /// In en, this message translates to:
+  /// **'Oversized'**
+  String get styleOversized;
+
+  /// No description provided for @styleSmartCasual.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Casual'**
+  String get styleSmartCasual;
+
   /// No description provided for @profileMyStyle.
   ///
   /// In en, this message translates to:
@@ -1095,6 +1137,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get profileSettings;
+
+  /// No description provided for @editProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get editProfileTitle;
+
+  /// No description provided for @profileNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get profileNameLabel;
+
+  /// No description provided for @profileNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your name'**
+  String get profileNameHint;
+
+  /// No description provided for @profileBioLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bio'**
+  String get profileBioLabel;
+
+  /// No description provided for @profileBioHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A line about your style'**
+  String get profileBioHint;
+
+  /// No description provided for @profileSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get profileSave;
+
+  /// No description provided for @settingsPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy'**
+  String get settingsPrivacy;
+
+  /// No description provided for @settingsPrivateAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Private account'**
+  String get settingsPrivateAccount;
+
+  /// No description provided for @settingsPrivateAccountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Only your followers see your posts.'**
+  String get settingsPrivateAccountHint;
+
+  /// No description provided for @settingsBrandFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Brands can feature my posts'**
+  String get settingsBrandFeatures;
+
+  /// No description provided for @settingsBrandFeaturesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'For new posts, and only by the brands they tag.'**
+  String get settingsBrandFeaturesHint;
+
+  /// No description provided for @settingsShowLikeCounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Show like counts'**
+  String get settingsShowLikeCounts;
+
+  /// No description provided for @settingsNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get settingsNotifications;
+
+  /// No description provided for @settingsNotifyBrandActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Brand activity'**
+  String get settingsNotifyBrandActivity;
+
+  /// No description provided for @settingsNotifyBrandActivityHint.
+  ///
+  /// In en, this message translates to:
+  /// **'When a brand features your post or sends you a reward.'**
+  String get settingsNotifyBrandActivityHint;
+
+  /// No description provided for @settingsNotifyDrops.
+  ///
+  /// In en, this message translates to:
+  /// **'New drops'**
+  String get settingsNotifyDrops;
+
+  /// No description provided for @settingsNotifyDropsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'New items from brands you follow.'**
+  String get settingsNotifyDropsHint;
+
+  /// No description provided for @settingsSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save that change. Try again.'**
+  String get settingsSaveFailed;
 
   /// No description provided for @profileShare.
   ///

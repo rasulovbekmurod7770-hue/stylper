@@ -19,13 +19,12 @@ class SupabaseOnboardingRemoteDataSource implements OnboardingRemoteDataSource {
   @override
   Future<void> saveProfile(Map<String, Object?> body) =>
       guardSupabase(() async {
-        final userId = requireUserId(_client);
         // The username first: it's the part that can be refused.
-        await _updateOwnRow('profiles', 'id', userId, {
+        await updateOwnRow(_client, 'profiles', 'id', {
           'username': body['username'],
         });
         final age = body['age'] as int?;
-        await _updateOwnRow('profile_private', 'user_id', userId, {
+        await updateOwnRow(_client, 'profile_private', 'user_id', {
           'gender': body['gender'],
           'birth_year': age == null ? null : DateTime.now().year - age,
           'height_cm': body['heightCm'],
@@ -33,12 +32,13 @@ class SupabaseOnboardingRemoteDataSource implements OnboardingRemoteDataSource {
         });
       }, codes: const {'23505': ApiErrorCodes.usernameTaken});
 
-  /// Records the liked outfit and marks onboarding finished. `style_dna`
-  /// stays as it is: the quiz items don't carry style tags yet.
+  /// Records the liked outfit, sets the Style DNA and marks onboarding
+  /// finished.
   @override
   Future<void> completeOnboarding({
     required String topId,
     required String bottomId,
+    required List<String> styleDna,
   }) => guardSupabase(() async {
     final userId = requireUserId(_client);
     await _client.from('style_quiz_answers').insert({
@@ -46,30 +46,9 @@ class SupabaseOnboardingRemoteDataSource implements OnboardingRemoteDataSource {
       'top_key': topId,
       'bottom_key': bottomId,
     });
-    await _updateOwnRow('profiles', 'id', userId, {
+    await updateOwnRow(_client, 'profiles', 'id', {
+      'style_dna': styleDna,
       'onboarded_at': DateTime.now().toUtc().toIso8601String(),
     });
   });
-
-  /// Updates the signed-in user's row in [table]. RLS answers an update of
-  /// someone else's row with no rows rather than an error, so none counts as
-  /// unauthorized.
-  Future<void> _updateOwnRow(
-    String table,
-    String idColumn,
-    String userId,
-    Map<String, Object?> values,
-  ) async {
-    final rows = await _client
-        .from(table)
-        .update(values)
-        .eq(idColumn, userId)
-        .select(idColumn);
-    if (rows.isEmpty) {
-      throw const ServerException(
-        statusCode: 401,
-        code: ApiErrorCodes.unauthorized,
-      );
-    }
-  }
 }

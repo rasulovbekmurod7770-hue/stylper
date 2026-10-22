@@ -30,6 +30,9 @@ abstract final class AppRoutes {
 
   static String user(String id, {String tab = home}) => '$tab/user/$id';
 
+  /// Edit Profile, from your own profile in any tab.
+  static String editProfile({String tab = profile}) => '$tab/edit-profile';
+
   static const wardrobe = '$profile/wardrobe';
 
   static String wardrobeCategory(String category) => '$wardrobe/$category';

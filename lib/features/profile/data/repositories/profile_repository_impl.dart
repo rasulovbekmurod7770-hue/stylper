@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/error/exceptions.dart';
+import '../../domain/entities/profile_settings.dart';
 import '../../domain/entities/user_profile.dart';
 import '../../domain/failures/profile_failure.dart';
 import '../../domain/repositories/profile_repository.dart';
@@ -30,6 +31,25 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<Either<ProfileFailure, List<SavedPost>>> getSavedPosts() =>
       _guard(() async => ProfileJson.saved(await _remote.getSavedPosts()));
 
+  @override
+  Future<Either<ProfileFailure, Unit>> updateProfile(ProfileEdit edit) =>
+      _guard(() async {
+        await _remote.updateProfile(ProfileJson.editBody(edit));
+        return unit;
+      });
+
+  @override
+  Future<Either<ProfileFailure, ProfileSettings>> getSettings() =>
+      _guard(() async => ProfileJson.settings(await _remote.getSettings()));
+
+  @override
+  Future<Either<ProfileFailure, Unit>> updateSettings(
+    ProfileSettings settings,
+  ) => _guard(() async {
+    await _remote.updateSettings(ProfileJson.settingsBody(settings));
+    return unit;
+  });
+
   Future<Either<ProfileFailure, T>> _guard<T>(
     Future<T> Function() request,
   ) async {
@@ -40,6 +60,7 @@ class ProfileRepositoryImpl implements ProfileRepository {
         ProfileFailure(switch (e.code) {
           ApiErrorCodes.notFound => ProfileFailureReason.notFound,
           ApiErrorCodes.unauthorized => ProfileFailureReason.signInRequired,
+          ApiErrorCodes.usernameTaken => ProfileFailureReason.usernameTaken,
           _ => ProfileFailureReason.unknown,
         }),
       );

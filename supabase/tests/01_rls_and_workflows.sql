@@ -51,8 +51,8 @@ do $$ begin
   assert (select display_name from profiles where id = 'aaaaaaaa-0000-0000-0000-000000000001') = 'Aziza';
 end $$;
 
-update profiles set username = 'aziza', style_dna = '{Minimal,Casual}' where id = 'aaaaaaaa-0000-0000-0000-000000000001';
-update profiles set username = 'bobur', style_dna = '{Casual}'        where id = 'bbbbbbbb-0000-0000-0000-000000000002';
+update profiles set username = 'aziza', style_dna = '{minimal,casual}' where id = 'aaaaaaaa-0000-0000-0000-000000000001';
+update profiles set username = 'bobur', style_dna = '{casual}'        where id = 'bbbbbbbb-0000-0000-0000-000000000002';
 update profiles set username = 'kamila', is_private = true            where id = 'cccccccc-0000-0000-0000-000000000003';
 
 insert into brands (id, slug, name, tagline) values
@@ -128,7 +128,7 @@ set role authenticated;
 select test_as('aaaaaaaa-0000-0000-0000-000000000001');
 insert into posts (id, author_id, caption, city, styles)
   values ('50000000-0000-0000-0000-00000000000a', 'aaaaaaaa-0000-0000-0000-000000000001',
-          'Soft tailoring, slow mornings.', 'Tashkent', '{Minimal,Casual}');
+          'Soft tailoring, slow mornings.', 'Tashkent', '{minimal,casual}');
 insert into post_images (id, post_id, media_id)
   values ('51000000-0000-0000-0000-00000000000a', '50000000-0000-0000-0000-00000000000a', 'ee000000-0000-0000-0000-000000000001');
 insert into post_tags (post_id, post_image_id, x_pct, y_pct, product_id) values
@@ -158,6 +158,17 @@ do $$ begin
     insert into posts (author_id) values ('bbbbbbbb-0000-0000-0000-000000000002');
     assert false, 'impersonated post must be rejected';
   exception when insufficient_privilege then null; end;
+  -- styles are fixed keys (0003): display words or unknown keys are refused
+  begin
+    update posts set styles = '{Minimal}' where id = '50000000-0000-0000-0000-00000000000a';
+    assert false, 'a display word must be rejected as a post style';
+  exception when check_violation then null; end;
+  begin
+    update profiles set style_dna = '{casual,boho}' where id = auth.uid();
+    assert false, 'an unknown key must be rejected in style_dna';
+  exception when check_violation then null; end;
+  update profiles set style_dna = '{smart_casual,streetwear}' where id = auth.uid();
+  update profiles set style_dna = '{minimal,casual}' where id = auth.uid();
   -- height/weight: owner can write
   update profile_private set height_cm = 168, weight_kg = 55 where user_id = auth.uid();
   assert (select height_cm from profile_private where user_id = auth.uid()) = 168;
@@ -315,6 +326,8 @@ set role anon;
 select test_as(null);
 do $$ begin
   assert (select count(*) from feed_for_you()) >= 1, 'guest sees For You feed';
+  assert (select count(*) from feed_for_you('casual')) >= 1, 'For You filters by style key';
+  assert (select count(*) from feed_for_you('streetwear')) = 0, 'and leaves out other styles';
   assert (select count(*) from trending_in_city('Tashkent')) >= 1, 'guest sees trending';
   assert (select count(*) from search_all('blaz')) >= 1, 'search finds the blazer';
   assert (select count(*) from search_all('cos')) >= 1, 'search finds COS';

@@ -32,7 +32,7 @@ stylper-backend/
     migrations/
       0001_stylper_schema.sql      ← DONE: tables, RLS, triggers, RPCs
       0002_handles.sql             ← DONE: usernames, brand slugs and reserved names share one namespace
-      0003_style_keys.sql          ← TODO: styles become fixed keys (see §4)
+      0003_style_keys.sql          ← DONE: styles are fixed keys (see §4)
       0004_tag_limit.sql           ← TODO: at most 10 tags per photo (see "Layered outfits", §7)
       0005_cron.sql                ← TODO: schedule nightly job
     seed.sql                       ← DONE: demo data for local dev only (loaded by `supabase db reset`; never a migration)
@@ -61,6 +61,7 @@ stylper-backend/
 - Clients never insert into `media`, `events`, `notifications`, `brand_daily_stats`, or `brands`.
 - `can_view_post()` is the single definition of who can see a post. Reuse it; don't copy its logic.
 - Height and weight live only in `profile_private`, which only its owner can read.
+- Styles are fixed keys, never display words: `minimal`, `casual`, `streetwear`, `neutral`, `oversized`, `smart_casual` (`style_keys()`). `posts.styles` and `profiles.style_dna` reject anything else (`0003_style_keys.sql`), so "For you" can match a post's styles against the viewer's Style DNA. Apps show translated labels.
 - Usernames and brand slugs are one namespace: neither may equal the other or a reserved name (`stylper`, `admin`, `support`, `help`, `api`, `www`, `settings`). Triggers from `0002_handles.sql` enforce it and raise `unique_violation`, the same error as a taken username.
 - When a creator switches **Allow brands to feature this** on, `posts.brand_consent_at` is stamped with the time. Brands can only feature posts where it's on and that tag one of their products.
 
@@ -185,6 +186,7 @@ psql -d stylper_test -v ON_ERROR_STOP=1 \
   -f supabase/tests/00_supabase_stub.sql \
   -f supabase/migrations/0001_stylper_schema.sql \
   -f supabase/migrations/0002_handles.sql \
+  -f supabase/migrations/0003_style_keys.sql \
   -f supabase/tests/01_rls_and_workflows.sql
 # → ALL TESTS PASSED
 ```

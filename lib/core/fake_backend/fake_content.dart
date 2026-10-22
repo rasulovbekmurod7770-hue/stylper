@@ -1,4 +1,5 @@
 import '../constants/app_assets.dart';
+import '../domain/style_keys.dart';
 
 /// Seed content served by `FakeBackend`: the people, products and posts of
 /// the Figma sample screens. Product photos reuse the style-quiz cut-outs,
@@ -7,17 +8,14 @@ abstract final class FakeContent {
   static const city = 'Tashkent';
 
   /// Home's "For you" style chips.
-  static const styles = ['Casual', 'Minimal', 'Street'];
+  static const styles = [
+    StyleKeys.casual,
+    StyleKeys.minimal,
+    StyleKeys.streetwear,
+  ];
 
   /// Every style a post can be tagged with; Home's chips are a subset.
-  static const allStyles = [
-    'Minimal',
-    'Casual',
-    'Street',
-    'Neutral',
-    'Oversized',
-    'Smart Casual',
-  ];
+  static const allStyles = StyleKeys.all;
 
   /// Brands (and other businesses) that sell the catalog products. `handle`
   /// is the brand's username; `local` marks Uzbek brands (shown first);
@@ -42,7 +40,7 @@ abstract final class FakeContent {
       'handle': 'john',
       'avatar': null,
       'bio': 'Minimalist fashion lover | NYC',
-      'styles': ['Minimal', 'Casual', 'Streetwear', 'Neutral', 'Oversized'],
+      'styles': ['minimal', 'casual', 'streetwear', 'neutral', 'oversized'],
       'followers': 1200,
       'following': 338,
     },
@@ -51,7 +49,7 @@ abstract final class FakeContent {
       'handle': 'katty_miller',
       'avatar': null,
       'bio': '',
-      'styles': ['Casual'],
+      'styles': ['casual'],
       'followers': 87,
       'following': 112,
     },
@@ -60,7 +58,7 @@ abstract final class FakeContent {
       'handle': 'mina',
       'avatar': AppImages.homeAvatarMina,
       'bio': 'Sneakers first, outfit second',
-      'styles': ['Casual', 'Street'],
+      'styles': ['casual', 'streetwear'],
       'followers': 5300,
       'following': 210,
     },
@@ -69,7 +67,7 @@ abstract final class FakeContent {
       'handle': 'fozil',
       'avatar': AppImages.homeAvatarFozil,
       'bio': 'Tashkent streets',
-      'styles': ['Street', 'Layered'],
+      'styles': ['streetwear', 'oversized'],
       'followers': 2400,
       'following': 180,
     },
@@ -78,7 +76,7 @@ abstract final class FakeContent {
       'handle': 'Bobur',
       'avatar': AppImages.homeAvatarBobur,
       'bio': 'Less, but better',
-      'styles': ['Minimal'],
+      'styles': ['minimal'],
       'followers': 980,
       'following': 75,
     },
@@ -87,7 +85,7 @@ abstract final class FakeContent {
       'handle': 'bob',
       'avatar': AppImages.homeAvatarBob,
       'bio': '',
-      'styles': ['Minimal', 'Neutral'],
+      'styles': ['minimal', 'neutral'],
       'followers': 640,
       'following': 90,
     },
@@ -96,7 +94,7 @@ abstract final class FakeContent {
       'handle': 'sofia',
       'avatar': AppImages.homePersonSofia,
       'bio': 'Denim every day',
-      'styles': ['Casual'],
+      'styles': ['casual'],
       'followers': 3100,
       'following': 402,
     },
@@ -105,7 +103,7 @@ abstract final class FakeContent {
       'handle': 'leo',
       'avatar': AppImages.homePersonLeo,
       'bio': 'Knitwear collector',
-      'styles': ['Street', 'Casual'],
+      'styles': ['streetwear', 'casual'],
       'followers': 1900,
       'following': 260,
     },
@@ -114,7 +112,7 @@ abstract final class FakeContent {
       'handle': 'amin',
       'avatar': AppImages.homePersonAmin,
       'bio': '',
-      'styles': ['Minimal'],
+      'styles': ['minimal'],
       'followers': 720,
       'following': 133,
     },
@@ -123,7 +121,7 @@ abstract final class FakeContent {
       'handle': 'zokir',
       'avatar': AppImages.homeAvatarZokir,
       'bio': '',
-      'styles': ['Street'],
+      'styles': ['streetwear'],
       'followers': 410,
       'following': 98,
     },
@@ -269,7 +267,7 @@ abstract final class FakeContent {
       'image': AppImages.postMina,
       'likes': 1248,
       'comments': 48,
-      'styles': ['Casual'],
+      'styles': ['casual'],
       'products': [
         {'product': 'p_trousers_zara', 'x': 0.30, 'y': 0.12},
       ],
@@ -285,7 +283,7 @@ abstract final class FakeContent {
       'image': AppImages.postSofia,
       'likes': 864,
       'comments': 21,
-      'styles': ['Casual'],
+      'styles': ['casual'],
       'products': [
         {'product': 'p_tee_zara', 'x': 0.48, 'y': 0.30},
         {'product': 'p_jeans_vintage_zara', 'x': 0.44, 'y': 0.62},
@@ -302,7 +300,7 @@ abstract final class FakeContent {
       'image': AppImages.postBobur,
       'likes': 1248,
       'comments': 48,
-      'styles': ['Minimal'],
+      'styles': ['minimal'],
       'products': <Object?>[],
       'similar': [
         'post_soft_neutrals',
@@ -316,7 +314,7 @@ abstract final class FakeContent {
       'image': AppImages.postSoftNeutrals,
       'likes': 412,
       'comments': 28,
-      'styles': ['Minimal'],
+      'styles': ['minimal'],
       'caption': 'Soft neutrals',
       'products': [
         {'product': 'p_longsleeve_uniqlo', 'x': 0.52, 'y': 0.22},
@@ -334,7 +332,7 @@ abstract final class FakeContent {
       'image': AppImages.postFozil,
       'likes': 1248,
       'comments': 48,
-      'styles': ['Street'],
+      'styles': ['streetwear'],
       'products': [
         {'product': 'p_waffle_uniqlo', 'x': 0.44, 'y': 0.16},
         {'product': 'p_jeans_kink', 'x': 0.34, 'y': 0.70},
@@ -351,7 +349,7 @@ abstract final class FakeContent {
       'image': AppImages.postUtilityChic,
       'likes': 412,
       'comments': 28,
-      'styles': ['Street'],
+      'styles': ['streetwear'],
       'caption': 'Utility chic',
       'products': [
         {'product': 'p_cardigan_cos', 'x': 0.44, 'y': 0.36},
@@ -370,7 +368,7 @@ abstract final class FakeContent {
       'image': AppImages.postNoWords,
       'likes': 233,
       'comments': 12,
-      'styles': ['Street'],
+      'styles': ['streetwear'],
       'caption': 'No words',
       'products': [
         {'product': 'p_cardigan_cos', 'x': 0.46, 'y': 0.30},
@@ -384,7 +382,7 @@ abstract final class FakeContent {
       'image': AppImages.postLikeMyOutfit,
       'likes': 389,
       'comments': 17,
-      'styles': ['Minimal'],
+      'styles': ['minimal'],
       'caption': 'I like my Outfit',
       'products': [
         {'product': 'p_tee_zara', 'x': 0.50, 'y': 0.42},
@@ -402,7 +400,7 @@ abstract final class FakeContent {
       'image': AppImages.postLeo,
       'likes': 301,
       'comments': 9,
-      'styles': ['Casual'],
+      'styles': ['casual'],
       'products': [
         {'product': 'p_polo_arket', 'x': 0.50, 'y': 0.26},
       ],
@@ -413,7 +411,7 @@ abstract final class FakeContent {
       'image': AppImages.postJohnCoat,
       'likes': 642,
       'comments': 31,
-      'styles': ['Minimal'],
+      'styles': ['minimal'],
       'caption': 'Rainy layers',
       'products': [
         {'product': 'p_trousers_zara', 'x': 0.50, 'y': 0.72},
@@ -430,7 +428,7 @@ abstract final class FakeContent {
       'image': AppImages.postJohnSuit,
       'likes': 518,
       'comments': 22,
-      'styles': ['Minimal'],
+      'styles': ['minimal'],
       'caption': 'All black',
       'products': [
         {'product': 'p_trousers_zara', 'x': 0.48, 'y': 0.70},
@@ -447,7 +445,7 @@ abstract final class FakeContent {
       'image': AppImages.postJohnKnit,
       'likes': 377,
       'comments': 15,
-      'styles': ['Casual'],
+      'styles': ['casual'],
       'caption': 'Soft knit',
       'products': <Object?>[],
       'similar': [
@@ -462,7 +460,7 @@ abstract final class FakeContent {
       'image': AppImages.postAmin,
       'likes': 276,
       'comments': 14,
-      'styles': ['Minimal'],
+      'styles': ['minimal'],
       'products': [
         {'product': 'p_cardigan_cos', 'x': 0.40, 'y': 0.40},
         {'product': 'p_trousers_zara', 'x': 0.42, 'y': 0.70},

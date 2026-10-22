@@ -17,6 +17,16 @@ abstract interface class ProfileRemoteDataSource {
 
   /// GET /me/saved → `{posts}`
   Future<Map<String, Object?>> getSavedPosts();
+
+  /// PATCH /me/profile `{name, username, bio}` (Edit Profile)
+  Future<void> updateProfile(Map<String, Object?> body);
+
+  /// GET /me/settings → `{isPrivate, allowBrandFeatures, showLikeCounts,
+  /// notifyBrandActivity, notifyDrops}`
+  Future<Map<String, Object?>> getSettings();
+
+  /// PUT /me/settings, same body
+  Future<void> updateSettings(Map<String, Object?> body);
 }
 
 /// [ProfileRemoteDataSource] backed by [FakeBackend] until the API exists.
@@ -43,4 +53,16 @@ class FakeProfileRemoteDataSource implements ProfileRemoteDataSource {
   @override
   Future<Map<String, Object?>> getSavedPosts() async =>
       _backend.savedPosts(await _tokenStore.read());
+
+  @override
+  Future<void> updateProfile(Map<String, Object?> body) async =>
+      _backend.editProfile(await _tokenStore.read() ?? '', body);
+
+  @override
+  Future<Map<String, Object?>> getSettings() async =>
+      _backend.settings(await _tokenStore.read() ?? '');
+
+  @override
+  Future<void> updateSettings(Map<String, Object?> body) async =>
+      _backend.updateSettings(await _tokenStore.read() ?? '', body);
 }

@@ -14,6 +14,7 @@ import '../../../../core/widgets/snackbars.dart';
 import '../../../../core/widgets/user_avatar.dart';
 import '../../domain/entities/user_profile.dart';
 import '../cubits/following_cubit.dart';
+import '../cubits/profile_cubit.dart';
 import 'settings_sheet.dart';
 
 /// The pinned bar over a profile ("hero-top" in Figma 2775:3285). Your own
@@ -119,14 +120,15 @@ class _CompactIdentity extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
-              Text(
-                '@${profile.handle}',
-                style: AppTypography.captionMuted.copyWith(
-                  color: AppColors.textSecondary,
+              if (profile.handle.isNotEmpty)
+                Text(
+                  '@${profile.handle}',
+                  style: AppTypography.captionMuted.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
             ],
           ),
         ),
@@ -173,11 +175,16 @@ class ProfileHero extends StatelessWidget {
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 6),
-          Text(
-            '@${profile.handle}',
-            style: AppTypography.bodyStrong.copyWith(color: AppColors.brandRed),
-          ),
+          // No username yet if profile setup was skipped.
+          if (profile.handle.isNotEmpty) ...[
+            const SizedBox(height: 6),
+            Text(
+              '@${profile.handle}',
+              style: AppTypography.bodyStrong.copyWith(
+                color: AppColors.brandRed,
+              ),
+            ),
+          ],
           if (profile.bio.isNotEmpty) ...[
             const SizedBox(height: 6),
             Text(
@@ -278,7 +285,12 @@ class _Actions extends StatelessWidget {
             ProfileButton(
               label: l10n.profileEdit,
               filled: false,
-              onTap: comingSoon,
+              onTap: () async {
+                final saved = await context.openEditProfile();
+                if ((saved ?? false) && context.mounted) {
+                  context.read<ProfileCubit>().refresh();
+                }
+              },
             ),
             ProfileButton(
               label: l10n.profileMyWardrobe,

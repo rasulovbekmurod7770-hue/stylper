@@ -50,11 +50,11 @@ from auth.users where email like '%@stylper.ai';
 update profiles p set
   username = v.username, bio = v.bio, style_dna = v.style_dna, onboarded_at = now()
 from (values
-  ('a0000000-0000-4000-8000-000000000001'::uuid, 'john',         'Minimalist fashion lover | NYC', '{Minimal,Casual,Streetwear,Neutral,Oversized}'::text[]),
-  ('a0000000-0000-4000-8000-000000000002'::uuid, 'katty_miller', null,                             '{Casual}'::text[]),
-  ('a0000000-0000-4000-8000-000000000003'::uuid, 'leo',          'Knitwear collector',             '{Street,Casual}'::text[]),
-  ('a0000000-0000-4000-8000-000000000004'::uuid, 'mina',         'Sneakers first, outfit second',  '{Casual,Street}'::text[]),
-  ('a0000000-0000-4000-8000-000000000005'::uuid, 'fozil',        'Tashkent streets',               '{Street,Layered}'::text[])
+  ('a0000000-0000-4000-8000-000000000001'::uuid, 'john',         'Minimalist fashion lover | NYC', '{minimal,casual,streetwear,neutral,oversized}'::text[]),
+  ('a0000000-0000-4000-8000-000000000002'::uuid, 'katty_miller', null,                             '{casual}'::text[]),
+  ('a0000000-0000-4000-8000-000000000003'::uuid, 'leo',          'Knitwear collector',             '{streetwear,casual}'::text[]),
+  ('a0000000-0000-4000-8000-000000000004'::uuid, 'mina',         'Sneakers first, outfit second',  '{casual,streetwear}'::text[]),
+  ('a0000000-0000-4000-8000-000000000005'::uuid, 'fozil',        'Tashkent streets',               '{streetwear,oversized}'::text[])
 ) as v(id, username, bio, style_dna)
 where p.id = v.id;
 
@@ -145,14 +145,14 @@ insert into wardrobe_items (id, owner_id, category, name, brand_name, product_id
 insert into posts (id, author_id, caption, location_text, city, styles, created_at)
 select id, author_id, caption, 'Tashkent', 'Tashkent', styles, now() - hours * interval '1 hour'
 from (values
-  ('f0000000-0000-4000-8000-000000000001'::uuid, 'a0000000-0000-4000-8000-000000000003'::uuid, 'Utility chic',     '{Street}'::text[],         2),
-  ('f0000000-0000-4000-8000-000000000002'::uuid, 'a0000000-0000-4000-8000-000000000004'::uuid, null,               '{Casual}'::text[],         5),
-  ('f0000000-0000-4000-8000-000000000003'::uuid, 'a0000000-0000-4000-8000-000000000005'::uuid, null,               '{Street,Layered}'::text[], 9),
-  ('f0000000-0000-4000-8000-000000000004'::uuid, 'a0000000-0000-4000-8000-000000000001'::uuid, 'Rainy layers',     '{Minimal}'::text[],        14),
-  ('f0000000-0000-4000-8000-000000000005'::uuid, 'a0000000-0000-4000-8000-000000000002'::uuid, 'Stripes and denim', '{Casual}'::text[],        20),
-  ('f0000000-0000-4000-8000-000000000006'::uuid, 'a0000000-0000-4000-8000-000000000005'::uuid, 'I like my Outfit', '{Minimal}'::text[],        27),
-  ('f0000000-0000-4000-8000-000000000007'::uuid, 'a0000000-0000-4000-8000-000000000001'::uuid, 'Soft knit',        '{Casual}'::text[],         36),
-  ('f0000000-0000-4000-8000-000000000008'::uuid, 'a0000000-0000-4000-8000-000000000003'::uuid, null,               '{Casual}'::text[],         48)
+  ('f0000000-0000-4000-8000-000000000001'::uuid, 'a0000000-0000-4000-8000-000000000003'::uuid, 'Utility chic',     '{streetwear}'::text[],         2),
+  ('f0000000-0000-4000-8000-000000000002'::uuid, 'a0000000-0000-4000-8000-000000000004'::uuid, null,               '{casual}'::text[],         5),
+  ('f0000000-0000-4000-8000-000000000003'::uuid, 'a0000000-0000-4000-8000-000000000005'::uuid, null,               '{streetwear,oversized}'::text[], 9),
+  ('f0000000-0000-4000-8000-000000000004'::uuid, 'a0000000-0000-4000-8000-000000000001'::uuid, 'Rainy layers',     '{minimal}'::text[],        14),
+  ('f0000000-0000-4000-8000-000000000005'::uuid, 'a0000000-0000-4000-8000-000000000002'::uuid, 'Stripes and denim', '{casual}'::text[],        20),
+  ('f0000000-0000-4000-8000-000000000006'::uuid, 'a0000000-0000-4000-8000-000000000005'::uuid, 'I like my Outfit', '{minimal}'::text[],        27),
+  ('f0000000-0000-4000-8000-000000000007'::uuid, 'a0000000-0000-4000-8000-000000000001'::uuid, 'Soft knit',        '{casual}'::text[],         36),
+  ('f0000000-0000-4000-8000-000000000008'::uuid, 'a0000000-0000-4000-8000-000000000003'::uuid, null,               '{casual}'::text[],         48)
 ) as v(id, author_id, caption, styles, hours);
 
 insert into media (id, owner_id, kind, full_key, thumb_key, width, height, bytes, blurhash, status)

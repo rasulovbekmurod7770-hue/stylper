@@ -9,9 +9,11 @@ abstract interface class OnboardingRepository {
 
   Future<Either<OnboardingFailure, StyleQuiz>> getStyleQuiz();
 
-  /// Records the outfit the user liked and marks onboarding as finished.
+  /// Records the outfit the user liked, sets their Style DNA (`StyleKeys`,
+  /// strongest first) and marks onboarding as finished.
   Future<Either<OnboardingFailure, Unit>> completeOnboarding({
     required OutfitItem top,
     required OutfitItem bottom,
+    required List<String> styleDna,
   });
 }

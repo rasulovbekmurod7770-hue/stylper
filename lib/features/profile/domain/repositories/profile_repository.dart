@@ -1,5 +1,6 @@
 import 'package:fpdart/fpdart.dart';
 
+import '../entities/profile_settings.dart';
 import '../entities/user_profile.dart';
 import '../failures/profile_failure.dart';
 
@@ -15,6 +16,15 @@ abstract interface class ProfileRepository {
 
   /// The signed-in user's saved posts, newest first.
   Future<Either<ProfileFailure, List<SavedPost>>> getSavedPosts();
+
+  /// Saves the signed-in user's name, username and bio. A username that is
+  /// someone else's, a brand's or reserved is
+  /// [ProfileFailureReason.usernameTaken].
+  Future<Either<ProfileFailure, Unit>> updateProfile(ProfileEdit edit);
+
+  Future<Either<ProfileFailure, ProfileSettings>> getSettings();
+
+  Future<Either<ProfileFailure, Unit>> updateSettings(ProfileSettings settings);
 
   static const me = 'me';
 }

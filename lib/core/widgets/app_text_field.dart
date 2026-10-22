@@ -25,6 +25,7 @@ class AppTextField extends StatefulWidget {
     this.autocorrect = true,
     this.enableSuggestions = true,
     this.enabled = true,
+    this.maxLines = 1,
     this.onChanged,
     this.onSubmitted,
   });
@@ -44,6 +45,9 @@ class AppTextField extends StatefulWidget {
   final bool autocorrect;
   final bool enableSuggestions;
   final bool enabled;
+
+  /// More than 1 makes a multi-line field (e.g. a bio).
+  final int maxLines;
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onSubmitted;
 
@@ -73,6 +77,7 @@ class _AppTextFieldState extends State<AppTextField> {
   @override
   Widget build(BuildContext context) {
     final errorText = widget.errorText;
+    final multiline = widget.maxLines > 1;
     final borderColor = errorText != null
         ? AppColors.accent
         : _focusNode.hasFocus
@@ -90,14 +95,20 @@ class _AppTextFieldState extends State<AppTextField> {
           onTap: widget.enabled ? _focusNode.requestFocus : null,
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 150),
-            height: 50,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            // Multi-line fields grow with their text from two lines.
+            height: multiline ? null : 50,
+            padding: multiline
+                ? const EdgeInsets.symmetric(horizontal: 16, vertical: 14)
+                : const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
               color: AppColors.inputFill,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(color: borderColor),
             ),
             child: Row(
+              crossAxisAlignment: multiline
+                  ? CrossAxisAlignment.start
+                  : CrossAxisAlignment.center,
               children: [
                 SvgPicture.asset(widget.iconAsset, width: 18, height: 18),
                 const SizedBox(width: 12),
@@ -107,6 +118,8 @@ class _AppTextFieldState extends State<AppTextField> {
                     focusNode: _focusNode,
                     enabled: widget.enabled,
                     obscureText: widget.obscureText,
+                    maxLines: widget.maxLines,
+                    minLines: multiline ? 2 : null,
                     keyboardType: widget.keyboardType,
                     textInputAction: widget.textInputAction,
                     autofillHints: widget.autofillHints,

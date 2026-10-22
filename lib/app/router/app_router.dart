@@ -36,8 +36,11 @@ import '../../features/product/presentation/cubits/product_detail_cubit.dart';
 import '../../features/product/presentation/pages/product_detail_page.dart';
 import '../../features/product/presentation/pages/product_looks_page.dart';
 import '../../features/profile/domain/repositories/profile_repository.dart';
+import '../../features/profile/presentation/cubits/edit_profile_cubit.dart';
 import '../../features/profile/presentation/cubits/profile_cubit.dart';
 import '../../features/profile/presentation/cubits/saved_posts_cubit.dart';
+import '../../features/profile/presentation/cubits/settings_cubit.dart';
+import '../../features/profile/presentation/pages/edit_profile_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import '../../features/search/presentation/cubits/search_cubit.dart';
 import '../../features/search/presentation/pages/search_page.dart';
@@ -292,14 +295,27 @@ List<RouteBase> _detailRoutes() => [
     path: 'user/:userId',
     builder: (context, state) => _profile(state.pathParameters['userId']!),
   ),
+  GoRoute(
+    path: 'edit-profile',
+    // Guests may open any main-tab path; this one needs an account.
+    builder: (context, state) =>
+        context.read<SessionCubit>().state is SessionAuthenticated
+        ? BlocProvider(
+            create: (_) => sl<EditProfileCubit>()..load(),
+            child: const EditProfilePage(),
+          )
+        : const GuestProfileView(),
+  ),
 ];
 
-/// A profile with its cubits; the saved posts load when that tab opens.
+/// A profile with its cubits; the saved posts load when that tab opens, the
+/// settings when the sheet does (your own profile only).
 Widget _profile(String userId, {Key? key}) => MultiBlocProvider(
   key: key,
   providers: [
     BlocProvider(create: (_) => sl<ProfileCubit>(param1: userId)..load()),
     BlocProvider(create: (_) => sl<SavedPostsCubit>()),
+    BlocProvider(create: (_) => sl<SettingsCubit>()),
   ],
   child: const ProfilePage(),
 );

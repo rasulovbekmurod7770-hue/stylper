@@ -10,11 +10,9 @@
 // They use plain `test`, not `testWidgets`, because the widget test binding
 // blocks real HTTP. They pass with email confirmation off (the local default)
 // and on (production); with it on, they open the link from Mailpit.
-import 'dart:convert';
-
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
 import 'package:stylper/core/config/backend_config.dart';
+import 'package:stylper/core/domain/style_keys.dart';
 import 'package:stylper/core/usecase/usecase.dart';
 import 'package:stylper/features/auth/data/repositories/supabase_auth_repository.dart';
 import 'package:stylper/features/auth/domain/entities/app_user.dart';
@@ -28,13 +26,7 @@ import 'package:stylper/features/onboarding/domain/failures/onboarding_failure.d
 import 'package:stylper/features/onboarding/domain/usecases/onboarding_usecases.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-const _password = 'stylper123';
-
-/// Admin key of the local stack, for the test that deletes an account.
-const _secretKey = String.fromEnvironment('SUPABASE_SECRET_KEY');
-
-/// Local Mailpit, where the local stack delivers its emails.
-final _mailpit = Uri.parse('http://127.0.0.1:54324');
+import 'live_support.dart';
 
 void main() {
   late SupabaseClient client;
@@ -44,20 +36,7 @@ void main() {
   late GetStyleQuiz getStyleQuiz;
 
   setUp(() {
-    expect(
-      BackendConfig.supabaseUrl,
-      isNotEmpty,
-      reason: 'run with --dart-define-from-file=env/test.json',
-    );
-    // The app's settings (PKCE), minus the device storage and auto-refresh.
-    client = SupabaseClient(
-      BackendConfig.supabaseUrl,
-      BackendConfig.supabasePublishableKey,
-      authOptions: AuthClientOptions(
-        autoRefreshToken: false,
-        pkceAsyncStorage: _MemoryStorage(),
-      ),
-    );
+    client = liveClient();
     auth = SupabaseAuthRepository(client);
     final onboarding = OnboardingRepositoryImpl(
       remote: SupabaseOnboardingRemoteDataSource(client),
@@ -70,43 +49,14 @@ void main() {
 
   tearDown(() => client.dispose());
 
-  Future<AppUser> signIn(String email) async => (await auth.signInWithEmail(
-    email: email,
-    password: _password,
-  )).getOrElse((f) => fail('sign-in failed: ${f.reason}'));
+  Future<AppUser> signIn(String email) => signInLive(auth, email);
 
-  /// Signs up a new account and returns it signed in, through the
-  /// confirmation link when the stack wants the email confirmed.
-  Future<AppUser> signUpNewUser(String email) async {
-    final result = await auth.signUpWithEmail(
-      email: email,
-      password: _password,
-    );
-    switch (result.getOrElse((f) => fail('sign-up failed: ${f.reason}'))) {
-      case SignedUp(:final user):
-        printOnFailure('email confirmation is off: signed straight in');
-        return user;
-      case ConfirmationEmailSent(email: final sentTo):
-        expect(sentTo, email);
-        expect(auth.currentUser, isNull);
-        expect(client.auth.currentSession, isNull);
-        expect(
-          (await auth.signInWithEmail(
-            email: email,
-            password: _password,
-          )).getLeft().toNullable()?.reason,
-          AuthFailureReason.emailNotConfirmed,
-        );
-        await _openConfirmationLink(email);
-        return signIn(email);
-    }
-  }
+  Future<AppUser> signUpNewUser(String email) =>
+      signUpLive(client, auth, email);
 
   test('a new user signs up, gets a profile row, sets it up, takes the quiz, '
       'and signs back in onboarded', () async {
-    final stamp = DateTime.now().microsecondsSinceEpoch;
-    final email = 'live.$stamp@stylper.test';
-    final username = 'live_${stamp % 100000000}';
+    final (:email, :username) = newAccount('live');
 
     final user = await signUpNewUser(email);
     expect(user.email, email);
@@ -168,6 +118,18 @@ void main() {
     );
     expect(done.isRight(), isTrue, reason: '$done');
     expect(auth.currentUser!.onboardingCompleted, isTrue);
+    // White T-Shirt + Baggy Jeans (the approved example).
+    final dna = await client
+        .from('profiles')
+        .select('style_dna')
+        .eq('id', user.id)
+        .single();
+    expect(dna['style_dna'], [
+      StyleKeys.minimal,
+      StyleKeys.neutral,
+      StyleKeys.streetwear,
+      StyleKeys.oversized,
+    ]);
     final answers = await client
         .from('style_quiz_answers')
         .select('top_key, bottom_key, liked');
@@ -202,11 +164,9 @@ void main() {
   test(
     'restoreSession signs out when the account was deleted meanwhile',
     () async {
-      final email =
-          'gone.${DateTime.now().microsecondsSinceEpoch}@stylper.test';
-      final user = await signUpNewUser(email);
+      final user = await signUpNewUser(newAccount('gone').email);
 
-      final admin = SupabaseClient(BackendConfig.supabaseUrl, _secretKey);
+      final admin = SupabaseClient(BackendConfig.supabaseUrl, liveSecretKey);
       addTearDown(admin.dispose);
       await admin.auth.admin.deleteUser(user.id);
 
@@ -216,7 +176,7 @@ void main() {
       expect(relaunched.currentUser, isNull);
       expect(client.auth.currentSession, isNull, reason: 'signed out');
     },
-    skip: _secretKey.isEmpty ? 'needs SUPABASE_SECRET_KEY' : null,
+    skip: liveSecretKey.isEmpty ? 'needs SUPABASE_SECRET_KEY' : null,
   );
 
   test('wrong password and an existing email', () async {
@@ -231,7 +191,7 @@ void main() {
 
     final existing = await auth.signUpWithEmail(
       email: 'developer@stylper.ai',
-      password: _password,
+      password: livePassword,
     );
     // With confirmation on, Supabase answers as for a new account, so nobody
     // can find out who is registered.
@@ -244,43 +204,4 @@ void main() {
     );
     expect(auth.currentUser, isNull);
   });
-}
-
-/// Opens the confirmation link Supabase emailed to [email], as the user would.
-Future<void> _openConfirmationLink(String email) async {
-  final search = _mailpit.replace(
-    path: '/api/v1/search',
-    queryParameters: {'query': 'to:"$email"'},
-  );
-  final found = jsonDecode((await http.get(search)).body) as Map;
-  final messages = found['messages'] as List;
-  expect(messages, isNotEmpty, reason: 'no confirmation email for $email');
-  final message = await http.get(
-    _mailpit.replace(path: '/api/v1/message/${(messages.first as Map)['ID']}'),
-  );
-  final html = (jsonDecode(message.body) as Map)['HTML'] as String;
-  final link = RegExp(r'href="([^"]*/auth/v1/verify[^"]*)"').firstMatch(html);
-  expect(link, isNotNull, reason: 'no verify link in the email');
-  // Supabase confirms the address, then redirects to the site URL (not
-  // running locally), so don't follow the redirect.
-  final request = http.Request(
-    'GET',
-    Uri.parse(link!.group(1)!.replaceAll('&amp;', '&')),
-  )..followRedirects = false;
-  final response = await request.send();
-  expect(response.statusCode, inInclusiveRange(300, 399));
-}
-
-class _MemoryStorage extends GotrueAsyncStorage {
-  final _items = <String, String>{};
-
-  @override
-  Future<String?> getItem({required String key}) async => _items[key];
-
-  @override
-  Future<void> setItem({required String key, required String value}) async =>
-      _items[key] = value;
-
-  @override
-  Future<void> removeItem({required String key}) async => _items.remove(key);
 }

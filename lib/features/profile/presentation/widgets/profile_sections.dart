@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/l10n/l10n.dart';
+import '../../../../core/l10n/style_labels.dart';
 import '../../../../core/router/tab_navigation.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -56,7 +57,10 @@ class StyleDnaSection extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    Text(style, style: AppTypography.captionStrong),
+                    Text(
+                      context.l10n.styleLabel(style),
+                      style: AppTypography.captionStrong,
+                    ),
                   ],
                 ),
               ),

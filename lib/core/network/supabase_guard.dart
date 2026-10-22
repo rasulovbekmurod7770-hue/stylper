@@ -46,6 +46,28 @@ String requireUserId(SupabaseClient client) =>
       code: ApiErrorCodes.unauthorized,
     ));
 
+/// Updates the signed-in user's row in [table] (where [idColumn] is their
+/// id). RLS answers an update of someone else's row with no rows rather than
+/// an error, so none counts as [ApiErrorCodes.unauthorized].
+Future<void> updateOwnRow(
+  SupabaseClient client,
+  String table,
+  String idColumn,
+  Map<String, Object?> values,
+) async {
+  final rows = await client
+      .from(table)
+      .update(values)
+      .eq(idColumn, requireUserId(client))
+      .select(idColumn);
+  if (rows.isEmpty) {
+    throw const ServerException(
+      statusCode: 401,
+      code: ApiErrorCodes.unauthorized,
+    );
+  }
+}
+
 const _postgrestCodes = {
   'PGRST301': ApiErrorCodes.unauthorized, // JWT expired or invalid
   'PGRST303': ApiErrorCodes.unauthorized,

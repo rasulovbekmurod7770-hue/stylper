@@ -82,8 +82,10 @@ it", local brands first, and trust (nothing that misleads).
   is Supabase (see **Backend** below), switched on at build time with
   `--dart-define-from-file=env/<target>.json` (`BACKEND=supabase`, see
   `env/example.json`; `env/*.json` are gitignored). Features move to it one
-  at a time in spec §10 order — **ported: auth + onboarding**
-  (`SupabaseAuthRepository`, `SupabaseOnboardingRemoteDataSource`). The rest
+  at a time in spec §10 order — **ported: auth, onboarding and your own
+  profile** (header, Edit Profile, Settings: `SupabaseAuthRepository`,
+  `SupabaseOnboardingRemoteDataSource`, `SupabaseProfileRemoteDataSource`,
+  which hands the unported profile calls to the fake one). The rest
   still call FakeBackend, where a Supabase user counts as a guest (the
   user's decision: no Fake↔Supabase bridge). Every remote call goes through
   a `*RemoteDataSource` interface (auth: the repository); a `Fake…` one
@@ -103,6 +105,13 @@ it", local brands first, and trust (nothing that misleads).
   and prices are shown only through `formatPrice(price, l10n)` —
   "1 130 000 soʻm" (uz), "1 130 000 сум" (ru), "1,130,000 UZS" (en). They're
   long, so leave them a line of their own in narrow cards.
+- **Styles are fixed keys everywhere** (the user's decision): `StyleKeys`
+  (`minimal`, `casual`, `streetwear`, `neutral`, `oversized`,
+  `smart_casual`) in data, JSON, the database (0003 rejects anything else)
+  and code; screens show `l10n.styleLabel(key)`, and Home's chips
+  `styleLabel(key, short: true)` ("Street"). Style DNA comes from the quiz:
+  each item has 1–2 style keys, and `styleDnaOf` counts them (most frequent
+  first, ties in tag order, at most 5).
 - Every user-facing string goes into all three of `lib/l10n/app_{en,ru,uz}.arb`
   (Uzbek is Latin script, with `ʻ`), then `flutter gen-l10n`. Content from the
   backend (names, captions, tags) isn't localized.
@@ -180,8 +189,10 @@ it", local brands first, and trust (nothing that misleads).
   metadata: `design/figma/metadata_2849-1017.xml`. The wardrobe's own "Add
   New Item" opens the same form.
   Not in Figma, built from the same pieces: product "See all looks",
-  wardrobe category, settings sheet, "Check your email" after sign-up (the
-  forgot-password screen's pieces; golden `check_email`, no compare pair). **Search** (the tab) has no Figma frame:
+  wardrobe category, settings sheet (privacy and notification toggles, Sign
+  out), Edit Profile (profile-setup form pieces), "Check your email" after
+  sign-up (the forgot-password screen's pieces); goldens `settings_sheet`,
+  `edit_profile`, `check_email`, no compare pairs. **Search** (the tab) has no Figma frame:
   it follows the Search screen of the claude.ai "Stylper Prototype"
   artifact (https://claude.ai/artifact/QnuM1JWAdTM5BZqDZD9mvb), finding
   brands and people by username or name (`GET /search`); its Styles chips

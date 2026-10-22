@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/l10n/l10n.dart';
+import '../../../../core/l10n/style_labels.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/load_error_view.dart';
@@ -93,7 +94,9 @@ class _ProductLooksPageState extends State<ProductLooksPage> {
                     Padding(
                       padding: const EdgeInsets.only(right: 8),
                       child: _FilterChip(
-                        label: style ?? l10n.filterAll,
+                        label: style == null
+                            ? l10n.filterAll
+                            : l10n.styleLabel(style),
                         selected: style == _style,
                         onTap: () => setState(() => _style = style),
                       ),

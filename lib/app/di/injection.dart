@@ -35,12 +35,15 @@ import '../../features/product/domain/repositories/product_repository.dart';
 import '../../features/product/domain/usecases/get_product.dart';
 import '../../features/product/presentation/cubits/product_detail_cubit.dart';
 import '../../features/profile/data/datasources/profile_remote_data_source.dart';
+import '../../features/profile/data/datasources/supabase_profile_remote_data_source.dart';
 import '../../features/profile/data/repositories/profile_repository_impl.dart';
 import '../../features/profile/domain/repositories/profile_repository.dart';
 import '../../features/profile/domain/usecases/profile_usecases.dart';
+import '../../features/profile/presentation/cubits/edit_profile_cubit.dart';
 import '../../features/profile/presentation/cubits/following_cubit.dart';
 import '../../features/profile/presentation/cubits/profile_cubit.dart';
 import '../../features/profile/presentation/cubits/saved_posts_cubit.dart';
+import '../../features/profile/presentation/cubits/settings_cubit.dart';
 import '../../features/search/data/datasources/search_remote_data_source.dart';
 import '../../features/search/data/repositories/search_repository_impl.dart';
 import '../../features/search/domain/repositories/search_repository.dart';
@@ -102,8 +105,9 @@ void configureDependencies({
   // Supabase one at a time, in the order of STYLPER_BACKEND_SPEC.md §10;
   // nothing outside this block needs to change.
   //
-  // Ported: auth and onboarding. The rest still call FakeBackend, which
-  // doesn't know Supabase users, so there they act as guests.
+  // Ported: auth, onboarding and your own profile (header, Edit Profile,
+  // Settings). The rest still call FakeBackend, which doesn't know Supabase
+  // users, so there they act as guests.
   sl.registerLazySingleton(() => backend ?? FakeBackend());
   if (supabase != null) {
     sl
@@ -113,6 +117,12 @@ void configureDependencies({
       )
       ..registerLazySingleton<OnboardingRemoteDataSource>(
         () => SupabaseOnboardingRemoteDataSource(sl()),
+      )
+      ..registerLazySingleton<ProfileRemoteDataSource>(
+        () => SupabaseProfileRemoteDataSource(
+          sl(),
+          FakeProfileRemoteDataSource(sl(), sl()),
+        ),
       );
   } else {
     sl
@@ -124,6 +134,9 @@ void configureDependencies({
       )
       ..registerLazySingleton<OnboardingRemoteDataSource>(
         () => FakeOnboardingRemoteDataSource(sl(), sl()),
+      )
+      ..registerLazySingleton<ProfileRemoteDataSource>(
+        () => FakeProfileRemoteDataSource(sl(), sl()),
       );
   }
   sl
@@ -135,9 +148,6 @@ void configureDependencies({
     )
     ..registerLazySingleton<ProductRemoteDataSource>(
       () => FakeProductRemoteDataSource(sl(), sl()),
-    )
-    ..registerLazySingleton<ProfileRemoteDataSource>(
-      () => FakeProfileRemoteDataSource(sl(), sl()),
     )
     ..registerLazySingleton<WardrobeRemoteDataSource>(
       () => FakeWardrobeRemoteDataSource(sl(), sl()),
@@ -196,6 +206,9 @@ void configureDependencies({
     ..registerFactory(() => GetProfile(sl()))
     ..registerFactory(() => SetFollowing(sl()))
     ..registerFactory(() => GetSavedPosts(sl()))
+    ..registerFactory(() => UpdateProfile(sl(), sl()))
+    ..registerFactory(() => GetSettings(sl()))
+    ..registerFactory(() => UpdateSettings(sl()))
     ..registerFactory(() => GetWardrobe(sl()))
     ..registerFactory(() => GetWardrobeItems(sl()))
     ..registerFactory(() => SetInWardrobe(sl()))
@@ -235,6 +248,8 @@ void configureDependencies({
     // App-wide, so a post's Follow and the author's profile agree.
     ..registerLazySingleton(() => FollowingCubit(sl()))
     ..registerFactory(() => SavedPostsCubit(sl()))
+    ..registerFactory(() => EditProfileCubit(sl(), sl()))
+    ..registerFactory(() => SettingsCubit(sl(), sl()))
     // App-wide, so every "save to wardrobe" control agrees.
     ..registerLazySingleton(() => WardrobeMembershipCubit(sl()))
     ..registerFactory(() => WardrobeCubit(sl()))

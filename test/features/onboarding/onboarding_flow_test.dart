@@ -18,10 +18,12 @@ void main() {
   late SaveProfile saveProfile;
   late GetStyleQuiz getStyleQuiz;
   late CompleteStyleQuiz completeStyleQuiz;
+  late FakeBackend backend;
+  late InMemoryAuthTokenStore tokens;
 
   setUp(() async {
-    final backend = FakeBackend(latency: Duration.zero);
-    final tokens = InMemoryAuthTokenStore();
+    backend = FakeBackend(latency: Duration.zero);
+    tokens = InMemoryAuthTokenStore();
     auth = AuthRepositoryImpl(
       remote: FakeAuthRemoteDataSource(backend),
       tokenStore: tokens,
@@ -89,5 +91,8 @@ void main() {
 
     expect(result.isRight(), isTrue);
     expect(auth.currentUser!.onboardingCompleted, isTrue);
+    // White T-Shirt + Baggy Jeans.
+    final me = await backend.userProfile('me', token: await tokens.read());
+    expect(me['styles'], ['minimal', 'neutral', 'streetwear', 'oversized']);
   });
 }

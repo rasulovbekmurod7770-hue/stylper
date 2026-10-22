@@ -19,8 +19,9 @@ Its data resets on every launch.
 
 ### Against the local Supabase stack
 
-Sign-up, sign-in, profile setup and the style quiz can run on Supabase
-(the other screens still use the fake backend). Start the stack with
+Sign-up, sign-in, profile setup, the style quiz and your own profile (its
+header, Edit Profile and Settings) can run on Supabase (the other screens
+still use the fake backend). Start the stack with
 `npx supabase start`, then copy `env/example.json` to a gitignored file for
 your device and run with it:
 
@@ -92,8 +93,9 @@ session changes and the router redirects:
 
 The backend is Supabase (`supabase/`, `STYLPER_BACKEND_SPEC.md`). Features move
 over one at a time, in the order of the spec's §10, behind the build-time
-switch above; so far auth and onboarding (`SupabaseAuthRepository`,
-`SupabaseOnboardingRemoteDataSource`).
+switch above; so far auth, onboarding and your own profile
+(`SupabaseAuthRepository`, `SupabaseOnboardingRemoteDataSource`,
+`SupabaseProfileRemoteDataSource`).
 
 Every remote call goes through a `*RemoteDataSource` interface (auth,
 onboarding, home, post, product, profile, wardrobe). To port one:

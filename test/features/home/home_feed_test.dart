@@ -35,14 +35,14 @@ void main() {
       );
 
       expect(feed.city, 'Tashkent');
-      expect(feed.styles, ['Casual', 'Minimal', 'Street']);
+      expect(feed.styles, ['casual', 'minimal', 'streetwear']);
       expect(feed.featured.first.author.name, 'Mina Cho');
       expect(feed.featured.first.engagement.likeCount, 1248);
       expect(feed.featured.first.engagement.liked, isFalse);
       for (final style in feed.styles) {
         expect(feed.featuredIn(style), hasLength(2), reason: style);
       }
-      expect(feed.featuredIn('Minimal').map((p) => p.id), [
+      expect(feed.featuredIn('minimal').map((p) => p.id), [
         'post_bobur',
         'post_soft_neutrals',
       ]);
@@ -94,7 +94,7 @@ void main() {
   group('HomeFeedCubit', () {
     const feed = HomeFeed(
       city: 'Tashkent',
-      styles: ['Casual', 'Street'],
+      styles: ['casual', 'streetwear'],
       featured: [],
       peopleWearing: [],
       trending: [],
@@ -139,13 +139,13 @@ void main() {
     test('the first style is selected until another is chosen', () {
       final cubit = HomeFeedCubit(getHomeFeed)
         ..emit(const HomeFeedState(status: HomeFeedStatus.ready, feed: feed));
-      expect(cubit.state.style, 'Casual');
+      expect(cubit.state.style, 'casual');
 
-      cubit.selectStyle('Street');
-      expect(cubit.state.style, 'Street');
+      cubit.selectStyle('streetwear');
+      expect(cubit.state.style, 'streetwear');
 
       cubit.selectStyle('Unknown');
-      expect(cubit.state.style, 'Street', reason: 'not offered by the feed');
+      expect(cubit.state.style, 'streetwear', reason: 'not offered by the feed');
     });
 
     blocTest<HomeFeedCubit, HomeFeedState>(
@@ -157,10 +157,10 @@ void main() {
       seed: () => const HomeFeedState(
         status: HomeFeedStatus.ready,
         feed: feed,
-        selectedStyle: 'Street',
+        selectedStyle: 'streetwear',
       ),
       act: (cubit) => cubit.load(),
-      verify: (cubit) => expect(cubit.state.style, 'Street'),
+      verify: (cubit) => expect(cubit.state.style, 'streetwear'),
     );
   });
 }

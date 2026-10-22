@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/l10n/l10n.dart';
+import '../../../../core/l10n/style_labels.dart';
 import '../../../../core/presentation/image_source.dart';
 import '../../../../core/presentation/price_format.dart';
 import '../../../../core/router/tab_navigation.dart';
@@ -444,7 +445,10 @@ class _HowPeopleStyleIt extends StatelessWidget {
                             child: FeedPhoto(path: style.imagePath, radius: 18),
                           ),
                           const SizedBox(width: 12),
-                          Text(style.name, style: AppTypography.bodyStrong),
+                          Text(
+                            context.l10n.styleLabel(style.name),
+                            style: AppTypography.bodyStrong,
+                          ),
                         ],
                       ),
                     ),

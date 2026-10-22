@@ -12,6 +12,7 @@ abstract interface class OnboardingRemoteDataSource {
   Future<void> completeOnboarding({
     required String topId,
     required String bottomId,
+    required List<String> styleDna,
   });
 }
 
@@ -33,9 +34,11 @@ class FakeOnboardingRemoteDataSource implements OnboardingRemoteDataSource {
   Future<void> completeOnboarding({
     required String topId,
     required String bottomId,
+    required List<String> styleDna,
   }) async {
     await _backend.completeOnboarding(await _token, {
       'likedOutfit': {'topId': topId, 'bottomId': bottomId},
+      'styleDna': styleDna,
     });
   }
 }

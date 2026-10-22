@@ -534,6 +534,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileStyleDna => 'Style DNA';
 
   @override
+  String get styleMinimal => 'Minimal';
+
+  @override
+  String get styleCasual => 'Casual';
+
+  @override
+  String get styleStreetwear => 'Streetwear';
+
+  @override
+  String get styleStreetwearShort => 'Street';
+
+  @override
+  String get styleNeutral => 'Neutral';
+
+  @override
+  String get styleOversized => 'Oversized';
+
+  @override
+  String get styleSmartCasual => 'Smart Casual';
+
+  @override
   String get profileMyStyle => 'My style';
 
   @override
@@ -559,6 +580,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileSettings => 'Settings';
+
+  @override
+  String get editProfileTitle => 'Edit profile';
+
+  @override
+  String get profileNameLabel => 'Name';
+
+  @override
+  String get profileNameHint => 'Your name';
+
+  @override
+  String get profileBioLabel => 'Bio';
+
+  @override
+  String get profileBioHint => 'A line about your style';
+
+  @override
+  String get profileSave => 'Save';
+
+  @override
+  String get settingsPrivacy => 'Privacy';
+
+  @override
+  String get settingsPrivateAccount => 'Private account';
+
+  @override
+  String get settingsPrivateAccountHint =>
+      'Only your followers see your posts.';
+
+  @override
+  String get settingsBrandFeatures => 'Brands can feature my posts';
+
+  @override
+  String get settingsBrandFeaturesHint =>
+      'For new posts, and only by the brands they tag.';
+
+  @override
+  String get settingsShowLikeCounts => 'Show like counts';
+
+  @override
+  String get settingsNotifications => 'Notifications';
+
+  @override
+  String get settingsNotifyBrandActivity => 'Brand activity';
+
+  @override
+  String get settingsNotifyBrandActivityHint =>
+      'When a brand features your post or sends you a reward.';
+
+  @override
+  String get settingsNotifyDrops => 'New drops';
+
+  @override
+  String get settingsNotifyDropsHint => 'New items from brands you follow.';
+
+  @override
+  String get settingsSaveFailed => 'Couldn\'t save that change. Try again.';
 
   @override
   String get profileShare => 'Share profile';

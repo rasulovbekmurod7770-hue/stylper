@@ -27,6 +27,15 @@ class FakeBackend {
   static const demoPassword = 'stylper123';
 
   static const _minPasswordLength = 8;
+
+  /// A new account's settings (as in the database).
+  static const _defaultSettings = {
+    'isPrivate': false,
+    'allowBrandFeatures': true,
+    'showLikeCounts': true,
+    'notifyBrandActivity': true,
+    'notifyDrops': false,
+  };
   static final _usernamePattern = RegExp(r'^[a-z0-9_.]{3,20}$');
 
   /// Names nobody can take, as `is_reserved_handle` in the database.
@@ -46,6 +55,7 @@ class FakeBackend {
   final _tokens = <String, String>{}; // token → userId
   final _usernames = <String, String>{}; // username → userId
   final _bodyMetrics = <String, Map<String, Object?>>{}; // userId → private
+  final _settings = <String, Map<String, Object?>>{}; // userId → settings
   final _outfitLikes = <String, List<Map<String, Object?>>>{};
   final _postLikes = <String, int>{}; // postId → like count
   final _likedBy = <String, Set<String>>{}; // postId → userIds
@@ -218,14 +228,51 @@ class FakeBackend {
   ) async {
     await _delay();
     final userId = _userIdFor(token);
-    final username = body['username'] as String?;
+    _claimUsername(userId, body['username'] as String?);
+    final user = _users[userId]!..['gender'] = body['gender'];
+    _bodyMetrics[userId] = {
+      'age': body['age'],
+      'heightCm': body['heightCm'],
+      'weightKg': body['weightKg'],
+    };
+    return Map.of(user);
+  }
+
+  /// PATCH /me/profile (Edit Profile). Body: `{name, username, bio}`; `name`
+  /// up to 60 characters and `bio` up to 160, either empty to clear it. The
+  /// username follows the rules of profile setup.
+  Future<void> editProfile(String token, Map<String, Object?> body) async {
+    await _delay();
+    final userId = _userIdFor(token);
+    final name = (body['name'] as String? ?? '').trim();
+    final bio = (body['bio'] as String? ?? '').trim();
+    if (name.length > 60 || bio.length > 160) {
+      throw const ServerException(
+        statusCode: 422,
+        code: ApiErrorCodes.validation,
+      );
+    }
+    _claimUsername(userId, body['username'] as String?);
+    final profile = _profiles[userId] ??= {};
+    // Without a name, the profile shows the username.
+    if (name.isEmpty) {
+      profile.remove('name');
+    } else {
+      profile['name'] = name;
+    }
+    profile['bio'] = bio;
+  }
+
+  /// Makes [username] [userId]'s, unless it's invalid (422) or taken by
+  /// someone else, a brand's handle or reserved: people and brands share one
+  /// handle namespace (migration 0002) → 409 `username_taken`.
+  void _claimUsername(String userId, String? username) {
     if (username == null || !_usernamePattern.hasMatch(username)) {
       throw const ServerException(
         statusCode: 422,
         code: ApiErrorCodes.validation,
       );
     }
-    // People and brands share one handle namespace (migration 0002).
     final owner = _usernames[username];
     if ((owner != null && owner != userId) ||
         _reservedHandles.contains(username) ||
@@ -235,23 +282,35 @@ class FakeBackend {
         code: ApiErrorCodes.usernameTaken,
       );
     }
-
     final user = _users[userId]!;
     final previous = user['username'] as String?;
     if (previous != null && previous != username) _usernames.remove(previous);
     _usernames[username] = userId;
     user['username'] = username;
-    user['gender'] = body['gender'];
-    _bodyMetrics[userId] = {
-      'age': body['age'],
-      'heightCm': body['heightCm'],
-      'weightKg': body['weightKg'],
-    };
-    return Map.of(user);
   }
 
+  /// GET /me/settings → `{isPrivate, allowBrandFeatures, showLikeCounts,
+  /// notifyBrandActivity, notifyDrops}`. Stored only; nothing here acts on
+  /// them yet.
+  Future<Map<String, Object?>> settings(String token) async {
+    await _delay();
+    return {..._defaultSettings, ...?_settings[_userIdFor(token)]};
+  }
+
+  /// PUT /me/settings, same body; unknown keys are ignored.
+  Future<void> updateSettings(String token, Map<String, Object?> body) async {
+    await _delay();
+    final userId = _userIdFor(token);
+    _settings[userId] = {
+      for (final key in _defaultSettings.keys)
+        if (body[key] case final bool value) key: value,
+    };
+  }
+
+
   /// POST /me/onboarding/complete → user.
-  /// Body: `{likedOutfit: {topId, bottomId}}`.
+  /// Body: `{likedOutfit: {topId, bottomId}, styleDna}`; `styleDna` (style
+  /// keys) becomes the profile's Style DNA.
   Future<Map<String, Object?>> completeOnboarding(
     String token,
     Map<String, Object?> body,
@@ -261,6 +320,9 @@ class FakeBackend {
     final liked = body['likedOutfit'];
     if (liked is Map<String, Object?>) {
       (_outfitLikes[userId] ??= []).add(Map.of(liked));
+    }
+    if (body['styleDna'] case final List<Object?> styleDna) {
+      (_profiles[userId] ??= {})['styles'] = [...styleDna.cast<String>()];
     }
     final user = _users[userId]!..['onboardingCompleted'] = true;
     return Map.of(user);

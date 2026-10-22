@@ -534,6 +534,27 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileStyleDna => 'ДНК стиля';
 
   @override
+  String get styleMinimal => 'Минимализм';
+
+  @override
+  String get styleCasual => 'Кэжуал';
+
+  @override
+  String get styleStreetwear => 'Стритвир';
+
+  @override
+  String get styleStreetwearShort => 'Стрит';
+
+  @override
+  String get styleNeutral => 'Нейтральный';
+
+  @override
+  String get styleOversized => 'Оверсайз';
+
+  @override
+  String get styleSmartCasual => 'Смарт-кэжуал';
+
+  @override
   String get profileMyStyle => 'Мой стиль';
 
   @override
@@ -559,6 +580,65 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileSettings => 'Настройки';
+
+  @override
+  String get editProfileTitle => 'Редактировать профиль';
+
+  @override
+  String get profileNameLabel => 'Имя';
+
+  @override
+  String get profileNameHint => 'Ваше имя';
+
+  @override
+  String get profileBioLabel => 'О себе';
+
+  @override
+  String get profileBioHint => 'Пара слов о вашем стиле';
+
+  @override
+  String get profileSave => 'Сохранить';
+
+  @override
+  String get settingsPrivacy => 'Конфиденциальность';
+
+  @override
+  String get settingsPrivateAccount => 'Закрытый аккаунт';
+
+  @override
+  String get settingsPrivateAccountHint =>
+      'Ваши посты видят только подписчики.';
+
+  @override
+  String get settingsBrandFeatures => 'Бренды могут показывать мои посты';
+
+  @override
+  String get settingsBrandFeaturesHint =>
+      'Для новых постов и только брендам, отмеченным в них.';
+
+  @override
+  String get settingsShowLikeCounts => 'Показывать число лайков';
+
+  @override
+  String get settingsNotifications => 'Уведомления';
+
+  @override
+  String get settingsNotifyBrandActivity => 'Активность брендов';
+
+  @override
+  String get settingsNotifyBrandActivityHint =>
+      'Когда бренд показывает ваш пост или дарит вам награду.';
+
+  @override
+  String get settingsNotifyDrops => 'Новинки';
+
+  @override
+  String get settingsNotifyDropsHint =>
+      'Новые вещи от брендов, на которые вы подписаны.';
+
+  @override
+  String get settingsSaveFailed =>
+      'Не удалось сохранить изменение. Попробуйте ещё раз.';
 
   @override
   String get profileShare => 'Поделиться профилем';

@@ -47,7 +47,8 @@ final class LikedOutfit extends Equatable {
   List<Object?> get props => [top, bottom];
 }
 
-/// Finishes onboarding, then refreshes the user so routing moves to Home.
+/// Finishes onboarding with the Style DNA of the liked outfit, then refreshes
+/// the user so routing moves to Home.
 class CompleteStyleQuiz
     implements UseCase<Future<Either<OnboardingFailure, Unit>>, LikedOutfit> {
   const CompleteStyleQuiz(this._onboarding, this._auth);
@@ -60,6 +61,7 @@ class CompleteStyleQuiz
     final result = await _onboarding.completeOnboarding(
       top: outfit.top,
       bottom: outfit.bottom,
+      styleDna: styleDnaOf([outfit.top, outfit.bottom]),
     );
     if (result.isLeft()) return result;
     return (await _auth.refreshCurrentUser()).match(

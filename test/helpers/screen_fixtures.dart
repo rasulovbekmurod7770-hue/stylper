@@ -61,12 +61,17 @@ import 'package:stylper/features/product/presentation/pages/product_detail_page.
 import 'package:stylper/features/profile/data/models/profile_json.dart';
 import 'package:stylper/features/profile/domain/repositories/profile_repository.dart';
 import 'package:stylper/features/profile/domain/usecases/profile_usecases.dart';
+import 'package:stylper/features/profile/domain/entities/profile_settings.dart';
+import 'package:stylper/features/profile/presentation/cubits/edit_profile_cubit.dart';
 import 'package:stylper/features/profile/presentation/cubits/following_cubit.dart';
 import 'package:stylper/features/profile/presentation/cubits/profile_cubit.dart';
 import 'package:stylper/features/profile/presentation/cubits/saved_posts_cubit.dart';
+import 'package:stylper/features/profile/presentation/cubits/settings_cubit.dart';
+import 'package:stylper/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:stylper/features/profile/presentation/pages/profile_page.dart';
 import 'package:stylper/features/profile/presentation/widgets/profile_header.dart';
 import 'package:stylper/features/profile/presentation/widgets/profile_sections.dart';
+import 'package:stylper/features/profile/presentation/widgets/settings_sheet.dart';
 import 'package:stylper/features/search/data/datasources/search_remote_data_source.dart';
 import 'package:stylper/features/search/data/repositories/search_repository_impl.dart';
 import 'package:stylper/features/search/domain/usecases/search_usecases.dart';
@@ -124,6 +129,12 @@ class _MockSetFollowing extends Mock implements SetFollowing {}
 
 class _MockGetSavedPosts extends Mock implements GetSavedPosts {}
 
+class _MockUpdateProfile extends Mock implements UpdateProfile {}
+
+class _MockGetSettings extends Mock implements GetSettings {}
+
+class _MockUpdateSettings extends Mock implements UpdateSettings {}
+
 class _MockGetWardrobe extends Mock implements GetWardrobe {}
 
 /// The fake backend with the demo account (John) signed in.
@@ -157,6 +168,43 @@ Widget _ownProfile() {
       child: const ProfilePage(),
     ),
     tab: MainTab.profile,
+  );
+}
+
+/// Edit Profile, starting from John's profile.
+Widget _editProfile() {
+  final getProfile = _MockGetProfile();
+  when(() => getProfile(any())).thenAnswer((_) async {
+    final (backend, token) = await _signedInBackend();
+    return Right(
+      ProfileJson.profile(
+        await backend.userProfile(ProfileRepository.me, token: token),
+      ),
+    );
+  });
+  return _inShell(
+    BlocProvider(
+      create: (_) => EditProfileCubit(getProfile, _MockUpdateProfile())..load(),
+      child: const EditProfilePage(),
+    ),
+    tab: MainTab.profile,
+  );
+}
+
+/// The Settings sheet's content, as opened from your profile: private
+/// account on.
+Widget _settingsSheet() {
+  final getSettings = _MockGetSettings();
+  when(() => getSettings(any()))
+      .thenAnswer((_) async => const Right(ProfileSettings(isPrivate: true)));
+  return Scaffold(
+    body: SafeArea(
+      child: BlocProvider(
+        create: (_) =>
+            SettingsCubit(getSettings, _MockUpdateSettings())..load(),
+        child: SettingsSheet(onSignOut: () {}),
+      ),
+    ),
   );
 }
 
@@ -281,8 +329,8 @@ Widget _posting(Widget page, {required int step}) {
         ),
       )
       ..setLocation('Tashkent')
-      ..toggleStyle('Minimal')
-      ..toggleStyle('Casual');
+      ..toggleStyle('minimal')
+      ..toggleStyle('casual');
   }
   if (step >= 3) {
     draft.setCaption(
@@ -400,7 +448,7 @@ Widget _postWithOwnItem() {
       PostJson.post(
         await backend.publishPost(token, {
           'image': 'assets/images/posts/john_knit.webp',
-          'styles': ['Minimal'],
+          'styles': ['minimal'],
           'tags': [
             {'itemId': item['id'], 'x': 0.42, 'y': 0.24},
             {'productId': 'p_jeans_kink', 'x': 0.5, 'y': 0.62},
@@ -702,6 +750,9 @@ List<ScreenFixture> screenFixtures() {
       build: _ownProfile,
       images: _allContentImages,
     ),
+    // Not in Figma: Edit Profile and the Settings sheet.
+    ScreenFixture(name: 'edit_profile', build: _editProfile),
+    ScreenFixture(name: 'settings_sheet', build: _settingsSheet),
     // Figma "Profile 4": the Saved tab, scrolled to the compact header.
     ScreenFixture(
       name: 'profile_saved',

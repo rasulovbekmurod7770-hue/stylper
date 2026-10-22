@@ -19,6 +19,7 @@ class OutfitItemModel {
     required this.brand,
     required this.imagePath,
     required this.category,
+    this.styles = const [],
   });
 
   factory OutfitItemModel.fromJson(Map<String, Object?> json) =>
@@ -28,6 +29,7 @@ class OutfitItemModel {
         brand: json['brand']! as String,
         imagePath: json['image']! as String,
         category: OutfitCategory.values.byName(json['category']! as String),
+        styles: [...?(json['styles'] as List<Object?>?)?.cast<String>()],
       );
 
   final String id;
@@ -35,6 +37,7 @@ class OutfitItemModel {
   final String brand;
   final String imagePath;
   final OutfitCategory category;
+  final List<String> styles;
 
   OutfitItem toEntity() => OutfitItem(
     id: id,
@@ -42,5 +45,6 @@ class OutfitItemModel {
     brand: brand,
     imagePath: imagePath,
     category: category,
+    styles: styles,
   );
 }

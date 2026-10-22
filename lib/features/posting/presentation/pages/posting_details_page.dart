@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/l10n/l10n.dart';
+import '../../../../core/l10n/style_labels.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_typography.dart';
@@ -141,7 +142,7 @@ class _PostingDetailsPageState extends State<PostingDetailsPage> {
                     children: [
                       for (final style in state.styleOptions)
                         _StylePill(
-                          label: style,
+                          label: l10n.styleLabel(style),
                           selected: draft.styles.contains(style),
                           onTap: () => cubit.toggleStyle(style),
                         ),

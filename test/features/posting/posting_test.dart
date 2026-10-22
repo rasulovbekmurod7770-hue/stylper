@@ -129,7 +129,7 @@ void main() {
             tags: [_sweaterTag],
             caption: '  Soft layers  ',
             location: 'Tashkent',
-            styles: ['Minimal'],
+            styles: ['minimal'],
           ),
         )).getOrElse((f) => throw StateError('$f'));
 
@@ -408,7 +408,7 @@ void main() {
     tearDown(() => draft.close());
 
     test('loads the style options from the backend', () {
-      expect(draft.state.styleOptions, contains('Minimal'));
+      expect(draft.state.styleOptions, contains('minimal'));
     });
 
     test('a different photo drops the tags placed on the old one', () {
@@ -432,10 +432,10 @@ void main() {
 
     test('styles toggle on and off', () {
       draft
-        ..toggleStyle('Minimal')
-        ..toggleStyle('Casual')
-        ..toggleStyle('Minimal');
-      expect(draft.state.draft.styles, ['Casual']);
+        ..toggleStyle('minimal')
+        ..toggleStyle('casual')
+        ..toggleStyle('minimal');
+      expect(draft.state.draft.styles, ['casual']);
     });
 
     test('publishing reports the new post', () async {

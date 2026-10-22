@@ -157,7 +157,7 @@ class PostPreview extends Equatable {
   /// Username without the leading `@`.
   final String? authorHandle;
 
-  /// Styles the post belongs to, e.g. "Casual".
+  /// Styles the post belongs to, as `StyleKeys`, e.g. `casual`.
   final List<String> styles;
 
   @override

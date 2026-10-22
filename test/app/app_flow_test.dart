@@ -25,6 +25,7 @@ import 'package:stylper/features/wardrobe/presentation/widgets/add_item_card.dar
 import 'package:stylper/features/wardrobe/presentation/widgets/add_item_sheet.dart';
 import 'package:stylper/features/posting/presentation/widgets/posting_widgets.dart';
 import 'package:stylper/features/product/presentation/pages/product_detail_page.dart';
+import 'package:stylper/features/profile/presentation/pages/edit_profile_page.dart';
 import 'package:stylper/features/profile/presentation/pages/profile_page.dart';
 import 'package:stylper/features/search/presentation/cubits/search_cubit.dart';
 import 'package:stylper/features/search/presentation/pages/search_page.dart';
@@ -147,6 +148,66 @@ void main() {
     await openTab(tester, 'Profile');
     // The hero, and the compact header that appears on scroll.
     expect(find.text('@new_user'), findsWidgets);
+    // Style DNA of the outfit liked: White T-Shirt + Baggy Jeans.
+    for (final style in ['Minimal', 'Neutral', 'Streetwear', 'Oversized']) {
+      expect(find.text(style), findsOneWidget, reason: style);
+    }
+  });
+
+  testWidgets('Edit Profile: a brand\'s handle is taken, then the profile '
+      'shows the new name, username and bio', (tester) async {
+    await signInAsDemo(tester);
+    await openTab(tester, 'Profile');
+    await tapText(tester, 'Edit Profile');
+    expect(find.byType(EditProfilePage), findsOneWidget);
+    expect(find.text('john'), findsOneWidget, reason: 'starts from @john');
+
+    await type(tester, 1, 'cos');
+    await tapText(tester, 'Save');
+    expect(find.text('This username is already taken.'), findsOneWidget);
+
+    await type(tester, 0, 'John Brown');
+    await type(tester, 1, '@john_b');
+    await type(tester, 2, 'Layers, always.');
+    await tapText(tester, 'Save');
+
+    expect(find.byType(EditProfilePage), findsNothing);
+    expect(find.text('John Brown'), findsWidgets);
+    expect(find.text('@john_b'), findsWidgets);
+    expect(find.text('Layers, always.'), findsOneWidget);
+  });
+
+  testWidgets('Settings: a toggle stays as set when the sheet reopens', (
+    tester,
+  ) async {
+    await signInAsDemo(tester);
+    await openTab(tester, 'Profile');
+    Future<void> openSettings() async {
+      await tester.tap(find.bySemanticsLabel('Settings'));
+      await tester.pumpAndSettle();
+    }
+
+    bool privateAccount() => tester
+        .widget<AppSwitch>(
+          find.descendant(
+            of: find.ancestor(
+              of: find.text('Private account'),
+              matching: find.byType(InkWell),
+            ),
+            matching: find.byType(AppSwitch),
+          ),
+        )
+        .value;
+
+    await openSettings();
+    expect(privateAccount(), isFalse);
+    await tapText(tester, 'Private account');
+    expect(privateAccount(), isTrue);
+
+    await tester.tapAt(const Offset(20, 20)); // closes the sheet
+    await tester.pumpAndSettle();
+    await openSettings();
+    expect(privateAccount(), isTrue);
   });
 
   testWidgets('with email confirmation on: sign up → check your email → '

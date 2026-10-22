@@ -31,6 +31,10 @@ extension TabNavigation on BuildContext {
 
   void openUser(String userId) => pushInTab('user/$userId');
 
+  /// Completes with `true` once the profile was saved.
+  Future<bool?> openEditProfile() =>
+      push<bool>(AppRoutes.editProfile(tab: currentTab));
+
   /// The signed-in user's wardrobe, which lives in the Profile tab.
   void openWardrobe() => currentTab == AppRoutes.profile
       ? push(AppRoutes.wardrobe)
