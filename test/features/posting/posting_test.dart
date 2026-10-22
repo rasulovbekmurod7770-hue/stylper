@@ -15,7 +15,9 @@ import 'package:stylper/features/posting/presentation/cubits/post_draft_cubit.da
 import 'package:stylper/features/posting/presentation/cubits/tag_search_cubit.dart';
 import 'package:stylper/features/profile/data/datasources/profile_remote_data_source.dart';
 import 'package:stylper/features/profile/data/repositories/profile_repository_impl.dart';
+import 'package:stylper/features/profile/domain/entities/profile_settings.dart';
 import 'package:stylper/features/profile/domain/repositories/profile_repository.dart';
+import 'package:stylper/features/profile/domain/usecases/profile_usecases.dart';
 import 'package:stylper/core/domain/money.dart';
 import 'package:stylper/features/wardrobe/data/datasources/wardrobe_remote_data_source.dart';
 import 'package:stylper/features/wardrobe/data/repositories/wardrobe_repository_impl.dart';
@@ -400,8 +402,17 @@ void main() {
   group('PostDraftCubit', () {
     late PostDraftCubit draft;
 
+    late ProfileRepositoryImpl profiles;
+
     setUp(() async {
-      draft = PostDraftCubit(GetPostStyles(posting), PublishPost(posting));
+      profiles = ProfileRepositoryImpl(
+        remote: FakeProfileRemoteDataSource(backend, tokens),
+      );
+      draft = PostDraftCubit(
+        GetPostStyles(posting),
+        PublishPost(posting),
+        GetSettings(profiles),
+      );
       await draft.loadStyles();
     });
 
@@ -409,6 +420,23 @@ void main() {
 
     test('loads the style options from the backend', () {
       expect(draft.state.styleOptions, contains('minimal'));
+    });
+
+    test('"Allow brands to feature this" starts as Settings has it, unless '
+        'already flipped', () async {
+      await signIn();
+      await draft.loadDefaults();
+      expect(draft.state.draft.allowBrandFeature, isTrue, reason: 'default');
+
+      await profiles.updateSettings(
+        const ProfileSettings(allowBrandFeatures: false),
+      );
+      await draft.loadDefaults();
+      expect(draft.state.draft.allowBrandFeature, isFalse);
+
+      draft.setAllowBrandFeature(true);
+      await draft.loadDefaults();
+      expect(draft.state.draft.allowBrandFeature, isTrue, reason: 'flipped');
     });
 
     test('a different photo drops the tags placed on the old one', () {

@@ -5,6 +5,7 @@ import '../../../../core/usecase/usecase.dart';
 import '../../domain/entities/post_draft.dart';
 import '../../domain/failures/posting_failure.dart';
 import '../../domain/usecases/posting_usecases.dart';
+import '../../../profile/domain/usecases/profile_usecases.dart';
 
 enum PublishStatus { editing, publishing, published, failure }
 
@@ -51,11 +52,15 @@ final class PostDraftState extends Equatable {
 
 /// The post being created, shared by every posting step.
 class PostDraftCubit extends Cubit<PostDraftState> {
-  PostDraftCubit(this._getStyles, this._publish)
+  PostDraftCubit(this._getStyles, this._publish, this._getSettings)
     : super(const PostDraftState());
 
   final GetPostStyles _getStyles;
   final PublishPost _publish;
+  final GetSettings _getSettings;
+
+  /// The user flipped "Allow brands to feature this" themselves.
+  bool _brandFeatureSet = false;
 
   Future<void> loadStyles() async {
     final result = await _getStyles(const NoParams());
@@ -63,6 +68,23 @@ class PostDraftCubit extends Cubit<PostDraftState> {
     result.match(
       (_) {}, // The styles section just stays empty.
       (styles) => emit(state.copyWith(styleOptions: styles)),
+    );
+  }
+
+  /// Starts "Allow brands to feature this" from the user's Settings default
+  /// for new posts, unless they already flipped it.
+  Future<void> loadDefaults() async {
+    final result = await _getSettings(const NoParams());
+    if (isClosed || _brandFeatureSet) return;
+    result.match(
+      (_) {}, // The switch just starts off.
+      (settings) => emit(
+        state.copyWith(
+          draft: state.draft.copyWith(
+            allowBrandFeature: settings.allowBrandFeatures,
+          ),
+        ),
+      ),
     );
   }
 
@@ -115,9 +137,10 @@ class PostDraftCubit extends Cubit<PostDraftState> {
     );
   }
 
-  void setAllowBrandFeature(bool allow) => emit(
-    state.copyWith(draft: state.draft.copyWith(allowBrandFeature: allow)),
-  );
+  void setAllowBrandFeature(bool allow) {
+    _brandFeatureSet = true;
+    emit(state.copyWith(draft: state.draft.copyWith(allowBrandFeature: allow)));
+  }
 
   Future<void> publish() async {
     if (state.status == PublishStatus.publishing) return;

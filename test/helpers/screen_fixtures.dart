@@ -297,8 +297,11 @@ class _JohnsWardrobe implements WardrobeRepository {
 Widget _posting(Widget page, {required int step}) {
   final posting = _JohnsPosting();
   final wardrobe = _JohnsWardrobe(posting);
-  final draft = PostDraftCubit(GetPostStyles(posting), PublishPost(posting))
-    ..loadStyles();
+  final draft = PostDraftCubit(
+    GetPostStyles(posting),
+    PublishPost(posting),
+    _MockGetSettings(),
+  )..loadStyles();
   if (step >= 1) draft.setPhoto('assets/images/posts/john_knit.webp');
   if (step >= 2) {
     draft

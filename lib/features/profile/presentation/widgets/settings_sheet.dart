@@ -125,8 +125,7 @@ class _Toggles extends StatelessWidget {
           title: l10n.settingsNotifyBrandActivity,
           hint: l10n.settingsNotifyBrandActivityHint,
           value: settings.notifyBrandActivity,
-          onChanged: (on) =>
-              change((s) => s.copyWith(notifyBrandActivity: on)),
+          onChanged: (on) => change((s) => s.copyWith(notifyBrandActivity: on)),
         ),
         _ToggleRow(
           title: l10n.settingsNotifyDrops,

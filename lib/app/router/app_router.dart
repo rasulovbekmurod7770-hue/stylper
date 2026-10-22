@@ -131,7 +131,11 @@ GoRouter createRouter(SessionCubit session) {
           value: sl<GalleryThumbnails>(),
           child: MultiBlocProvider(
             providers: [
-              BlocProvider(create: (_) => sl<PostDraftCubit>()..loadStyles()),
+              BlocProvider(
+                create: (_) => sl<PostDraftCubit>()
+                  ..loadStyles()
+                  ..loadDefaults(),
+              ),
               // "Add New Item" while tagging.
               BlocProvider(create: (_) => sl<AddItemCubit>()),
             ],

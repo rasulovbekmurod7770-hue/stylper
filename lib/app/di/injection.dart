@@ -258,7 +258,7 @@ void configureDependencies({
       (category, _) => WardrobeItemsCubit(sl(), category: category),
     )
     ..registerFactory(() => MediaPickerCubit(sl()))
-    ..registerFactory(() => PostDraftCubit(sl(), sl()))
+    ..registerFactory(() => PostDraftCubit(sl(), sl(), sl()))
     ..registerFactory(() => TagSearchCubit(sl(), sl()))
     ..registerFactory(() => SearchCubit(sl(), sl()))
     // App-wide, so screens showing your posts pick up a new one.

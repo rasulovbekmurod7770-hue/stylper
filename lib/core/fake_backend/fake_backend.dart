@@ -307,7 +307,6 @@ class FakeBackend {
     };
   }
 
-
   /// POST /me/onboarding/complete → user.
   /// Body: `{likedOutfit: {topId, bottomId}, styleDna}`; `styleDna` (style
   /// keys) becomes the profile's Style DNA.

@@ -80,9 +80,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 child: BlocBuilder<EditProfileCubit, EditProfileState>(
                   builder: (context, state) => switch (state.status) {
                     EditProfileStatus.loading => const Center(
-                      child: CircularProgressIndicator(
-                        color: AppColors.accent,
-                      ),
+                      child: CircularProgressIndicator(color: AppColors.accent),
                     ),
                     EditProfileStatus.loadFailure => LoadErrorView(
                       message: state.failure!.message(l10n),
@@ -146,8 +144,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         const SizedBox(height: 24),
                         PrimaryButton(
                           label: l10n.profileSave,
-                          isLoading:
-                              state.status == EditProfileStatus.saving,
+                          isLoading: state.status == EditProfileStatus.saving,
                           onPressed: _save,
                         ),
                       ],

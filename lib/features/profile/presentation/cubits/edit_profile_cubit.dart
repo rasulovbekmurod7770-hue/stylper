@@ -50,10 +50,8 @@ class EditProfileCubit extends Cubit<EditProfileState> {
           status: EditProfileStatus.loadFailure,
           failure: failure,
         ),
-        (profile) => EditProfileState(
-          status: EditProfileStatus.ready,
-          profile: profile,
-        ),
+        (profile) =>
+            EditProfileState(status: EditProfileStatus.ready, profile: profile),
       ),
     );
   }
@@ -97,10 +95,8 @@ class EditProfileCubit extends Cubit<EditProfileState> {
           profile: profile,
           failure: failure,
         ),
-        (_) => EditProfileState(
-          status: EditProfileStatus.saved,
-          profile: profile,
-        ),
+        (_) =>
+            EditProfileState(status: EditProfileStatus.saved, profile: profile),
       ),
     );
   }
