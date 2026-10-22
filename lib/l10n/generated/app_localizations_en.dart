@@ -269,6 +269,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get postOutfitDetails => 'Outfit details';
 
   @override
+  String get postShowTags => 'Show tagged items';
+
+  @override
+  String get postHideTags => 'Hide tagged items';
+
+  @override
   String get postSimilar => 'Similar';
 
   @override

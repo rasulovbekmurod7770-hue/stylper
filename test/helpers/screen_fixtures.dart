@@ -34,10 +34,12 @@ import 'package:stylper/features/onboarding/presentation/cubits/style_quiz_cubit
 import 'package:stylper/features/onboarding/presentation/pages/profile_setup_page.dart';
 import 'package:stylper/features/onboarding/presentation/pages/style_quiz_page.dart';
 import 'package:stylper/features/post/data/models/post_json.dart';
+import 'package:stylper/features/post/domain/entities/post.dart';
 import 'package:stylper/features/post/domain/usecases/post_usecases.dart';
 import 'package:stylper/features/post/presentation/cubits/post_detail_cubit.dart';
 import 'package:stylper/features/post/presentation/cubits/post_engagement_cubit.dart';
 import 'package:stylper/features/post/presentation/pages/post_detail_page.dart';
+import 'package:stylper/features/post/presentation/widgets/tagged_photo.dart';
 import 'package:stylper/features/posting/data/datasources/posting_remote_data_source.dart';
 import 'package:stylper/features/posting/data/repositories/posting_repository_impl.dart';
 import 'package:stylper/features/posting/domain/entities/post_draft.dart';
@@ -93,6 +95,7 @@ import 'package:stylper/features/wardrobe/presentation/pages/wardrobe_page.dart'
 import 'package:stylper/features/wardrobe/presentation/cubits/wardrobe_membership_cubit.dart';
 
 import 'fake_media.dart';
+import 'layered_posts.dart';
 import 'screen_harness.dart';
 
 class _MockSignInWithEmail extends Mock implements SignInWithEmail {}
@@ -521,19 +524,34 @@ Widget _withAppState(Widget child) {
 }
 
 /// The Figma post sample: Leo's "Utility chic".
-Widget _post() {
+Widget _post() => _postPage('post_utility_chic');
+
+/// A post screen for a seeded post, with [products] tagged instead of its
+/// own when given.
+Widget _postPage(String id, {List<TaggedProduct>? products}) {
   final getPost = _MockGetPost();
-  when(() => getPost(any())).thenAnswer(
-    (_) async => Right(
-      PostJson.post(
-        await FakeBackend(latency: Duration.zero).post('post_utility_chic'),
+  when(() => getPost(any())).thenAnswer((_) async {
+    final post = PostJson.post(
+      await FakeBackend(latency: Duration.zero).post(id),
+    );
+    if (products == null) return Right(post);
+    return Right(
+      Post(
+        id: post.id,
+        imagePath: post.imagePath,
+        author: post.author,
+        engagement: post.engagement,
+        commentCount: post.commentCount,
+        caption: post.caption,
+        location: post.location,
+        products: products,
+        similar: post.similar,
       ),
-    ),
-  );
+    );
+  });
   return _inShell(
     BlocProvider(
-      create: (_) =>
-          PostDetailCubit(getPost, postId: 'post_utility_chic')..load(),
+      create: (_) => PostDetailCubit(getPost, postId: id)..load(),
       child: const PostDetailPage(),
     ),
   );
@@ -726,6 +744,27 @@ List<ScreenFixture> screenFixtures() {
       images: _postImages,
       fillIn: (tester) async {
         await tester.tap(find.text('COS · Cardigan'));
+        await settleState(tester);
+      },
+    ),
+    // Layers tagged one by one: a coat over a cardigan, with a scarf.
+    ScreenFixture(
+      name: 'post_layers',
+      goldenSize: const Size(390, 1287),
+      build: () => _postPage('post_john_coat'),
+      images: _allContentImages,
+    ),
+    // More than four tags start hidden; here a tap on the photo shows them.
+    ScreenFixture(
+      name: 'post_many_tags',
+      goldenSize: const Size(390, 1287),
+      build: () => _postPage('post_john_coat', products: worstCaseTags),
+      images: _allContentImages,
+      fillIn: (tester) async {
+        final photo = tester.getRect(find.byType(TaggedPhoto));
+        await tester.tapAt(
+          photo.topLeft + Offset(photo.width * 0.1, photo.height * 0.75),
+        );
         await settleState(tester);
       },
     ),

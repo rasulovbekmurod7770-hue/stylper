@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
@@ -13,12 +14,18 @@ import '../../../../core/widgets/feed_photo.dart';
 import '../../../../core/router/tab_navigation.dart';
 import '../../../wardrobe/presentation/wardrobe_actions.dart';
 import '../../domain/entities/post.dart';
+import 'tag_layout.dart';
 import '../../../../core/presentation/price_format.dart';
 
 /// "Image-Frame" (2775:2861): the outfit photo with a back button, a dot and
 /// "Brand · Item" label per tagged product, and a dark fade along the bottom.
+/// Close-together tags (layers) are laid out by [TagLayout], so no label
+/// covers another or another tag's dot, and each has its own tap area.
 /// Tapping a tag opens its "expanded-tag-card" (variant 2775:2953); tapping
-/// the tag again or the photo closes it.
+/// the tag again or the photo closes it. A post with more than
+/// [TaggedPhoto.tagsShownUpTo] tags starts with them hidden behind a badge
+/// with their count (top right); tapping the photo or the badge shows or
+/// hides them.
 class TaggedPhoto extends StatefulWidget {
   const TaggedPhoto({super.key, required this.post});
 
@@ -27,31 +34,57 @@ class TaggedPhoto extends StatefulWidget {
   /// The Figma photo is 390×516.
   static const aspectRatio = 390 / 516;
 
+  /// Posts with more tags start with them hidden.
+  static const tagsShownUpTo = 4;
+
   @override
   State<TaggedPhoto> createState() => _TaggedPhotoState();
 }
 
 class _TaggedPhotoState extends State<TaggedPhoto> {
   int? _open;
+  late bool _showTags = !_many;
+
+  bool get _many => widget.post.products.length > TaggedPhoto.tagsShownUpTo;
 
   void _toggle(int index) =>
       setState(() => _open = _open == index ? null : index);
 
+  void _toggleTags() => setState(() {
+    _showTags = !_showTags;
+    _open = null;
+  });
+
+  /// A tap on the photo outside every label: the nearest dot's tag, else it
+  /// closes the open card, else (many tags) shows or hides them.
+  void _tapPhoto(Offset point, List<TagPlacement> tags) {
+    final tag = _showTags ? TagLayout.tagAt(point, tags) : null;
+    if (tag != null) return _toggle(tag);
+    if (_open != null) return setState(() => _open = null);
+    if (_many) _toggleTags();
+  }
+
   @override
   Widget build(BuildContext context) {
     final products = widget.post.products;
-    final open = _open;
+    final textScaler = MediaQuery.textScalerOf(context);
 
     return AspectRatio(
       aspectRatio: TaggedPhoto.aspectRatio,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final size = constraints.biggest;
+          final tags = TagLayout.place(
+            products,
+            size,
+            (text, maxWidth) => _TagLabel.measure(text, maxWidth, textScaler),
+          );
+          final open = _showTags ? _open : null;
           return Stack(
             children: [
               Positioned.fill(
                 child: GestureDetector(
-                  onTap: () => setState(() => _open = null),
+                  onTapUp: (details) => _tapPhoto(details.localPosition, tags),
                   child: FeedPhoto(path: widget.post.imagePath, radius: 0),
                 ),
               ),
@@ -73,10 +106,31 @@ class _TaggedPhotoState extends State<TaggedPhoto> {
                   ),
                 ),
               ),
-              for (final (index, product) in products.indexed)
-                ..._tag(product, size, selected: index == open, index: index),
+              if (_showTags) ...[
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: CustomPaint(
+                      painter: _ColumnLines(tags, selected: open),
+                    ),
+                  ),
+                ),
+                for (final (index, tag) in tags.indexed)
+                  ..._tag(tag, index, selected: open),
+              ],
               if (open != null && open < products.length)
-                _cardFor(products[open], size, widget.post.author.name),
+                _cardFor(products[open], tags[open], size),
+              // Top right, opposite the back button: clear of the floating
+              // tab bar on short screens.
+              if (_many)
+                Positioned(
+                  right: 11,
+                  top: 4,
+                  child: _TagsBadge(
+                    count: products.length,
+                    shown: _showTags,
+                    onTap: _toggleTags,
+                  ),
+                ),
               const Positioned(left: 19, top: 12, child: _BackButton()),
             ],
           );
@@ -85,75 +139,163 @@ class _TaggedPhotoState extends State<TaggedPhoto> {
     );
   }
 
-  /// A dark dot with a light ring centred on the tag point (8px while its
-  /// card is open), and the label 9px right and down of it (flipped to the
-  /// left on the right half of the photo).
-  List<Widget> _tag(
-    TaggedProduct product,
-    Size size, {
-    required bool selected,
-    required int index,
-  }) {
-    final center = Offset(
-      product.tagX * size.width,
-      product.tagY * size.height,
-    );
-    final dot = selected ? 8.0 : 6.0;
-    final flip = product.tagX > 0.55;
-    void onTap() => _toggle(index);
-
+  /// A dark dot with a light ring on the tag point (bigger while its card is
+  /// open), and its label, whose whole tap band opens the card. While a card
+  /// is open, the other tags dim.
+  List<Widget> _tag(TagPlacement tag, int index, {required int? selected}) {
+    final isSelected = index == selected;
+    final dot = isSelected ? 12.0 : 8.0;
     return [
       Positioned(
-        left: center.dx - dot / 2,
-        top: center.dy - dot / 2,
-        child: GestureDetector(
-          onTap: onTap,
-          child: Container(
-            width: dot,
-            height: dot,
-            decoration: BoxDecoration(
-              color: AppColors.textPrimary,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.background),
-            ),
-          ),
-        ),
+        left: tag.dot.dx - dot / 2,
+        top: tag.dot.dy - dot / 2,
+        child: IgnorePointer(child: _Dot(size: dot)),
       ),
-      Positioned(
-        left: flip ? null : center.dx + 9,
-        right: flip ? size.width - center.dx + 9 : null,
-        top: center.dy + 9,
+      Positioned.fromRect(
+        rect: tag.band,
         child: Semantics(
           button: true,
-          selected: selected,
+          selected: isSelected,
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap: onTap,
-            child: _TagLabel('${product.brand} · ${product.shortName}'),
+            onTap: () => _toggle(index),
+            child: Center(
+              child: SizedBox.fromSize(
+                size: tag.label.size,
+                child: Opacity(
+                  opacity: selected == null || isSelected ? 1 : 0.55,
+                  child: _TagLabel(tag.text, selected: isSelected),
+                ),
+              ),
+            ),
           ),
         ),
       ),
     ];
   }
 
-  /// The expanded card sits under the tag's label, or above the tag when
-  /// there's no room below.
-  Widget _cardFor(TaggedProduct product, Size size, String authorName) {
+  /// The expanded card sits under the tag's label, or above it when there's
+  /// no room below.
+  Widget _cardFor(TaggedProduct product, TagPlacement tag, Size size) {
     // Padding, brand, name, (price), then the styled count and buttons — or
     // just "Added by …" for an item the author added.
     final height = product.addedByAuthor
         ? 14 + 18 + 4 + 21 + (product.price == null ? 0 : 4 + 20) + 4 + 17 + 14
         : 142.0;
-    final y = product.tagY * size.height;
-    final below = y + 45;
+    final below = tag.label.bottom + 8;
+    final fitsBelow = below + height <= size.height - 8;
     return Positioned(
       left: 16,
       right: 16,
-      top: below + height <= size.height - 8 ? below : null,
-      bottom: below + height <= size.height - 8 ? null : size.height - y + 20,
+      top: fitsBelow ? below : null,
+      bottom: fitsBelow ? null : size.height - tag.label.top + 8,
       child: product.addedByAuthor
-          ? _AddedTagCard(product: product, by: authorName)
+          ? _AddedTagCard(product: product, by: widget.post.author.name)
           : _TagCard(product: product),
+    );
+  }
+}
+
+/// Thin lines from each dot in a column to its label.
+class _ColumnLines extends CustomPainter {
+  _ColumnLines(this.tags, {required this.selected});
+
+  final List<TagPlacement> tags;
+  final int? selected;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    for (final (index, tag) in tags.indexed) {
+      if (!tag.inColumn) continue;
+      final end = Offset(
+        tag.label.left > tag.dot.dx ? tag.label.left : tag.label.right,
+        tag.label.center.dy,
+      );
+      final dim = selected != null && selected != index;
+      canvas.drawLine(
+        tag.dot,
+        end,
+        Paint()
+          ..color = AppColors.background.withValues(alpha: dim ? 0.4 : 0.85)
+          ..strokeWidth = 1,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(_ColumnLines old) => true;
+}
+
+class _Dot extends StatelessWidget {
+  const _Dot({required this.size});
+
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: AppColors.textPrimary,
+        shape: BoxShape.circle,
+        border: Border.all(color: AppColors.background, width: 1.5),
+      ),
+    );
+  }
+}
+
+/// How many items are tagged, when they start hidden; shows or hides them.
+class _TagsBadge extends StatelessWidget {
+  const _TagsBadge({
+    required this.count,
+    required this.shown,
+    required this.onTap,
+  });
+
+  final int count;
+  final bool shown;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.l10n;
+    return Semantics(
+      button: true,
+      label: shown ? l10n.postHideTags : l10n.postShowTags,
+      excludeSemantics: true,
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: onTap,
+        // A bigger target than the badge itself.
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: _Glass(
+            radius: 999,
+            blur: 5,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.sell_outlined,
+                    size: 14,
+                    color: AppColors.background,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$count',
+                    style: AppTypography.onPhotoLabel.copyWith(
+                      color: AppColors.background,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -198,25 +340,56 @@ class _Glass extends StatelessWidget {
 }
 
 class _TagLabel extends StatelessWidget {
-  const _TagLabel(this.text);
+  const _TagLabel(this.text, {required this.selected});
 
   final String text;
 
+  /// White while its card is open.
+  final bool selected;
+
+  static const _padding = EdgeInsets.symmetric(horizontal: 10, vertical: 6);
+
+  /// The label's size showing [text] in at most [maxWidth].
+  static Size measure(String text, double maxWidth, TextScaler textScaler) {
+    final painter = TextPainter(
+      text: TextSpan(text: text, style: AppTypography.onPhotoLabel),
+      textDirection: TextDirection.ltr,
+      textScaler: textScaler,
+      maxLines: 1,
+      ellipsis: '…',
+    )..layout(maxWidth: math.max(0, maxWidth - _padding.horizontal));
+    final size = Size(
+      painter.width.ceilToDouble() + _padding.horizontal,
+      painter.height.ceilToDouble() + _padding.vertical,
+    );
+    painter.dispose();
+    return size;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return _Glass(
-      radius: 999,
-      blur: 5,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        child: Text(
-          text,
-          style: AppTypography.onPhotoLabel.copyWith(
-            color: AppColors.background,
-          ),
-        ),
+    final style = AppTypography.onPhotoLabel.copyWith(
+      color: selected ? AppColors.ink : AppColors.background,
+    );
+    final content = Padding(
+      padding: _padding,
+      child: Text(
+        text,
+        style: style,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
+    if (selected) {
+      return DecoratedBox(
+        decoration: const BoxDecoration(
+          color: AppColors.background,
+          borderRadius: BorderRadius.all(Radius.circular(999)),
+        ),
+        child: content,
+      );
+    }
+    return _Glass(radius: 999, blur: 5, child: content);
   }
 }
 

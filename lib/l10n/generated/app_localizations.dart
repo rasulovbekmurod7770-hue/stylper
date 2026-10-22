@@ -562,6 +562,18 @@ abstract class AppLocalizations {
   /// **'Outfit details'**
   String get postOutfitDetails;
 
+  /// No description provided for @postShowTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Show tagged items'**
+  String get postShowTags;
+
+  /// No description provided for @postHideTags.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide tagged items'**
+  String get postHideTags;
+
   /// No description provided for @postSimilar.
   ///
   /// In en, this message translates to:

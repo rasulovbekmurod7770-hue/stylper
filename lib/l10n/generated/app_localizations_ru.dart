@@ -269,6 +269,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get postOutfitDetails => 'Детали образа';
 
   @override
+  String get postShowTags => 'Показать отмеченные вещи';
+
+  @override
+  String get postHideTags => 'Скрыть отмеченные вещи';
+
+  @override
   String get postSimilar => 'Похожие';
 
   @override

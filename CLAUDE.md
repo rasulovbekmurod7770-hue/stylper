@@ -77,9 +77,17 @@ it", local brands first, and trust (nothing that misleads).
   finds them for later posts. **Layers** (spec §7 "Layered outfits"):
   every layer can be tagged, so categories run outside in
   (`WardrobeCategories.all`: outerwear, tops, bottoms, shoes, accessories)
-  in the picker, the wardrobe and Add New Item; Outfit details lists tags
-  by `outsideIn`; a photo takes at most `PostDraft.maxTags` (10) tags, which
-  the database enforces too (0004). There is **no audience setting** ("Share to followers" was
+  in the picker (after "My Wardrobe", which comes first), the wardrobe and
+  Add New Item; Outfit details lists tags by `outsideIn`; a photo takes at
+  most `PostDraft.maxTags` (10) tags, which the database enforces too
+  (0004). On the post photo, `TagLayout` (user-approved design) keeps close
+  tags readable: lone tags keep the Figma spot (or flip sides), colliding
+  ones stand in a column beside their dots with leader lines (brands dropped
+  together when a column has no room); every label has a 44px tap band
+  (40px minimum when tight) and bands never overlap; off the labels a tap
+  goes to the nearest dot within 22px. Posts with more than 4 tags start
+  hidden behind a count badge (top right); tapping the photo shows or hides
+  them. The posting `TagCanvas` doesn't use `TagLayout` yet. There is **no audience setting** ("Share to followers" was
   removed on purpose): every post is public. After publishing,
   `PublishedPostsCubit` (app-wide) tells screens that list your posts to
   refresh.

@@ -146,7 +146,7 @@ People wear layers (a jacket over a t-shirt, a scarf over a coat) and must be ab
 - Every tag has the category of its product or wardrobe item (`item_category_t`); label-only tags count as `other`. The tag picker and the wardrobe offer every category, including **Outerwear** and **Accessories**.
 - **At most 10 tags per photo** (per `post_image_id`), enforced in the database by `0004_tag_limit.sql`. The app stops at 10 as well.
 - **Outfit details** (the list of tagged items on the post) is ordered outside-in: outerwear, tops, bottoms, shoes, accessories, then `other`; within a category, in the order they were tagged.
-- **Close-together dots** stay readable and tappable: no dot hides another and no labels overlap.
+- **Close-together dots** stay readable and tappable: no dot hides another and no labels overlap. Posts with more than 4 tags start with tags hidden behind a count badge; tapping the photo shows or hides them.
 
 ## 8. Jobs
 

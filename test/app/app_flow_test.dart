@@ -542,8 +542,11 @@ void main() {
       find.textContaining('Weekend denim', findRichText: true),
       findsOneWidget,
     );
-    expect(find.text('ZARA · Jeans'), findsOneWidget);
-    expect(find.text('TIMEOFLESS · Grey Cardigan'), findsOneWidget);
+    // Tagged close together, they share a column; with no room for the
+    // brands there, the labels name just the items.
+    expect(find.text('ZARA · Jeans'), findsNothing);
+    expect(find.text('Jeans'), findsWidgets); // the tag, and Outfit details
+    expect(find.text('Grey Cardigan'), findsWidgets);
     expect(find.text('Added by John. B'), findsOneWidget);
   });
 

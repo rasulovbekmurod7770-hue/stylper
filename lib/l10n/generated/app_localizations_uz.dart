@@ -270,6 +270,12 @@ class AppLocalizationsUz extends AppLocalizations {
   String get postOutfitDetails => 'Obraz tafsilotlari';
 
   @override
+  String get postShowTags => 'Belgilangan buyumlarni koʻrsatish';
+
+  @override
+  String get postHideTags => 'Belgilangan buyumlarni yashirish';
+
+  @override
   String get postSimilar => 'Oʻxshash';
 
   @override
