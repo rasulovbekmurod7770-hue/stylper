@@ -6,6 +6,12 @@ abstract final class AppRoutes {
   static const forgotPassword = '/welcome/sign-in/forgot-password';
   static const signUp = '/welcome/sign-up';
 
+  /// After sign-up when the email must be confirmed first.
+  static const checkEmail = '$signUp/check-email';
+
+  static String checkEmailFor(String email) =>
+      Uri(path: checkEmail, queryParameters: {'email': email}).toString();
+
   static const profileSetup = '/onboarding/profile';
   static const styleQuiz = '/onboarding/style-quiz';
 

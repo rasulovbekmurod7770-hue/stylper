@@ -2,6 +2,9 @@ import '../../../../core/error/failure.dart';
 
 enum AuthFailureReason {
   invalidCredentials,
+
+  /// Signing in before opening the confirmation link sent at sign-up.
+  emailNotConfirmed,
   emailAlreadyInUse,
   weakPassword,
   userDisabled,

@@ -13,9 +13,26 @@ flutter pub get
 flutter run            # Android / iOS / web (Chrome)
 ```
 
-There is no backend yet. The app runs against an in-memory **fake backend**
+By default the app runs against an in-memory **fake backend**
 (`lib/core/fake_backend/fake_backend.dart`) with ~600 ms simulated latency.
 Its data resets on every launch.
+
+### Against the local Supabase stack
+
+Sign-up, sign-in, profile setup and the style quiz can run on Supabase
+(the other screens still use the fake backend). Start the stack with
+`npx supabase start`, then copy `env/example.json` to a gitignored file for
+your device and run with it:
+
+```bash
+cp env/example.json env/emulator.json   # Android emulator: http://10.0.2.2:54321
+flutter run --dart-define-from-file=env/emulator.json
+```
+
+A phone needs the laptop's LAN IP instead (same Wi-Fi); web and desktop use
+`http://127.0.0.1:54321`. The seed accounts (`developer@stylper.ai` etc.,
+password `stylper123`) work here too. With email confirmation on, sign-up
+shows "Check your email"; the email lands in Mailpit, http://127.0.0.1:54324.
 
 | Demo account | |
 |---|---|
@@ -73,13 +90,24 @@ session changes and the router redirects:
 
 ### Connecting the real backend
 
-Every remote call goes through a `*RemoteDataSource` interface (auth,
-onboarding, home, post, product, profile, wardrobe). To switch to the API:
+The backend is Supabase (`supabase/`, `STYLPER_BACKEND_SPEC.md`). Features move
+over one at a time, in the order of the spec's §10, behind the build-time
+switch above; so far auth and onboarding (`SupabaseAuthRepository`,
+`SupabaseOnboardingRemoteDataSource`).
 
-1. Implement these interfaces over HTTP. Throw `ServerException(statusCode, code)`
-   using the codes in `ApiErrorCodes`, and `NetworkException` when offline.
-2. Register them in `lib/app/di/injection.dart`, in the marked **Backend** block.
-3. Replace `InMemoryAuthTokenStore` with secure storage.
+Every remote call goes through a `*RemoteDataSource` interface (auth,
+onboarding, home, post, product, profile, wardrobe). To port one:
+
+1. Implement the interface on `SupabaseClient`, wrapping each call in
+   `guardSupabase` so errors become `ServerException(statusCode, code)` with
+   the codes in `ApiErrorCodes`, or `NetworkException` when offline.
+2. Register it in `lib/app/di/injection.dart`, in the marked **Backend**
+   block, under `if (supabase != null)`.
+3. Add live tests to `test_supabase/` and run them against the local stack:
+   `flutter test test_supabase --dart-define-from-file=env/test.json`.
+
+Supabase keeps the session itself (on the device, refreshed automatically), so
+ported features don't use `AuthTokenStore`.
 
 Nothing in domain or presentation needs to change. `FakeBackend` documents the
 endpoints and payloads the app currently expects.

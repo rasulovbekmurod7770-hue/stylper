@@ -78,13 +78,24 @@ it", local brands first, and trust (nothing that misleads).
   removed on purpose): every post is public. After publishing,
   `PublishedPostsCubit` (app-wide) tells screens that list your posts to
   refresh.
-- **The app still runs on `FakeBackend`; no Firebase.** The real backend is
-  Supabase (see **Backend** below), not wired into the app yet. Every remote
-  call goes through a `*RemoteDataSource` interface; until it's switched to
-  Supabase, a `Fake…` data source calls
-  `lib/core/fake_backend/fake_backend.dart`. A new endpoint gets a
-  `FakeBackend` method documenting its route and JSON, and is registered in
-  the **Backend** block of `lib/app/di/injection.dart`.
+- **The app runs on `FakeBackend` by default; no Firebase.** The real backend
+  is Supabase (see **Backend** below), switched on at build time with
+  `--dart-define-from-file=env/<target>.json` (`BACKEND=supabase`, see
+  `env/example.json`; `env/*.json` are gitignored). Features move to it one
+  at a time in spec §10 order — **ported: auth + onboarding**
+  (`SupabaseAuthRepository`, `SupabaseOnboardingRemoteDataSource`). The rest
+  still call FakeBackend, where a Supabase user counts as a guest (the
+  user's decision: no Fake↔Supabase bridge). Every remote call goes through
+  a `*RemoteDataSource` interface (auth: the repository); a `Fake…` one
+  calls `lib/core/fake_backend/fake_backend.dart`, a `Supabase…` one wraps
+  its calls in `guardSupabase` (`lib/core/network/supabase_guard.dart`). A
+  new endpoint gets a `FakeBackend` method documenting its route and JSON,
+  and is registered in the **Backend** block of `lib/app/di/injection.dart`.
+- **Sign-up handles email confirmation both ways** (production has it ON):
+  without a session, `signUpWithEmail` returns `ConfirmationEmailSent` and
+  the app shows the check-email screen (`/welcome/sign-up/check-email`);
+  signing in before opening the link is `emailNotConfirmed`.
+  `FakeBackend(requireEmailConfirmation: true)` exercises it in tests.
 - Content image fields are asset paths now and URLs later; render them with
   `imageFromPath` (`lib/core/presentation/image_source.dart`).
 - **Prices are in Uzbek soʻm everywhere** (the user's decision), even where
@@ -126,10 +137,13 @@ it", local brands first, and trust (nothing that misleads).
   tests to `supabase/tests/01_rls_and_workflows.sql`. They run in one
   transaction that empties the database first and is rolled back at the end,
   so they can run any time and the demo data survives; after editing
-  migrations, `npx supabase db reset` first to apply them:
+  migrations, `npx supabase db reset` first to apply them. Because they empty
+  every table, the script refuses to run unless the connection sets
+  `stylper.allow_destructive_tests=on` — only ever against the local stack:
 
   ```bash
-  psql postgresql://postgres:postgres@127.0.0.1:54322/postgres \
+  PGOPTIONS='-c stylper.allow_destructive_tests=on' \
+    psql postgresql://postgres:postgres@127.0.0.1:54322/postgres \
     -v ON_ERROR_STOP=1 -f supabase/tests/01_rls_and_workflows.sql
   # → ALL TESTS PASSED
   ```
@@ -166,7 +180,8 @@ it", local brands first, and trust (nothing that misleads).
   metadata: `design/figma/metadata_2849-1017.xml`. The wardrobe's own "Add
   New Item" opens the same form.
   Not in Figma, built from the same pieces: product "See all looks",
-  wardrobe category, settings sheet. **Search** (the tab) has no Figma frame:
+  wardrobe category, settings sheet, "Check your email" after sign-up (the
+  forgot-password screen's pieces; golden `check_email`, no compare pair). **Search** (the tab) has no Figma frame:
   it follows the Search screen of the claude.ai "Stylper Prototype"
   artifact (https://claude.ai/artifact/QnuM1JWAdTM5BZqDZD9mvb), finding
   brands and people by username or name (`GET /search`); its Styles chips
@@ -202,7 +217,16 @@ flutter analyze
 flutter test                                   # all, incl. goldens
 flutter test --tags golden --update-goldens    # only after an intended visual change
 python3 tool/compare_to_figma.py               # golden vs Figma screenshot
+# live, against the local Supabase stack (not part of `flutter test`):
+flutter test test_supabase --dart-define-from-file=env/test.json
 ```
+
+- `test_supabase/` drives the ported features' real Supabase code against
+  the local stack, with email confirmation off or on (it then opens the link
+  from Mailpit). Run it after changing a `Supabase…` class or the schema.
+  `env/test.json` (gitignored) is `env/local.json` plus the stack's secret
+  key as `SUPABASE_SECRET_KEY`, for tests that need admin calls; that key
+  never goes in the app's env files.
 
 - Each designed screen has a `ScreenFixture` in
   `test/helpers/screen_fixtures.dart`: one golden at its Figma frame size,

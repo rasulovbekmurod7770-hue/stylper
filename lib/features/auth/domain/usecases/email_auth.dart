@@ -3,6 +3,7 @@ import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/usecase/usecase.dart';
 import '../entities/app_user.dart';
+import '../entities/sign_up_result.dart';
 import '../failures/auth_failure.dart';
 import '../repositories/auth_repository.dart';
 
@@ -31,13 +32,14 @@ class SignInWithEmail
 }
 
 class SignUpWithEmail
-    implements UseCase<Future<Either<AuthFailure, AppUser>>, EmailCredentials> {
+    implements
+        UseCase<Future<Either<AuthFailure, SignUpResult>>, EmailCredentials> {
   const SignUpWithEmail(this._repository);
 
   final AuthRepository _repository;
 
   @override
-  Future<Either<AuthFailure, AppUser>> call(EmailCredentials params) =>
+  Future<Either<AuthFailure, SignUpResult>> call(EmailCredentials params) =>
       _repository.signUpWithEmail(
         email: params.email.trim(),
         password: params.password,

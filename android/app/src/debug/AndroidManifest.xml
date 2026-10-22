@@ -4,4 +4,7 @@
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>
+    <!-- The local Supabase stack is plain http (10.0.2.2 from the emulator,
+         the laptop's LAN IP from a phone). Debug builds only. -->
+    <application android:usesCleartextTraffic="true"/>
 </manifest>

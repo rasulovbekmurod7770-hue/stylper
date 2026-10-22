@@ -9,12 +9,19 @@ import 'fake_content.dart';
 ///
 /// State lives only in memory: restarting the app resets it to the seed data.
 class FakeBackend {
-  FakeBackend({this.latency = const Duration(milliseconds: 600)}) {
+  FakeBackend({
+    this.latency = const Duration(milliseconds: 600),
+    this.requireEmailConfirmation = false,
+  }) {
     _seed();
   }
 
   /// Simulated network delay for every call.
   final Duration latency;
+
+  /// Like a backend with email confirmation on: registering returns no
+  /// session, and the account can't sign in until [confirmEmail].
+  final bool requireEmailConfirmation;
 
   static const demoEmail = 'developer@stylper.ai';
   static const demoPassword = 'stylper123';
@@ -22,8 +29,20 @@ class FakeBackend {
   static const _minPasswordLength = 8;
   static final _usernamePattern = RegExp(r'^[a-z0-9_.]{3,20}$');
 
+  /// Names nobody can take, as `is_reserved_handle` in the database.
+  static const _reservedHandles = {
+    'stylper',
+    'admin',
+    'support',
+    'help',
+    'api',
+    'www',
+    'settings',
+  };
+
   final _users = <String, Map<String, Object?>>{}; // userId → public user
   final _passwords = <String, String>{}; // email → password
+  final _unconfirmed = <String>{}; // emails whose link wasn't opened yet
   final _tokens = <String, String>{}; // token → userId
   final _usernames = <String, String>{}; // username → userId
   final _bodyMetrics = <String, Map<String, Object?>>{}; // userId → private
@@ -132,11 +151,18 @@ class FakeBackend {
         code: ApiErrorCodes.invalidCredentials,
       );
     }
+    if (_unconfirmed.contains(key)) {
+      throw const ServerException(
+        statusCode: 403,
+        code: ApiErrorCodes.emailNotConfirmed,
+      );
+    }
     final user = _users.values.firstWhere((u) => u['email'] == key);
     return _session(user['id']! as String);
   }
 
-  /// POST /auth/register → `{accessToken, user}`
+  /// POST /auth/register → `{accessToken, user}`, or `{accessToken: null,
+  /// user}` when the email must be confirmed first.
   Future<Map<String, Object?>> register(String email, String password) async {
     await _delay();
     final key = email.toLowerCase();
@@ -153,7 +179,17 @@ class FakeBackend {
       );
     }
     final user = _createUser(email: key, password: password);
+    if (requireEmailConfirmation) {
+      _unconfirmed.add(key);
+      return {'accessToken': null, 'user': Map.of(user)};
+    }
     return _session(user['id']! as String);
+  }
+
+  /// GET /auth/confirm: the link in the confirmation email.
+  Future<void> confirmEmail(String email) async {
+    await _delay();
+    _unconfirmed.remove(email.toLowerCase());
   }
 
   /// POST /auth/password-reset — always succeeds so emails can't be enumerated.
@@ -173,7 +209,9 @@ class FakeBackend {
 
   /// PUT /me/profile → user.
   /// Body: `{username, gender, age?, heightCm?, weightKg?}`. Body metrics are
-  /// stored privately and never returned in public user payloads.
+  /// stored privately and never returned in public user payloads. A username
+  /// that is someone else's, a brand's handle or reserved → 409
+  /// `username_taken`.
   Future<Map<String, Object?>> updateProfile(
     String token,
     Map<String, Object?> body,
@@ -187,8 +225,11 @@ class FakeBackend {
         code: ApiErrorCodes.validation,
       );
     }
+    // People and brands share one handle namespace (migration 0002).
     final owner = _usernames[username];
-    if (owner != null && owner != userId) {
+    if ((owner != null && owner != userId) ||
+        _reservedHandles.contains(username) ||
+        FakeContent.brands.values.any((b) => b['handle'] == username)) {
       throw const ServerException(
         statusCode: 409,
         code: ApiErrorCodes.usernameTaken,

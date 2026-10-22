@@ -128,6 +128,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backToSignInLink => 'Sign In';
 
   @override
+  String get checkEmailTitle => 'Check your email';
+
+  @override
+  String checkEmailSubtitle(String email) {
+    return 'We\'ve sent a confirmation link to $email. Open it to activate your account, then sign in.';
+  }
+
+  @override
+  String get checkEmailHint => 'Can\'t find it? Check your spam folder.';
+
+  @override
+  String get goToSignIn => 'Go to Sign In';
+
+  @override
+  String wrongEmailPrompt(String link) {
+    return 'Wrong email? $link';
+  }
+
+  @override
+  String get signUpAgainLink => 'Sign up again';
+
+  @override
   String get back => 'Back';
 
   @override
@@ -304,6 +326,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorInvalidCredentials => 'Incorrect email or password.';
+
+  @override
+  String get errorEmailNotConfirmed =>
+      'Confirm your email first: open the link we sent you.';
 
   @override
   String get errorEmailInUse => 'An account with this email already exists.';

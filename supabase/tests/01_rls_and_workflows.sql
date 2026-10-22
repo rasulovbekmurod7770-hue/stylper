@@ -1,10 +1,22 @@
 -- Behaviour tests for the Stylper schema. Run after 00_supabase_stub.sql and
--- the migration. Every check is an ASSERT; the script stops at the first failure.
+-- the migrations. Every check is an ASSERT; the script stops at the first failure.
 -- Everything runs in one transaction that is rolled back at the end (or when
 -- psql stops on a failure), so the database is left as it was and the script
 -- can be run again without a reset.
+--
+-- The script empties every table first, so it refuses to run unless the
+-- connection opts in (never set this against a real project):
+--   PGOPTIONS='-c stylper.allow_destructive_tests=on' psql … -f this file
 \set ON_ERROR_STOP 1
 \set QUIET 1
+
+do $$ begin
+  if coalesce(current_setting('stylper.allow_destructive_tests', true), '') <> 'on' then
+    raise exception 'refusing to run: these tests empty every table in database "%"', current_database()
+      using hint = 'Run against a local database only, with '
+                   'PGOPTIONS=''-c stylper.allow_destructive_tests=on'' psql … -f supabase/tests/01_rls_and_workflows.sql';
+  end if;
+end $$;
 
 begin;
 
@@ -61,6 +73,55 @@ insert into media (id, owner_id, kind, full_key, thumb_key, status) values
  ('ee000000-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-000000000001', 'post', 'posts/a/1_1080.webp', 'posts/a/1_400.webp', 'ready'),
  ('ee000000-0000-0000-0000-000000000003', 'cccccccc-0000-0000-0000-000000000003', 'post', 'posts/c/1_1080.webp', 'posts/c/1_400.webp', 'ready'),
  ('ee000000-0000-0000-0000-000000000009', 'aaaaaaaa-0000-0000-0000-000000000001', 'post', 'posts/a/9_1080.webp', 'posts/a/9_400.webp', 'pending');
+
+-- ---------- handles: usernames, brand slugs and reserved names share one namespace ----------
+set role authenticated;
+select test_as('eeeeeeee-0000-0000-0000-000000000005');   -- X, no username yet
+do $$
+declare h text;
+begin
+  -- brand slugs and reserved names, in any case, count as taken
+  foreach h in array array['cos', 'COS', 'Zara', 'stylper', 'Admin', 'support', 'help', 'api', 'www', 'settings'] loop
+    begin
+      update profiles set username = h where id = auth.uid();
+      assert false, format('username %s must be rejected', h);
+    exception when unique_violation then null; end;
+  end loop;
+  begin
+    update profiles set username = 'aziza' where id = auth.uid();
+    assert false, 'another person''s username must be rejected';
+  exception when unique_violation then null; end;
+  begin
+    perform assert_handle_available('free_name', 'profile');
+    assert false, 'the handle check is not callable by users';
+  exception when insufficient_privilege then null; end;
+  update profiles set username = 'xurshid' where id = auth.uid();
+  -- saving the same username again, or only other fields, still works
+  update profiles set username = 'xurshid', bio = 'Tashkent' where id = auth.uid();
+  update profiles set bio = 'Samarkand' where id = auth.uid();
+  assert (select username::text || ' ' || bio from profiles where id = auth.uid()) = 'xurshid Samarkand';
+end $$;
+reset role;
+-- brands are created by Stylper admins (service role); the rule binds them too
+do $$
+declare h text;
+begin
+  foreach h in array array['aziza', 'Bobur', 'xurshid', 'stylper', 'support'] loop
+    begin
+      insert into brands (slug, name) values (h, 'Clash');
+      assert false, format('brand slug %s must be rejected', h);
+    exception when unique_violation then null; end;
+  end loop;
+  begin
+    update brands set slug = 'kamila' where slug = 'zara';
+    assert false, 'renaming a brand to a username must be rejected';
+  exception when unique_violation then null; end;
+  update brands set name = 'ZARA' where slug = 'zara';   -- other fields still save
+  -- a username that was given up can become a brand slug
+  update profiles set username = 'xurshid_uz' where id = 'eeeeeeee-0000-0000-0000-000000000005';
+  insert into brands (slug, name) values ('xurshid', 'Xurshid Atelier');
+  delete from brands where slug = 'xurshid';
+end $$;
 
 -- ---------- A publishes an outfit post with two tags ----------
 set role authenticated;

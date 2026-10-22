@@ -129,6 +129,28 @@ class AppLocalizationsUz extends AppLocalizations {
   String get backToSignInLink => 'Kirishga';
 
   @override
+  String get checkEmailTitle => 'Pochtangizni tekshiring';
+
+  @override
+  String checkEmailSubtitle(String email) {
+    return 'Tasdiqlash havolasini $email manziliga yubordik. Hisobingizni faollashtirish uchun uni oching, soʻng tizimga kiring.';
+  }
+
+  @override
+  String get checkEmailHint => 'Xat topilmadimi? «Spam» jildini tekshiring.';
+
+  @override
+  String get goToSignIn => 'Kirishga oʻtish';
+
+  @override
+  String wrongEmailPrompt(String link) {
+    return 'Manzil notoʻgʻrimi? $link';
+  }
+
+  @override
+  String get signUpAgainLink => 'Qaytadan roʻyxatdan oʻting';
+
+  @override
   String get back => 'Orqaga';
 
   @override
@@ -304,6 +326,10 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get errorInvalidCredentials => 'Elektron pochta yoki parol notoʻgʻri.';
+
+  @override
+  String get errorEmailNotConfirmed =>
+      'Avval pochtangizni tasdiqlang: biz yuborgan havolani oching.';
 
   @override
   String get errorEmailInUse =>

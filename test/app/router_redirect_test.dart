@@ -28,6 +28,7 @@ void main() {
     expect(redirectFor(s, AppRoutes.home), AppRoutes.welcome);
     expect(redirectFor(s, AppRoutes.signIn), isNull);
     expect(redirectFor(s, AppRoutes.forgotPassword), isNull);
+    expect(redirectFor(s, AppRoutes.checkEmailFor('a@b.uz')), isNull);
   });
 
   test('guests go to home', () {

@@ -46,3 +46,7 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+
+# Backend settings for `--dart-define-from-file` (env/example.json is the template)
+/env/*.json
+!/env/example.json

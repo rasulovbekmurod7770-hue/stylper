@@ -9,6 +9,7 @@ import 'package:stylper/app/shell/app_tab_bar.dart';
 import 'package:stylper/core/constants/app_assets.dart';
 import 'package:stylper/core/fake_backend/fake_backend.dart';
 import 'package:stylper/core/widgets/app_switch.dart';
+import 'package:stylper/features/auth/presentation/pages/check_email_page.dart';
 import 'package:stylper/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:stylper/features/auth/presentation/pages/sign_up_page.dart';
 import 'package:stylper/features/auth/presentation/pages/welcome_page.dart';
@@ -146,6 +147,49 @@ void main() {
     await openTab(tester, 'Profile');
     // The hero, and the compact header that appears on scroll.
     expect(find.text('@new_user'), findsWidgets);
+  });
+
+  testWidgets('with email confirmation on: sign up → check your email → '
+      'sign in once the link is opened', (tester) async {
+    final backend = FakeBackend(
+      latency: Duration.zero,
+      requireEmailConfirmation: true,
+    );
+    await sl.reset();
+    configureDependencies(
+      backend: backend,
+      media: FakeMediaRepository(library: [_newPhoto]),
+      thumbnails: const AssetGalleryThumbnails(),
+    );
+    session = sl<SessionCubit>();
+    await launch(tester);
+
+    await tapText(tester, 'Create Account');
+    await type(tester, 0, 'new.user@stylper.ai');
+    await type(tester, 1, 'stylper123');
+    await type(tester, 2, 'stylper123');
+    await tester.ensureVisible(find.byType(AppSwitch));
+    await tester.tap(find.byType(AppSwitch));
+    await tester.pumpAndSettle();
+    await tapText(tester, 'Create Account');
+
+    expect(find.byType(CheckEmailPage), findsOneWidget);
+    expect(find.textContaining('new.user@stylper.ai'), findsOneWidget);
+    await tapText(tester, 'Go to Sign In');
+
+    expect(find.byType(SignInPage), findsOneWidget);
+    await type(tester, 0, 'new.user@stylper.ai');
+    await type(tester, 1, 'stylper123');
+    await tapText(tester, 'Sign In');
+    expect(find.byType(SignInPage), findsOneWidget);
+    expect(
+      find.text('Confirm your email first: open the link we sent you.'),
+      findsOneWidget,
+    );
+
+    await tester.runAsync(() => backend.confirmEmail('new.user@stylper.ai'));
+    await tapText(tester, 'Sign In');
+    expect(find.byType(ProfileSetupPage), findsOneWidget);
   });
 
   testWidgets('existing user signs in straight to home, then signs out', (

@@ -35,10 +35,11 @@ class AuthSessionModel {
 
   factory AuthSessionModel.fromJson(Map<String, Object?> json) =>
       AuthSessionModel(
-        accessToken: json['accessToken']! as String,
+        accessToken: json['accessToken'] as String?,
         user: UserModel.fromJson(json['user']! as Map<String, Object?>),
       );
 
-  final String accessToken;
+  /// Null when registering needs the email confirmed before signing in.
+  final String? accessToken;
   final UserModel user;
 }

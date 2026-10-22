@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- The backend (Supabase). Debug and profile builds declare it too. -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <!-- Posting: the in-app camera roll (photo_manager, images only). Android
          13+ asks for images; 14+ can grant a selection. Older versions use
          READ_EXTERNAL_STORAGE, which the plugin declares itself. -->

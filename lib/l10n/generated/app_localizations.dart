@@ -310,6 +310,42 @@ abstract class AppLocalizations {
   /// **'Sign In'**
   String get backToSignInLink;
 
+  /// No description provided for @checkEmailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your email'**
+  String get checkEmailTitle;
+
+  /// No description provided for @checkEmailSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'ve sent a confirmation link to {email}. Open it to activate your account, then sign in.'**
+  String checkEmailSubtitle(String email);
+
+  /// No description provided for @checkEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t find it? Check your spam folder.'**
+  String get checkEmailHint;
+
+  /// No description provided for @goToSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to Sign In'**
+  String get goToSignIn;
+
+  /// Footer on the check-your-email screen. {link} is replaced by the tappable signUpAgainLink text.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong email? {link}'**
+  String wrongEmailPrompt(String link);
+
+  /// No description provided for @signUpAgainLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up again'**
+  String get signUpAgainLink;
+
   /// No description provided for @back.
   ///
   /// In en, this message translates to:
@@ -627,6 +663,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Incorrect email or password.'**
   String get errorInvalidCredentials;
+
+  /// No description provided for @errorEmailNotConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your email first: open the link we sent you.'**
+  String get errorEmailNotConfirmed;
 
   /// No description provided for @errorEmailInUse.
   ///

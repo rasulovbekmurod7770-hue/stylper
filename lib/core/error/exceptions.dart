@@ -20,6 +20,7 @@ class NetworkException implements Exception {
 /// Error codes shared by the app and the backend contract.
 abstract final class ApiErrorCodes {
   static const invalidCredentials = 'invalid_credentials';
+  static const emailNotConfirmed = 'email_not_confirmed';
   static const emailTaken = 'email_taken';
   static const weakPassword = 'weak_password';
   static const userDisabled = 'user_disabled';

@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 
 import '../entities/app_user.dart';
+import '../entities/sign_up_result.dart';
 import '../failures/auth_failure.dart';
 
 abstract interface class AuthRepository {
@@ -21,7 +22,9 @@ abstract interface class AuthRepository {
     required String password,
   });
 
-  Future<Either<AuthFailure, AppUser>> signUpWithEmail({
+  /// Signs the new user in, unless the backend first wants the email
+  /// confirmed ([ConfirmationEmailSent]).
+  Future<Either<AuthFailure, SignUpResult>> signUpWithEmail({
     required String email,
     required String password,
   });

@@ -5,6 +5,7 @@ import 'package:stylper/core/network/auth_token_store.dart';
 import 'package:stylper/features/auth/data/datasources/fake_auth_remote_data_source.dart';
 import 'package:stylper/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:stylper/features/auth/domain/entities/app_user.dart';
+import 'package:stylper/features/auth/domain/entities/sign_up_result.dart';
 import 'package:stylper/features/auth/domain/failures/auth_failure.dart';
 
 void main() {
@@ -62,12 +63,47 @@ void main() {
         email: 'New.User@Stylper.ai',
         password: 'stylper123',
       );
-      final user = result.getOrElse((_) => throw StateError('expected a user'));
+      final signedUp = result.getOrElse((_) => throw StateError('expected'));
+      final user = (signedUp as SignedUp).user;
       expect(user.email, 'new.user@stylper.ai');
       expect(user.hasProfile, isFalse);
       expect(user.onboardingCompleted, isFalse);
+      expect(repository.currentUser, user);
     },
   );
+
+  test('with email confirmation on, signing up sends a link instead of a '
+      'session, and signing in waits for the link', () async {
+    final backend = FakeBackend(
+      latency: Duration.zero,
+      requireEmailConfirmation: true,
+    );
+    repository = AuthRepositoryImpl(
+      remote: FakeAuthRemoteDataSource(backend),
+      tokenStore: tokenStore,
+    );
+
+    final signUp = await repository.signUpWithEmail(
+      email: 'new@stylper.ai',
+      password: 'stylper123',
+    );
+    expect(
+      signUp.getRight().toNullable(),
+      const ConfirmationEmailSent('new@stylper.ai'),
+    );
+    expect(repository.currentUser, isNull);
+    expect(await tokenStore.read(), isNull);
+
+    Future<Either<AuthFailure, AppUser>> signIn() => repository.signInWithEmail(
+      email: 'new@stylper.ai',
+      password: 'stylper123',
+    );
+    expect(failureOf(await signIn()), AuthFailureReason.emailNotConfirmed);
+
+    await backend.confirmEmail('new@stylper.ai');
+    expect((await signIn()).isRight(), isTrue);
+    expect(repository.currentUser?.email, 'new@stylper.ai');
+  });
 
   test(
     'social sign-in reports providerUnavailable until it is configured',

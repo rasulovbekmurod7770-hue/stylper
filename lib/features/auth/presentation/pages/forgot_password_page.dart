@@ -18,6 +18,7 @@ import '../../../../core/widgets/screen_header.dart';
 import '../../../../core/widgets/snackbars.dart';
 import '../auth_failure_message.dart';
 import '../cubits/forgot_password_cubit.dart';
+import '../widgets/auth_hint_box.dart';
 
 /// Figma: "Screen-ForgotPassword" (2775:2408).
 class ForgotPasswordPage extends StatefulWidget {
@@ -112,7 +113,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           onSubmitted: (_) => _submit(),
                         ),
                         const SizedBox(height: 24),
-                        _SecureHint(text: l10n.resetLinkHint),
+                        AuthHintBox(text: l10n.resetLinkHint),
                         const SizedBox(height: 32),
                         PrimaryButton(
                           label: l10n.sendResetLink,
@@ -177,32 +178,6 @@ class _BackButton extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _SecureHint extends StatelessWidget {
-  const _SecureHint({required this.text});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.accentSurface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.accentBorder),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SvgPicture.asset(AppIcons.check, width: 24, height: 24),
-          const SizedBox(width: 12),
-          Expanded(child: Text(text, style: AppTypography.hint)),
-        ],
       ),
     );
   }

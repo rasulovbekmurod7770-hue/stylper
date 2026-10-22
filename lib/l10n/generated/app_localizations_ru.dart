@@ -128,6 +128,28 @@ class AppLocalizationsRu extends AppLocalizations {
   String get backToSignInLink => 'входу';
 
   @override
+  String get checkEmailTitle => 'Проверьте почту';
+
+  @override
+  String checkEmailSubtitle(String email) {
+    return 'Мы отправили ссылку для подтверждения на $email. Откройте её, чтобы активировать аккаунт, а затем войдите.';
+  }
+
+  @override
+  String get checkEmailHint => 'Не видите письмо? Проверьте папку «Спам».';
+
+  @override
+  String get goToSignIn => 'Перейти ко входу';
+
+  @override
+  String wrongEmailPrompt(String link) {
+    return 'Не тот адрес? $link';
+  }
+
+  @override
+  String get signUpAgainLink => 'Зарегистрироваться заново';
+
+  @override
   String get back => 'Назад';
 
   @override
@@ -306,6 +328,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get errorInvalidCredentials => 'Неверная почта или пароль.';
+
+  @override
+  String get errorEmailNotConfirmed =>
+      'Сначала подтвердите почту: откройте ссылку из нашего письма.';
 
   @override
   String get errorEmailInUse => 'Аккаунт с этой почтой уже существует.';

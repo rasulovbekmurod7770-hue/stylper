@@ -77,6 +77,27 @@
     }
   },
   "backToSignInLink": "Sign In",
+  "checkEmailTitle": "Check your email",
+  "checkEmailSubtitle": "We've sent a confirmation link to {email}. Open it to activate your account, then sign in.",
+  "@checkEmailSubtitle": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "checkEmailHint": "Can't find it? Check your spam folder.",
+  "goToSignIn": "Go to Sign In",
+  "wrongEmailPrompt": "Wrong email? {link}",
+  "@wrongEmailPrompt": {
+    "description": "Footer on the check-your-email screen. {link} is replaced by the tappable signUpAgainLink text.",
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "signUpAgainLink": "Sign up again",
   "back": "Back",
   "profileSetupTitle": "Set Up Your Profile",
   "profileSetupSubtitle": "Help us personalize your style recommendations and fits",
@@ -177,6 +198,7 @@
   "profileGuestMessage": "You're browsing as a guest.",
   "signOut": "Sign out",
   "errorInvalidCredentials": "Incorrect email or password.",
+  "errorEmailNotConfirmed": "Confirm your email first: open the link we sent you.",
   "errorEmailInUse": "An account with this email already exists.",
   "errorWeakPassword": "This password is too weak. Use at least 8 characters.",
   "errorUserDisabled": "This account has been disabled.",

@@ -48,6 +48,20 @@ void main() {
     expect(auth.currentUser!.hasProfile, isFalse);
   });
 
+  test('a brand\'s handle or a reserved name counts as taken', () async {
+    for (final username in ['cos', 'terra_pro', 'stylper', 'admin']) {
+      final result = await saveProfile(
+        ProfileDetails(username: username, gender: Gender.female),
+      );
+      expect(
+        result.getLeft().toNullable()?.reason,
+        OnboardingFailureReason.usernameTaken,
+        reason: username,
+      );
+    }
+    expect(auth.currentUser!.hasProfile, isFalse);
+  });
+
   test('saving the profile updates the signed-in user', () async {
     final result = await saveProfile(
       const ProfileDetails(

@@ -31,7 +31,8 @@ stylper-backend/
     config.toml                    ← from `supabase init`
     migrations/
       0001_stylper_schema.sql      ← DONE: tables, RLS, triggers, RPCs
-      0002_cron.sql                ← TODO: schedule nightly job
+      0002_handles.sql             ← DONE: usernames, brand slugs and reserved names share one namespace
+      0003_cron.sql                ← TODO: schedule nightly job
     seed.sql                       ← DONE: demo data for local dev only (loaded by `supabase db reset`; never a migration)
     functions/
       create-upload/index.ts       ← TODO
@@ -58,6 +59,7 @@ stylper-backend/
 - Clients never insert into `media`, `events`, `notifications`, `brand_daily_stats`, or `brands`.
 - `can_view_post()` is the single definition of who can see a post. Reuse it; don't copy its logic.
 - Height and weight live only in `profile_private`, which only its owner can read.
+- Usernames and brand slugs are one namespace: neither may equal the other or a reserved name (`stylper`, `admin`, `support`, `help`, `api`, `www`, `settings`). Triggers from `0002_handles.sql` enforce it and raise `unique_violation`, the same error as a taken username.
 - When a creator switches **Allow brands to feature this** on, `posts.brand_consent_at` is stamped with the time. Brands can only feature posts where it's on and that tag one of their products.
 
 ## 5. Security model (RLS summary)
@@ -136,7 +138,7 @@ Use `supabase_flutter`. Table reads go through PostgREST (`.from('table').select
 
 ## 8. Jobs
 
-`0002_cron.sql`:
+`0003_cron.sql`:
 ```sql
 select cron.schedule('nightly-rollup', '15 19 * * *', $$select rollup_brand_stats()$$);  -- 00:15 Tashkent time
 ```
@@ -167,12 +169,16 @@ The SQL tests run on plain Postgres, using a stub of Supabase's `auth` schema:
 
 ```bash
 createdb stylper_test
+PGOPTIONS='-c stylper.allow_destructive_tests=on' \
 psql -d stylper_test -v ON_ERROR_STOP=1 \
   -f supabase/tests/00_supabase_stub.sql \
   -f supabase/migrations/0001_stylper_schema.sql \
+  -f supabase/migrations/0002_handles.sql \
   -f supabase/tests/01_rls_and_workflows.sql
 # → ALL TESTS PASSED
 ```
+
+The tests empty every table before they start (and roll everything back at the end), so the script refuses to run unless the connection sets `stylper.allow_destructive_tests=on`. Never set it against a real project.
 
 They cover privacy (height/weight, private accounts, blocks), permissions (brand vs non-brand, guests), counters, notifications, the consent toggle, rights and voucher flows, search, and analytics rollup. **Any schema change must keep these green, and new features should add tests here.**
 

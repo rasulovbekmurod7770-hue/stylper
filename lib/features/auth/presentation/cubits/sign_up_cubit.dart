@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/presentation/submission_status.dart';
 import '../../../../core/validation/validators.dart';
+import '../../domain/entities/sign_up_result.dart';
 import '../../domain/failures/auth_failure.dart';
 import '../../domain/usecases/email_auth.dart';
 
@@ -15,6 +16,7 @@ final class SignUpState extends Equatable {
     this.confirmPasswordError,
     this.termsError,
     this.failure,
+    this.confirmationSentTo,
   });
 
   final SubmissionStatus status;
@@ -24,6 +26,10 @@ final class SignUpState extends Equatable {
   final ValidationError? confirmPasswordError;
   final ValidationError? termsError;
   final AuthFailure? failure;
+
+  /// Set when the account was created but its email must be confirmed before
+  /// signing in; the address the link went to.
+  final String? confirmationSentTo;
 
   bool get hasFieldErrors =>
       emailError != null ||
@@ -40,6 +46,7 @@ final class SignUpState extends Equatable {
     confirmPasswordError,
     termsError,
     failure,
+    confirmationSentTo,
   ];
 }
 
@@ -95,9 +102,14 @@ class SignUpCubit extends Cubit<SignUpState> {
           termsAccepted: true,
           failure: failure,
         ),
-        (_) => const SignUpState(
+        // Signed in: the session changes and the router moves on.
+        (result) => SignUpState(
           status: SubmissionStatus.success,
           termsAccepted: true,
+          confirmationSentTo: switch (result) {
+            ConfirmationEmailSent(:final email) => email,
+            SignedUp() => null,
+          },
         ),
       ),
     );

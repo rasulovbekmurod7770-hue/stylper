@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/constants/app_assets.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/l10n/validation_messages.dart';
-import '../../../../core/presentation/submission_status.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_typography.dart';
 import '../../../../core/widgets/app_password_field.dart';
@@ -58,11 +57,14 @@ class _SignUpPageState extends State<SignUpPage> {
 
     return SocialSignInErrorListener(
       child: BlocListener<SignUpCubit, SignUpState>(
-        listenWhen: (previous, current) =>
-            current.status == SubmissionStatus.failure &&
-            previous.status != current.status,
-        listener: (context, state) =>
-            context.showMessage(state.failure!.message(l10n)),
+        listenWhen: (previous, current) => previous.status != current.status,
+        listener: (context, state) {
+          if (state.failure case final failure?) {
+            context.showMessage(failure.message(l10n));
+          } else if (state.confirmationSentTo case final email?) {
+            context.go(AppRoutes.checkEmailFor(email));
+          }
+        },
         child: Scaffold(
           body: SafeArea(
             child: FillViewportScrollView(

@@ -10,6 +10,7 @@ import '../../features/auth/presentation/cubits/forgot_password_cubit.dart';
 import '../../features/auth/presentation/cubits/sign_in_cubit.dart';
 import '../../features/auth/presentation/cubits/sign_up_cubit.dart';
 import '../../features/auth/presentation/cubits/social_sign_in_cubit.dart';
+import '../../features/auth/presentation/pages/check_email_page.dart';
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/pages/sign_in_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
@@ -95,6 +96,14 @@ GoRouter createRouter(SessionCubit session) {
               ],
               child: const SignUpPage(),
             ),
+            routes: [
+              GoRoute(
+                path: 'check-email',
+                builder: (context, state) => CheckEmailPage(
+                  email: state.uri.queryParameters['email'] ?? '',
+                ),
+              ),
+            ],
           ),
         ],
       ),

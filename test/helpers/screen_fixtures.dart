@@ -16,6 +16,7 @@ import 'package:stylper/features/auth/presentation/cubits/forgot_password_cubit.
 import 'package:stylper/features/auth/presentation/cubits/sign_in_cubit.dart';
 import 'package:stylper/features/auth/presentation/cubits/sign_up_cubit.dart';
 import 'package:stylper/features/auth/presentation/cubits/social_sign_in_cubit.dart';
+import 'package:stylper/features/auth/presentation/pages/check_email_page.dart';
 import 'package:stylper/features/auth/presentation/pages/forgot_password_page.dart';
 import 'package:stylper/features/auth/presentation/pages/sign_in_page.dart';
 import 'package:stylper/features/auth/presentation/pages/sign_up_page.dart';
@@ -588,6 +589,11 @@ List<ScreenFixture> screenFixtures() {
         create: (_) => ForgotPasswordCubit(_MockSendPasswordResetEmail()),
         child: const ForgotPasswordPage(),
       ),
+    ),
+    // Not in Figma: shown after sign-up when the email must be confirmed.
+    ScreenFixture(
+      name: 'check_email',
+      build: () => const CheckEmailPage(email: 'new.user@stylper.ai'),
     ),
     ScreenFixture(
       name: 'profile_setup',

@@ -1,10 +1,12 @@
 import 'package:get_it/get_it.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/fake_backend/fake_backend.dart';
 import '../../core/network/auth_token_store.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/datasources/fake_auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
+import '../../features/auth/data/repositories/supabase_auth_repository.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';
 import '../../features/auth/domain/usecases/email_auth.dart';
 import '../../features/auth/domain/usecases/session.dart';
@@ -20,6 +22,7 @@ import '../../features/home/domain/usecases/get_home_feed.dart';
 import '../../features/home/presentation/cubits/home_feed_cubit.dart';
 import '../../features/onboarding/data/datasources/onboarding_remote_data_source.dart';
 import '../../features/onboarding/data/datasources/style_quiz_local_data_source.dart';
+import '../../features/onboarding/data/datasources/supabase_onboarding_remote_data_source.dart';
 import '../../features/onboarding/data/repositories/onboarding_repository_impl.dart';
 import '../../features/onboarding/domain/repositories/onboarding_repository.dart';
 import '../../features/onboarding/domain/usecases/onboarding_usecases.dart';
@@ -71,9 +74,13 @@ import '../session/session_cubit.dart';
 
 final sl = GetIt.instance;
 
-/// [backend] lets tests inject a [FakeBackend] without simulated latency;
-/// [media] and [thumbnails] replace the device's photo library and camera.
+/// [supabase] switches the features already ported to Supabase over to it
+/// (`BACKEND=supabase`, see `main.dart`); without it everything runs on the
+/// fake backend. [backend] lets tests inject a [FakeBackend] without simulated
+/// latency; [media] and [thumbnails] replace the device's photo library and
+/// camera.
 void configureDependencies({
+  SupabaseClient? supabase,
   FakeBackend? backend,
   MediaRepository? media,
   GalleryThumbnails? thumbnails,
@@ -87,20 +94,39 @@ void configureDependencies({
     )
     ..registerLazySingleton<GalleryThumbnails>(
       () => thumbnails ?? const DeviceGalleryThumbnails(),
-    )
-    // ── Backend ────────────────────────────────────────────────────────────
-    // Until the Stylper API exists, remote data sources talk to an in-memory
-    // FakeBackend. When it's ready, register HTTP implementations of
-    // every *RemoteDataSource (auth, onboarding, home, post, product,
-    // profile, wardrobe, posting, search) here instead;
-    // nothing outside this block needs to change.
-    ..registerLazySingleton(() => backend ?? FakeBackend())
-    ..registerLazySingleton<AuthRemoteDataSource>(
-      () => FakeAuthRemoteDataSource(sl()),
-    )
-    ..registerLazySingleton<OnboardingRemoteDataSource>(
-      () => FakeOnboardingRemoteDataSource(sl(), sl()),
-    )
+    );
+
+  // ── Backend ──────────────────────────────────────────────────────────────
+  // Every remote call goes through a *RemoteDataSource (or, for auth, the
+  // repository itself). Features move from the in-memory FakeBackend to
+  // Supabase one at a time, in the order of STYLPER_BACKEND_SPEC.md §10;
+  // nothing outside this block needs to change.
+  //
+  // Ported: auth and onboarding. The rest still call FakeBackend, which
+  // doesn't know Supabase users, so there they act as guests.
+  sl.registerLazySingleton(() => backend ?? FakeBackend());
+  if (supabase != null) {
+    sl
+      ..registerSingleton(supabase)
+      ..registerLazySingleton<AuthRepository>(
+        () => SupabaseAuthRepository(sl()),
+      )
+      ..registerLazySingleton<OnboardingRemoteDataSource>(
+        () => SupabaseOnboardingRemoteDataSource(sl()),
+      );
+  } else {
+    sl
+      ..registerLazySingleton<AuthRemoteDataSource>(
+        () => FakeAuthRemoteDataSource(sl()),
+      )
+      ..registerLazySingleton<AuthRepository>(
+        () => AuthRepositoryImpl(remote: sl(), tokenStore: sl()),
+      )
+      ..registerLazySingleton<OnboardingRemoteDataSource>(
+        () => FakeOnboardingRemoteDataSource(sl(), sl()),
+      );
+  }
+  sl
     ..registerLazySingleton<HomeRemoteDataSource>(
       () => FakeHomeRemoteDataSource(sl(), sl()),
     )
@@ -121,13 +147,12 @@ void configureDependencies({
     )
     ..registerLazySingleton<SearchRemoteDataSource>(
       () => FakeSearchRemoteDataSource(sl(), sl()),
-    )
-    // ───────────────────────────────────────────────────────────────────────
+    );
+  // ─────────────────────────────────────────────────────────────────────────
+
+  sl
     ..registerLazySingleton(StyleQuizLocalDataSource.new)
     // Repositories
-    ..registerLazySingleton<AuthRepository>(
-      () => AuthRepositoryImpl(remote: sl(), tokenStore: sl()),
-    )
     ..registerLazySingleton<OnboardingRepository>(
       () => OnboardingRepositoryImpl(remote: sl(), quizLocal: sl()),
     )
