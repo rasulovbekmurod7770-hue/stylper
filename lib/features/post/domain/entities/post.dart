@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 
 import '../../../../core/domain/money.dart';
+import '../../../wardrobe/domain/entities/wardrobe.dart';
 
 export '../../../../core/domain/money.dart';
 
@@ -85,6 +86,7 @@ class TaggedProduct extends Equatable {
     required this.styledCount,
     required this.tagX,
     required this.tagY,
+    this.category,
     this.inWardrobe = false,
     this.addedByAuthor = false,
   });
@@ -113,6 +115,9 @@ class TaggedProduct extends Equatable {
   final double tagX;
   final double tagY;
 
+  /// One of `WardrobeCategories`; null when the item has none.
+  final String? category;
+
   /// Whether it's in the signed-in user's wardrobe.
   final bool inWardrobe;
 
@@ -130,9 +135,27 @@ class TaggedProduct extends Equatable {
     styledCount,
     tagX,
     tagY,
+    category,
     addedByAuthor,
     inWardrobe,
   ];
+}
+
+/// [products] in Outfit details order: outside in, as people layer clothes
+/// (outerwear, tops, bottoms, shoes, accessories, then anything else), in
+/// tagging order within a category.
+List<TaggedProduct> outsideIn(List<TaggedProduct> products) {
+  int layer(TaggedProduct product) {
+    final index = WardrobeCategories.all.indexOf(product.category ?? '');
+    return index == -1 ? WardrobeCategories.all.length : index;
+  }
+
+  final tagged = [...products.indexed];
+  tagged.sort((a, b) {
+    final byLayer = layer(a.$2).compareTo(layer(b.$2));
+    return byLayer != 0 ? byLayer : a.$1.compareTo(b.$1);
+  });
+  return [for (final (_, product) in tagged) product];
 }
 
 /// A post as a grid card ("Trending", "Similar").

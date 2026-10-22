@@ -47,6 +47,49 @@ void main() {
         (await posts.getPost(id))
             .getOrElse((failure) => throw StateError('$failure'));
 
+    test('Outfit details list the coat post\'s layers outside in', () async {
+      // Tagged trousers, cardigan, coat, scarf: a coat over a cardigan.
+      final post = await load('post_john_coat');
+      expect(post.products.map((p) => p.category), [
+        'bottoms',
+        'tops',
+        'outerwear',
+        'accessories',
+      ]);
+      expect(outsideIn(post.products).map((p) => p.name), [
+        'Wool Coat',
+        'Cotton Cardigan',
+        'Wide Leg Tailored Trousers',
+        'Chunky Scarf',
+      ]);
+    });
+
+    test('outside in keeps the tagging order within a layer, unknown last', () {
+      TaggedProduct item(String name, String? category) => TaggedProduct(
+        id: name,
+        name: name,
+        shortName: name,
+        brand: 'B',
+        price: null,
+        imagePath: null,
+        styledCount: 0,
+        tagX: 0.5,
+        tagY: 0.5,
+        category: category,
+      );
+      expect(
+        outsideIn([
+          item('label', null),
+          item('tee', 'tops'),
+          item('cap', 'accessories'),
+          item('shirt', 'tops'),
+          item('jacket', 'outerwear'),
+          item('boots', 'shoes'),
+        ]).map((p) => p.name),
+        ['jacket', 'tee', 'shirt', 'boots', 'cap', 'label'],
+      );
+    });
+
     test('loads a post with its tagged products and similar posts', () async {
       final post = await load('post_utility_chic');
 

@@ -74,7 +74,12 @@ it", local brands first, and trust (nothing that misleads).
   search. Tagged on a post they're copied into it and shown to everyone as
   "Added by {author}", with no product page, Shop or styled count (trust:
   nobody should take them for a brand's listing). Search's "My Wardrobe"
-  finds them for later posts. There is **no audience setting** ("Share to followers" was
+  finds them for later posts. **Layers** (spec §7 "Layered outfits"):
+  every layer can be tagged, so categories run outside in
+  (`WardrobeCategories.all`: outerwear, tops, bottoms, shoes, accessories)
+  in the picker, the wardrobe and Add New Item; Outfit details lists tags
+  by `outsideIn`; a photo takes at most `PostDraft.maxTags` (10) tags, which
+  the database enforces too (0004). There is **no audience setting** ("Share to followers" was
   removed on purpose): every post is public. After publishing,
   `PublishedPostsCubit` (app-wide) tells screens that list your posts to
   refresh.

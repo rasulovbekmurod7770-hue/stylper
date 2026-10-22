@@ -36,10 +36,10 @@ void main() {
   });
 
   test('Cardigan + Wide Leg Trousers', () {
-    expect(
-      dnaOf('cos-cotton-cardigan', 'zara-wide-leg-tailored-trousers'),
-      [StyleKeys.smartCasual, StyleKeys.minimal],
-    );
+    expect(dnaOf('cos-cotton-cardigan', 'zara-wide-leg-tailored-trousers'), [
+      StyleKeys.smartCasual,
+      StyleKeys.minimal,
+    ]);
   });
 
   test('the most frequent style leads, and there are at most five', () {

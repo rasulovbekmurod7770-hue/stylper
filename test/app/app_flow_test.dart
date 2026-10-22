@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,6 +18,7 @@ import 'package:stylper/features/home/presentation/pages/home_page.dart';
 import 'package:stylper/features/onboarding/presentation/pages/profile_setup_page.dart';
 import 'package:stylper/features/onboarding/presentation/pages/style_quiz_page.dart';
 import 'package:stylper/features/post/presentation/pages/post_detail_page.dart';
+import 'package:stylper/features/posting/presentation/cubits/post_draft_cubit.dart';
 import 'package:stylper/features/posting/presentation/pages/media_selection_page.dart';
 import 'package:stylper/features/posting/presentation/pages/posting_details_page.dart';
 import 'package:stylper/features/posting/presentation/pages/publish_page.dart';
@@ -72,8 +74,14 @@ void main() {
 
   /// "Add New Item" → TIMEOFLESS's grey cardigan, a top, 350 000 soʻm.
   Future<void> addGreyCardigan(WidgetTester tester) async {
-    await tester.ensureVisible(find.byType(AddItemCard).last);
-    await tester.tap(find.byType(AddItemCard).last);
+    // Scrolled out from under the floating tab bar, where needed.
+    final card = find.byType(AddItemCard).last.hitTestable();
+    await tester.scrollUntilVisible(
+      card,
+      100,
+      scrollable: find.byType(Scrollable).hitTestable().last,
+    );
+    await tester.tap(card);
     await tester.pumpAndSettle();
     final fields = find.descendant(
       of: find.byType(BottomSheet).last,
@@ -537,6 +545,28 @@ void main() {
     expect(find.text('ZARA · Jeans'), findsOneWidget);
     expect(find.text('TIMEOFLESS · Grey Cardigan'), findsOneWidget);
     expect(find.text('Added by John. B'), findsOneWidget);
+  });
+
+  testWidgets('a photo takes 10 tags; the 11th is refused with a note', (
+    tester,
+  ) async {
+    await signInAsDemo(tester);
+    await tester.tap(find.bySemanticsLabel('New post'));
+    await tester.pumpAndSettle();
+    await tapText(tester, 'Next');
+    expect(find.byType(TagItemsPage), findsOneWidget);
+
+    final recent = find.byType(ItemResultCard).first;
+    for (var i = 0; i < 11; i++) {
+      await tester.ensureVisible(recent);
+      await tester.tap(recent);
+      await tester.pumpAndSettle();
+    }
+    expect(find.text('You can tag up to 10 items per photo.'), findsOneWidget);
+    final draft = tester
+        .element(find.byType(TagItemsPage))
+        .read<PostDraftCubit>();
+    expect(draft.state.draft.tags, hasLength(10));
   });
 
   testWidgets('the wardrobe\'s "Add New Item" adds to the category', (

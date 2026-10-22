@@ -29,9 +29,14 @@ class PostDraft extends Equatable {
     this.allowBrandFeature = false,
   });
 
+  /// At most this many tags per photo (the database refuses more).
+  static const maxTags = 10;
+
   /// The chosen photo, a file on the device.
   final String? photoPath;
   final List<DraftTag> tags;
+
+  bool get canTagMore => tags.length < maxTags;
   final String caption;
   final String location;
   final List<String> styles;

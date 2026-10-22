@@ -413,8 +413,30 @@ abstract final class FakeContent {
       'comments': 31,
       'styles': ['minimal'],
       'caption': 'Rainy layers',
+      // Layers tagged one by one: a coat over a cardigan, with a scarf.
       'products': [
         {'product': 'p_trousers_zara', 'x': 0.50, 'y': 0.72},
+        {'product': 'p_cardigan_cos', 'x': 0.52, 'y': 0.40},
+        {
+          'item': {
+            'id': 'w_wool_coat',
+            'name': 'Wool Coat',
+            'brand': 'TIMEOFLESS',
+            'category': 'outerwear',
+          },
+          'x': 0.36,
+          'y': 0.36,
+        },
+        {
+          'item': {
+            'id': 'w_wool_scarf',
+            'name': 'Chunky Scarf',
+            'brand': 'TIMEOFLESS',
+            'category': 'accessories',
+          },
+          'x': 0.47,
+          'y': 0.24,
+        },
       ],
       'similar': [
         'post_bobur',
@@ -539,6 +561,7 @@ abstract final class FakeContent {
       'w_sneakers',
       'w_sunglasses',
       'w_watches',
+      'w_wool_coat',
     ],
   };
 
@@ -562,10 +585,25 @@ abstract final class FakeContent {
       'brand': 'Kink',
       'image': AppImages.wardrobeWatches,
     },
+    // John's coat from "Rainy layers"; no photo, as added by hand. (The
+    // scarf tagged there isn't in his wardrobe any more; the post keeps its
+    // copy.)
+    'w_wool_coat': {
+      'category': 'outerwear',
+      'name': 'Wool Coat',
+      'brand': 'TIMEOFLESS',
+    },
   };
 
-  /// Wardrobe categories, in display order.
-  static const wardrobeCategories = ['tops', 'bottoms', 'shoes', 'accessories'];
+  /// Wardrobe categories, in display order: outside in, as people layer
+  /// clothes.
+  static const wardrobeCategories = [
+    'outerwear',
+    'tops',
+    'bottoms',
+    'shoes',
+    'accessories',
+  ];
 
   static const saved = <String, List<String>>{
     'a_john': [

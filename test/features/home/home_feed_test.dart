@@ -145,7 +145,11 @@ void main() {
       expect(cubit.state.style, 'streetwear');
 
       cubit.selectStyle('Unknown');
-      expect(cubit.state.style, 'streetwear', reason: 'not offered by the feed');
+      expect(
+        cubit.state.style,
+        'streetwear',
+        reason: 'not offered by the feed',
+      );
     });
 
     blocTest<HomeFeedCubit, HomeFeedState>(

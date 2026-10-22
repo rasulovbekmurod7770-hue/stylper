@@ -158,6 +158,21 @@ do $$ begin
     insert into posts (author_id) values ('bbbbbbbb-0000-0000-0000-000000000002');
     assert false, 'impersonated post must be rejected';
   exception when insufficient_privilege then null; end;
+  -- at most 10 tags per photo (0004): layers are tagged one by one
+  insert into post_tags (post_id, post_image_id, x_pct, y_pct, label)
+  select '50000000-0000-0000-0000-00000000000a', '51000000-0000-0000-0000-00000000000a',
+         8 * n, 30, 'Layer ' || n
+  from generate_series(1, 8) as n;
+  assert (select count(*) from post_tags
+          where post_image_id = '51000000-0000-0000-0000-00000000000a') = 10, 'ten tags fit';
+  begin
+    insert into post_tags (post_id, post_image_id, x_pct, y_pct, label)
+      values ('50000000-0000-0000-0000-00000000000a', '51000000-0000-0000-0000-00000000000a', 90, 90, 'Eleventh');
+    assert false, 'an 11th tag on a photo must be rejected';
+  exception when check_violation then null; end;
+  -- moving a tag within the same full photo is still fine
+  update post_tags set post_image_id = post_image_id where label = 'Layer 1';
+  delete from post_tags where label like 'Layer %';
   -- styles are fixed keys (0003): display words or unknown keys are refused
   begin
     update posts set styles = '{Minimal}' where id = '50000000-0000-0000-0000-00000000000a';

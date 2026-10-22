@@ -497,6 +497,9 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get wardrobeOuterwear => 'Outerwear';
+
+  @override
   String get wardrobeTops => 'Tops';
 
   @override
@@ -719,6 +722,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get postingTagItems => 'Tag Items';
+
+  @override
+  String postingTagLimit(int count) {
+    return 'You can tag up to $count items per photo.';
+  }
 
   @override
   String get postingDetails => 'Details';

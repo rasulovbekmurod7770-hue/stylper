@@ -498,6 +498,9 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
+  String get wardrobeOuterwear => 'Ustki kiyim';
+
+  @override
   String get wardrobeTops => 'Ustki kiyim';
 
   @override
@@ -718,6 +721,11 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get postingTagItems => 'Kiyimlarni belgilang';
+
+  @override
+  String postingTagLimit(int count) {
+    return 'Bitta suratda $count tagacha buyumni belgilash mumkin.';
+  }
 
   @override
   String get postingDetails => 'Tafsilotlar';

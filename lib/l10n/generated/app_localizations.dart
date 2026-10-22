@@ -970,6 +970,12 @@ abstract class AppLocalizations {
   /// **'Added by {name}'**
   String postAddedBy(String name);
 
+  /// No description provided for @wardrobeOuterwear.
+  ///
+  /// In en, this message translates to:
+  /// **'Outerwear'**
+  String get wardrobeOuterwear;
+
   /// No description provided for @wardrobeTops.
   ///
   /// In en, this message translates to:
@@ -1329,6 +1335,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tag Items'**
   String get postingTagItems;
+
+  /// No description provided for @postingTagLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'You can tag up to {count} items per photo.'**
+  String postingTagLimit(int count);
 
   /// No description provided for @postingDetails.
   ///

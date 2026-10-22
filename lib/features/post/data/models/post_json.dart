@@ -72,6 +72,7 @@ abstract final class PostJson {
       styledCount: json['styledCount']! as int,
       tagX: (tag['x']! as num).toDouble(),
       tagY: (tag['y']! as num).toDouble(),
+      category: json['category'] as String?,
       inWardrobe: json['inWardrobe'] as bool? ?? false,
       addedByAuthor: json['addedByAuthor'] as bool? ?? false,
     );

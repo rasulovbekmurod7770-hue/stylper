@@ -2,12 +2,16 @@ import 'package:equatable/equatable.dart';
 
 import '../../../../core/domain/money.dart';
 
-/// Category ids the API uses, in display order.
+/// Category ids the API uses (`item_category_t`).
 abstract final class WardrobeCategories {
+  static const outerwear = 'outerwear';
   static const tops = 'tops';
   static const bottoms = 'bottoms';
   static const shoes = 'shoes';
   static const accessories = 'accessories';
+
+  /// Display order: outside in, as people layer clothes.
+  static const all = [outerwear, tops, bottoms, shoes, accessories];
 }
 
 class WardrobeCategory extends Equatable {

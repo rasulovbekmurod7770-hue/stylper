@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/l10n/l10n.dart';
 import '../../../../core/router/app_routes.dart';
 import '../../../../core/theme/app_typography.dart';
+import '../../../../core/widgets/snackbars.dart';
 import '../../../wardrobe/presentation/widgets/add_item_card.dart';
 import '../../../wardrobe/presentation/widgets/add_item_sheet.dart';
 import '../../domain/entities/post_draft.dart';
@@ -33,6 +34,7 @@ class _TagItemsPageState extends State<TagItemsPage> {
   /// Tags the item at the tapped spot, or (from the search field) at a free
   /// spot down the middle.
   Future<void> _tag({Offset? at}) async {
+    if (!_canTagMore()) return;
     setState(() => _pending = at);
     final item = await showItemSearch(context);
     if (!mounted) return;
@@ -42,6 +44,7 @@ class _TagItemsPageState extends State<TagItemsPage> {
 
   /// "Add New Item": adds clothes to the wardrobe, then tags them.
   Future<void> _addNew() async {
+    if (!_canTagMore()) return;
     final search = context.read<TagSearchCubit>();
     final added = await showAddItemSheet(
       context,
@@ -53,7 +56,15 @@ class _TagItemsPageState extends State<TagItemsPage> {
     _add(item, null);
   }
 
+  /// Says so when the photo already has [PostDraft.maxTags] tags.
+  bool _canTagMore() {
+    if (context.read<PostDraftCubit>().state.draft.canTagMore) return true;
+    context.showMessage(context.l10n.postingTagLimit(PostDraft.maxTags));
+    return false;
+  }
+
   void _add(TaggableItem item, Offset? at) {
+    if (!_canTagMore()) return;
     final draft = context.read<PostDraftCubit>();
     final spot =
         at ?? Offset(0.5, 0.3 + 0.12 * (draft.state.draft.tags.length % 5));

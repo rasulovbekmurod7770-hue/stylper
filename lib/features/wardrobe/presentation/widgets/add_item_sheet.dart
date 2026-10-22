@@ -48,12 +48,7 @@ Future<WardrobeItem?> showAddItemSheet(
 class _AddItemForm extends StatelessWidget {
   const _AddItemForm();
 
-  static const _categories = [
-    WardrobeCategories.tops,
-    WardrobeCategories.bottoms,
-    WardrobeCategories.shoes,
-    WardrobeCategories.accessories,
-  ];
+  static const _categories = WardrobeCategories.all;
 
   /// Whole soʻm, up to 10 digits, grouped as they're typed ("350 000").
   static TextInputFormatter _price(String locale) {

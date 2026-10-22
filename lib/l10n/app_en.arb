@@ -277,6 +277,7 @@
       "name": {"type": "String"}
     }
   },
+  "wardrobeOuterwear": "Outerwear",
   "wardrobeTops": "Tops",
   "wardrobeBottoms": "Bottoms",
   "wardrobeShoes": "Shoes",
@@ -378,6 +379,14 @@
   "postingNext": "Next",
   "postingNewPost": "New Post",
   "postingTagItems": "Tag Items",
+  "postingTagLimit": "You can tag up to {count} items per photo.",
+  "@postingTagLimit": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "postingDetails": "Details",
   "postingPublish": "Publish",
   "postingRecentPhotos": "Recent Photos",

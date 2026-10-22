@@ -497,6 +497,9 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get wardrobeOuterwear => 'Верхняя одежда';
+
+  @override
   String get wardrobeTops => 'Верх';
 
   @override
@@ -727,6 +730,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get postingTagItems => 'Отметьте вещи';
+
+  @override
+  String postingTagLimit(int count) {
+    return 'На одном фото можно отметить до $count вещей.';
+  }
 
   @override
   String get postingDetails => 'Детали';

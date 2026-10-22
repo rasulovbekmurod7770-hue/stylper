@@ -71,8 +71,14 @@ void main() {
           detail.looks.map((look) => look.id),
           containsAll(['post_utility_chic', 'post_no_words', 'post_amin']),
         );
-        expect(detail.styles.map((style) => style.name), ['streetwear', 'minimal']);
-        expect(detail.looksIn('minimal').map((look) => look.id), ['post_amin']);
+        expect(detail.styles.map((style) => style.name), [
+          'streetwear',
+          'minimal',
+        ]);
+        expect(detail.looksIn('minimal').map((look) => look.id), [
+          'post_john_coat',
+          'post_amin',
+        ]);
         expect(
           detail.similar.map((p) => p.id),
           isNot(contains('p_cardigan_cos')),
@@ -201,7 +207,7 @@ void main() {
       final categories = right(await wardrobe.getCategories());
       expect(
         {for (final c in categories) c.id: c.itemCount},
-        {'tops': 3, 'bottoms': 2, 'shoes': 1, 'accessories': 2},
+        {'outerwear': 1, 'tops': 3, 'bottoms': 2, 'shoes': 1, 'accessories': 2},
       );
     });
 

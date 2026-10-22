@@ -33,7 +33,7 @@ stylper-backend/
       0001_stylper_schema.sql      ← DONE: tables, RLS, triggers, RPCs
       0002_handles.sql             ← DONE: usernames, brand slugs and reserved names share one namespace
       0003_style_keys.sql          ← DONE: styles are fixed keys (see §4)
-      0004_tag_limit.sql           ← TODO: at most 10 tags per photo (see "Layered outfits", §7)
+      0004_tag_limit.sql           ← DONE: at most 10 tags per photo (see "Layered outfits", §7)
       0005_cron.sql                ← TODO: schedule nightly job
     seed.sql                       ← DONE: demo data for local dev only (loaded by `supabase db reset`; never a migration)
     functions/
@@ -187,6 +187,7 @@ psql -d stylper_test -v ON_ERROR_STOP=1 \
   -f supabase/migrations/0001_stylper_schema.sql \
   -f supabase/migrations/0002_handles.sql \
   -f supabase/migrations/0003_style_keys.sql \
+  -f supabase/migrations/0004_tag_limit.sql \
   -f supabase/tests/01_rls_and_workflows.sql
 # → ALL TESTS PASSED
 ```

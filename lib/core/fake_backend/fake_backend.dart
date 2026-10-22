@@ -500,6 +500,7 @@ class FakeBackend {
         'name': item['name'],
         'shortName': item['name'],
         'brand': item['brand'],
+        'category': item['category'],
         if (item['price'] != null) 'price': item['price'],
         'addedByAuthor': true,
         'styledCount': 0,
@@ -966,7 +967,11 @@ class FakeBackend {
         wardrobe.contains(id) && _ownItems.containsKey(id),
       _ => false,
     };
-    if (image == null || image.isEmpty || !tags.every(valid)) {
+    // At most 10 tags per photo (migration 0004).
+    if (image == null ||
+        image.isEmpty ||
+        tags.length > 10 ||
+        !tags.every(valid)) {
       throw const ServerException(
         statusCode: 422,
         code: ApiErrorCodes.validation,
@@ -996,6 +1001,7 @@ class FakeBackend {
                   'id': itemId,
                   'name': _ownItems[itemId]!['name'],
                   'brand': _ownItems[itemId]!['brand'],
+                  'category': _ownItems[itemId]!['category'],
                   'price': _ownItems[itemId]!['price'],
                 },
                 'x': tag['x'],

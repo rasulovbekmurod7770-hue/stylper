@@ -9,7 +9,8 @@ import '../../../wardrobe/presentation/wardrobe_actions.dart';
 import '../../domain/entities/post.dart';
 import '../../../../core/presentation/price_format.dart';
 
-/// "Outfit-Details-Section" (2775:2897): a 110px card per tagged product —
+/// "Outfit-Details-Section" (2775:2897): a 110px card per tagged product,
+/// outside in (outerwear first, see [outsideIn]) —
 /// cut-out photo, item and "Brand price" — with "Shop" and "Add to wardrobe"
 /// under it. Scrolls sideways when there are more than fit. A card and "Shop"
 /// open the product; "Add to wardrobe" saves it. Items the author added
@@ -36,6 +37,7 @@ class OutfitDetails extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final products = outsideIn(this.products);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

@@ -411,7 +411,13 @@ Widget _wardrobe() {
 /// Figma sample (Grey
 /// Cardigan by TIMEOFLESS, a top, 350 000 soʻm), with the keyboard up if given.
 Future<void> _fillAddItem(WidgetTester tester, {double keyboard = 0}) async {
+  // Below the categories on a small phone, so not built yet.
   final card = find.byType(AddItemCard);
+  await tester.scrollUntilVisible(
+    card,
+    100,
+    scrollable: find.byType(Scrollable).hitTestable().last,
+  );
   await tester.ensureVisible(card);
   await tester.pump();
   await tester.tap(card);

@@ -99,10 +99,15 @@ void main() {
         );
         final products = (json['products']! as List<Object?>).length;
         final mine = await search('', mine: true);
-        expect(mine.take(3), ['w_sneakers', 'w_sunglasses', 'w_watches']);
-        expect(mine, hasLength(products + 3));
+        expect(mine.take(4), [
+          'w_sneakers',
+          'w_sunglasses',
+          'w_watches',
+          'w_wool_coat',
+        ]);
+        expect(mine, hasLength(products + 4));
         final catalog = await search('');
-        expect(catalog, containsAll(mine.skip(3)));
+        expect(catalog, containsAll(mine.skip(4)));
         // Items people add themselves never show in the catalog.
         expect(catalog, isNot(contains('w_sneakers')));
         // Brand and name match own items too.
@@ -162,6 +167,24 @@ void main() {
         result.getLeft().toNullable(),
         const PostingFailure(PostingFailureReason.signInRequired),
       );
+    });
+
+    test('takes up to 10 tags on a photo, not 11', () async {
+      await signIn();
+      PostDraft withTags(int count) => PostDraft(
+        photoPath: _photo,
+        tags: [
+          for (var i = 0; i < count; i++)
+            DraftTag(item: _sweaterTag.item, x: 0.1 + i * 0.08, y: 0.5),
+        ],
+      );
+      expect((await posting.publish(withTags(10))).isRight(), isTrue);
+      expect(
+        (await posting.publish(withTags(11))).getLeft().toNullable(),
+        const PostingFailure(PostingFailureReason.invalid),
+      );
+      expect(withTags(10).canTagMore, isFalse);
+      expect(withTags(9).canTagMore, isTrue);
     });
 
     test('refuses an unknown item', () async {

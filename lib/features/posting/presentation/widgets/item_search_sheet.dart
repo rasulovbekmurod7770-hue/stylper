@@ -96,12 +96,7 @@ class _ProductSearchState extends State<_ProductSearch> {
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 20),
                     children: [
-                      for (final category in const [
-                        WardrobeCategories.tops,
-                        WardrobeCategories.bottoms,
-                        WardrobeCategories.shoes,
-                        WardrobeCategories.accessories,
-                      ])
+                      for (final category in WardrobeCategories.all)
                         _Chip(
                           label: wardrobeCategoryLabel(l10n, category),
                           selected: state.category == category,
