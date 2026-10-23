@@ -18,7 +18,7 @@ Launch target: about 5,000 users in Tashkent. Prices are in UZS. There's no in-a
 |---|---|---|
 | Database, auth, realtime | **Supabase Pro** (Postgres) | Auth providers: email + password, Google, Apple |
 | Server logic | **Postgres functions (RPC)** + **Supabase Edge Functions (TypeScript/Deno)** | Business rules live in SQL where possible |
-| Images | **Cloudflare R2** + custom domain `img.stylper.app` behind Cloudflare cache | No image bytes in Postgres or Supabase Storage |
+| Images | **Cloudflare R2** + a custom domain (TODO: not decided) behind Cloudflare cache | No image bytes in Postgres or Supabase Storage |
 | App | Flutter with `supabase_flutter` | Compress images on device |
 | Scheduled jobs | `pg_cron` (enable in Supabase dashboard) | Nightly rollup |
 
@@ -105,11 +105,13 @@ Goal: fast feeds, near-zero bandwidth cost, and the API server never handles ima
 
 Both functions check the caller's token themselves (`verify_jwt = false`), answer CORS preflights, and give R2 10 seconds per request. The rate limit counts uploads still pending from the last hour.
 
-**Serving:** `https://img.stylper.app/{key}`. Feeds and grids use `thumb_key`; the post detail view uses `full_key`. Use a Cloudflare cache rule with a 1-year TTL; keys never change because every upload gets a new UUID.
+**Serving:** `{IMG_PUBLIC_BASE}/{key}`: the dev bucket's r2.dev URL locally; in production a custom domain (TODO: not decided). Feeds and grids use `thumb_key`; the post detail view uses `full_key`. Use a Cloudflare cache rule with a 1-year TTL; keys never change because every upload gets a new UUID.
 
 **Cleanup:** pending rows older than 1 day are deleted by the nightly job. A weekly Edge Function should also delete R2 objects that no `media` row points to.
 
-**R2 secrets** for Edge Functions: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `IMG_PUBLIC_BASE`.
+**R2 secrets** for Edge Functions: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`, `IMG_PUBLIC_BASE`. Locally they're in `supabase/functions/.env` (dev bucket). In the cloud they're set at deploy time with `npx supabase secrets set --env-file supabase/functions/.env.production.local` (gitignored), for the `stylper-images` bucket and its own token.
+
+- [ ] **TODO: production `IMG_PUBLIC_BASE`.** The production bucket has no public URL yet and its custom domain isn't decided. `create-upload` fails until it's set, and the app's env files need the same value.
 
 ## 7. Screen → API map
 
@@ -172,7 +174,7 @@ It rolls up yesterday's events (Tashkent calendar day), deletes events older tha
 ## 10. Build order (each step should be shippable)
 
 1. `supabase init`, link the project, apply 0001, enable Google + Apple auth. **Done when:** tests pass locally (see §11) and a Flutter user can sign up and see their profile row.
-2. R2 bucket + custom domain + `create-upload` / `finalize-upload`. **Done when:** an avatar upload works end to end and loads from `img.stylper.app`. *(2026-10-23: works end to end locally against the dev bucket's r2.dev URL, from Chrome; the custom domain and the cloud deployment come later.)*
+2. R2 bucket + custom domain + `create-upload` / `finalize-upload`. **Done when:** an avatar upload works end to end and loads from the bucket's custom domain (TODO: not decided). *(2026-10-23: works end to end locally against the dev bucket's r2.dev URL, from Chrome; the custom domain and the cloud deployment come later.)*
 3. Posting flow + post detail + tags. **Done when:** a post with 2 tagged items appears on another account's feed with working tag dots, and a layered outfit (jacket over a t-shirt, tagged separately) shows both tags readable and tappable.
 4. Feed, likes, saves, comments, follows, notifications (Realtime). **Done when:** counters and notifications update live on a second device.
 5. Product pages, search, wardrobe, boards.

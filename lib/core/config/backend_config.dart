@@ -19,7 +19,8 @@ abstract final class BackendConfig {
   );
 
   /// Where uploaded photos are public (Cloudflare R2): the dev bucket's
-  /// `https://pub-….r2.dev` locally, `https://img.stylper.app` in production.
+  /// `https://pub-….r2.dev` locally; production's custom domain is still to
+  /// be decided (STYLPER_BACKEND_SPEC.md §6).
   /// Without it, uploaded photos can't be shown.
   static const imgPublicBase = String.fromEnvironment('IMG_PUBLIC_BASE');
 
