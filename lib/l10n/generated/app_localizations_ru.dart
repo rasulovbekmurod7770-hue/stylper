@@ -609,6 +609,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileSave => 'Сохранить';
 
   @override
+  String get profilePhotoAdd => 'Добавить фото';
+
+  @override
+  String get profilePhotoChange => 'Изменить фото';
+
+  @override
+  String get profilePhotoLibrary => 'Выбрать из галереи';
+
+  @override
+  String get profilePhotoCamera => 'Сделать фото';
+
+  @override
+  String get profilePhotoRemove => 'Удалить фото';
+
+  @override
+  String get errorPhotoUnusable => 'Это фото не подходит. Выберите другое.';
+
+  @override
   String get settingsPrivacy => 'Конфиденциальность';
 
   @override

@@ -18,7 +18,8 @@ abstract interface class ProfileRemoteDataSource {
   /// GET /me/saved → `{posts}`
   Future<Map<String, Object?>> getSavedPosts();
 
-  /// PATCH /me/profile `{name, username, bio}` (Edit Profile)
+  /// PATCH /me/profile `{name, username, bio, avatarMediaId?}` (Edit
+  /// Profile); `avatarMediaId` only when the photo changes (null removes it)
   Future<void> updateProfile(Map<String, Object?> body);
 
   /// GET /me/settings → `{isPrivate, allowBrandFeatures, showLikeCounts,

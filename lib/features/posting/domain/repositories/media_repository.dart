@@ -22,6 +22,15 @@ abstract interface class MediaRepository {
   /// Opens the camera; the path of the photo taken, or null if cancelled.
   Future<String?> takePhoto();
 
+  /// Whether [takePhoto] can open a camera (not on the web, where it would
+  /// only open a file dialog).
+  bool get canTakePhoto;
+
+  /// The system's photo picker, for one photo (a profile photo): needs no
+  /// photo access, and works on the web too. The path of the photo (a
+  /// `blob:` URL on the web), or null if cancelled.
+  Future<String?> pickPhoto();
+
   /// With limited access: lets the user change which photos the app sees.
   Future<void> manageSelection();
 

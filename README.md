@@ -20,10 +20,16 @@ Its data resets on every launch.
 ### Against the local Supabase stack
 
 Sign-up, sign-in, profile setup, the style quiz and your own profile (its
-header, Edit Profile and Settings) can run on Supabase (the other screens
-still use the fake backend). Start the stack with
-`npx supabase start`, then copy `env/example.json` to a gitignored file for
-your device and run with it:
+header, Edit Profile with its photo, and Settings) can run on Supabase (the
+other screens still use the fake backend). Photos upload through the
+`create-upload` / `finalize-upload` Edge Functions to Cloudflare R2's dev
+bucket: copy `supabase/functions/.env.example` to `supabase/functions/.env`
+(gitignored) and fill in the R2 token and the bucket's public URL first.
+Start the stack with `npx supabase start` (on a tight machine,
+`npx supabase start -x studio,logflare,vector,realtime,imgproxy` leaves out
+what the app doesn't use), then copy `env/example.json` to a gitignored file
+for your device, set `IMG_PUBLIC_BASE` to the bucket's public URL, and run
+with it:
 
 ```bash
 cp env/example.json env/emulator.json   # Android emulator: http://10.0.2.2:54321
@@ -31,7 +37,11 @@ flutter run --dart-define-from-file=env/emulator.json
 ```
 
 A phone needs the laptop's LAN IP instead (same Wi-Fi); web and desktop use
-`http://127.0.0.1:54321`. The seed accounts (`developer@stylper.ai` etc.,
+`http://127.0.0.1:54321`. On the web, run on the port the dev bucket's CORS
+allows: `flutter run -d chrome --web-port 5000` and open
+`http://localhost:5000`. After a reboot the Edge Functions container stays
+stopped (`npx supabase start` doesn't revive it):
+`docker start supabase_edge_runtime_stylper`. The seed accounts (`developer@stylper.ai` etc.,
 password `stylper123`) work here too. With email confirmation on, sign-up
 shows "Check your email"; the email lands in Mailpit, http://127.0.0.1:54324.
 
@@ -64,6 +74,8 @@ lib/
     post/               outfit post screen, likes / saves, post grid
     product/            product page, "See all looks"
     profile/            profiles (own + others), follow, saved posts
+    uploads/            photo uploads: WebP 1080 + 400 on the device, then
+                        create-upload → PUT ×2 to R2 → finalize-upload
     wardrobe/           wardrobe categories and items, save to wardrobe,
                         add your own items (clothes no brand here sells)
   l10n/                 app_en.arb, app_ru.arb, app_uz.arb

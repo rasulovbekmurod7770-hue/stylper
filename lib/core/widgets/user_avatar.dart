@@ -4,7 +4,8 @@ import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import 'feed_photo.dart';
 
-/// A round profile photo, or the person's initials when they have none.
+/// A round profile photo, or the person's initials when they have none or
+/// it can't be loaded.
 class UserAvatar extends StatelessWidget {
   const UserAvatar({
     super.key,
@@ -28,26 +29,27 @@ class UserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final path = imagePath;
+    final initials = DecoratedBox(
+      decoration: const BoxDecoration(
+        shape: BoxShape.circle,
+        gradient: AppColors.brandGradient,
+      ),
+      child: Center(
+        child: Text(
+          UserAvatar.initials(name),
+          style: AppTypography.bodyStrong.copyWith(
+            fontSize: size * 0.36,
+            height: 1,
+            color: const Color(0xFFFFFFFF),
+          ),
+        ),
+      ),
+    );
     return SizedBox.square(
       dimension: size,
       child: path != null
-          ? FeedPhoto.circle(path: path)
-          : DecoratedBox(
-              decoration: const BoxDecoration(
-                shape: BoxShape.circle,
-                gradient: AppColors.brandGradient,
-              ),
-              child: Center(
-                child: Text(
-                  initials(name),
-                  style: AppTypography.bodyStrong.copyWith(
-                    fontSize: size * 0.36,
-                    height: 1,
-                    color: const Color(0xFFFFFFFF),
-                  ),
-                ),
-              ),
-            ),
+          ? FeedPhoto.circle(path: path, fallback: initials)
+          : initials,
     );
   }
 }

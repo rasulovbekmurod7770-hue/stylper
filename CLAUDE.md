@@ -95,10 +95,19 @@ it", local brands first, and trust (nothing that misleads).
   is Supabase (see **Backend** below), switched on at build time with
   `--dart-define-from-file=env/<target>.json` (`BACKEND=supabase`, see
   `env/example.json`; `env/*.json` are gitignored). Features move to it one
-  at a time in spec §10 order — **ported: auth, onboarding and your own
-  profile** (header, Edit Profile, Settings: `SupabaseAuthRepository`,
-  `SupabaseOnboardingRemoteDataSource`, `SupabaseProfileRemoteDataSource`,
-  which hands the unported profile calls to the fake one). The rest
+  at a time in spec §10 order — **ported: auth, onboarding, your own
+  profile** (header, Edit Profile with its photo, Settings:
+  `SupabaseAuthRepository`, `SupabaseOnboardingRemoteDataSource`,
+  `SupabaseProfileRemoteDataSource`, which hands the unported profile calls
+  to the fake one) **and photo uploads** (`features/uploads`:
+  `DevicePhotoEncoder` makes the two WebPs, the engine resizing to exactly
+  1080 / 400 and flutter_image_compress only encoding;
+  `SupabaseUploadRemoteDataSource` calls the Edge Functions and PUTs to R2;
+  tests swap the encoder via `configureDependencies(photoEncoder:)`,
+  `FakePhotoEncoder`). Edit Profile uploads a picked photo at once
+  (`MediaRepository.pickPhoto`, the system picker, web included) and attaches
+  it on Save. Uploaded photos are keys in `media`; the app builds URLs with
+  `mediaUrl` and `IMG_PUBLIC_BASE` (env file). The rest
   still call FakeBackend, where a Supabase user counts as a guest (the
   user's decision: no Fake↔Supabase bridge). Every remote call goes through
   a `*RemoteDataSource` interface (auth: the repository); a `Fake…` one
@@ -153,8 +162,22 @@ it", local brands first, and trust (nothing that misleads).
   migration): COS, UNIQLO, ZARA and ARKET with products, variants and a COS
   store, five people and eight tagged posts. Sign in as
   `developer@stylper.ai` (john), `katty.miller@`, `leo@`, `mina@` or
-  `fozil@stylper.ai`, password `stylper123`. Media keys are `seed/…`
-  placeholders until R2 exists.
+  `fozil@stylper.ai`, password `stylper123`. Seed media keys are `seed/…`
+  placeholders that aren't in R2 (avatars fall back to initials).
+- **Edge Functions** (`supabase/functions/`): `create-upload` and
+  `finalize-upload` (spec §6), shared code in `_shared/` (CORS + JSON errors
+  with the app's `ApiErrorCodes`, the service-role client, R2 via
+  aws4fetch). They check the caller themselves (`verify_jwt = false` in
+  `config.toml`). Locally they read `supabase/functions/.env` (gitignored;
+  template `.env.example`; R2 *dev* bucket, never production keys) and run
+  against the real `stylper-images-dev` bucket; the cloud gets its own values
+  with `npx supabase secrets set`. Supabase injects its URL and secret key.
+  After a reboot `supabase_edge_runtime_stylper` stays stopped:
+  `docker start supabase_edge_runtime_stylper`.
+- The cloud project (Frankfurt) is linked (`npx supabase link`); migrations
+  go up with `npx supabase db push` (`--dry-run` first). Never push
+  `seed.sql`, and never `supabase config push` (local auth settings would
+  overwrite production's).
 - **The SQL tests must pass after any schema change**, and new features add
   tests to `supabase/tests/01_rls_and_workflows.sql`. They run in one
   transaction that empties the database first and is rolled back at the end,

@@ -74,6 +74,7 @@ import 'package:stylper/features/profile/presentation/pages/profile_page.dart';
 import 'package:stylper/features/profile/presentation/widgets/profile_header.dart';
 import 'package:stylper/features/profile/presentation/widgets/profile_sections.dart';
 import 'package:stylper/features/profile/presentation/widgets/settings_sheet.dart';
+import 'package:stylper/features/uploads/domain/usecases/upload_photo.dart';
 import 'package:stylper/features/search/data/datasources/search_remote_data_source.dart';
 import 'package:stylper/features/search/data/repositories/search_repository_impl.dart';
 import 'package:stylper/features/search/domain/usecases/search_usecases.dart';
@@ -132,6 +133,8 @@ class _MockSetFollowing extends Mock implements SetFollowing {}
 
 class _MockGetSavedPosts extends Mock implements GetSavedPosts {}
 
+class _MockUploadPhoto extends Mock implements UploadPhoto {}
+
 class _MockUpdateProfile extends Mock implements UpdateProfile {}
 
 class _MockGetSettings extends Mock implements GetSettings {}
@@ -187,7 +190,12 @@ Widget _editProfile() {
   });
   return _inShell(
     BlocProvider(
-      create: (_) => EditProfileCubit(getProfile, _MockUpdateProfile())..load(),
+      create: (_) => EditProfileCubit(
+        getProfile,
+        _MockUpdateProfile(),
+        FakeMediaRepository(),
+        _MockUploadPhoto(),
+      )..load(),
       child: const EditProfilePage(),
     ),
     tab: MainTab.profile,

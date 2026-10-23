@@ -17,8 +17,8 @@ abstract interface class ProfileRepository {
   /// The signed-in user's saved posts, newest first.
   Future<Either<ProfileFailure, List<SavedPost>>> getSavedPosts();
 
-  /// Saves the signed-in user's name, username and bio. A username that is
-  /// someone else's, a brand's or reserved is
+  /// Saves the signed-in user's name, username, bio and, if it changed, their
+  /// photo. A username that is someone else's, a brand's or reserved is
   /// [ProfileFailureReason.usernameTaken].
   Future<Either<ProfileFailure, Unit>> updateProfile(ProfileEdit edit);
 

@@ -1,7 +1,11 @@
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/widgets.dart';
 import 'package:stylper/features/posting/domain/entities/media.dart';
 import 'package:stylper/features/posting/domain/repositories/media_repository.dart';
 import 'package:stylper/features/posting/presentation/gallery_thumbnails.dart';
+import 'package:stylper/features/uploads/data/photo_encoder.dart';
 
 /// A photo library of bundled images, standing in for the device's (the
 /// photos' handles are their asset paths).
@@ -10,6 +14,8 @@ class FakeMediaRepository implements MediaRepository {
     this.access = MediaAccess.full,
     this.library = defaultLibrary,
     this.cameraPhoto,
+    this.pickedPhoto,
+    this.canTakePhoto = true,
   });
 
   static const defaultLibrary = [
@@ -30,6 +36,12 @@ class FakeMediaRepository implements MediaRepository {
 
   /// What the camera returns; null means the user cancelled.
   String? cameraPhoto;
+
+  /// What the system photo picker returns; null means the user cancelled.
+  String? pickedPhoto;
+
+  @override
+  final bool canTakePhoto;
 
   var accessChecks = 0;
   var manageCalls = 0;
@@ -68,6 +80,9 @@ class FakeMediaRepository implements MediaRepository {
   Future<String?> takePhoto() async => cameraPhoto;
 
   @override
+  Future<String?> pickPhoto() async => pickedPhoto;
+
+  @override
   Future<void> manageSelection() async => manageCalls++;
 
   @override
@@ -85,4 +100,33 @@ class AssetGalleryThumbnails implements GalleryThumbnails {
   @override
   ImageProvider preview(GalleryPhoto photo) =>
       AssetImage(photo.handle as String);
+}
+
+/// Stands in for the device's image codecs: the test photos are WebP files
+/// already, so both "compressed" files are the photo itself.
+class FakePhotoEncoder implements PhotoEncoder {
+  FakePhotoEncoder({this.fails = false, this.gate});
+
+  /// Like a file that isn't an image.
+  bool fails;
+
+  /// When set, encoding waits for it, so a test can catch an upload midway.
+  Completer<void>? gate;
+
+  final encoded = <String>[];
+
+  @override
+  Future<PhotoForUpload> encode(String path) async {
+    await gate?.future;
+    if (fails) throw const PhotoEncodingException('not an image');
+    encoded.add(path);
+    final bytes = File(path).readAsBytesSync();
+    return PhotoForUpload(
+      full: bytes,
+      thumb: bytes,
+      width: 1080,
+      height: 1350,
+      blurhash: 'LEHV6nWB2yk8pyo0adR*.7kCMdnj',
+    );
+  }
 }

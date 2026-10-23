@@ -37,9 +37,12 @@ stylper-backend/
       0005_cron.sql                ← TODO: schedule nightly job
     seed.sql                       ← DONE: demo data for local dev only (loaded by `supabase db reset`; never a migration)
     functions/
-      create-upload/index.ts       ← TODO
-      finalize-upload/index.ts     ← TODO
-      _shared/r2.ts                ← TODO: S3 client + presigner for R2
+      create-upload/index.ts       ← DONE
+      finalize-upload/index.ts     ← DONE
+      _shared/r2.ts                ← DONE: R2 via aws4fetch (presigned PUTs, reads, deletes)
+      _shared/http.ts              ← DONE: CORS, JSON errors with the app's error codes
+      _shared/supabase.ts          ← DONE: service-role client, caller check
+      .env.example                 ← local secrets template (.env is gitignored)
     tests/
       00_supabase_stub.sql         ← plain-Postgres stand-in for Supabase auth (tests only)
       01_rls_and_workflows.sql     ← DONE: behaviour tests, must stay green
@@ -97,8 +100,10 @@ Goal: fast feeds, near-zero bandwidth cost, and the API server never handles ima
 
 **Edge Function `finalize-upload`** (POST `{ media_id }`):
 - Checks that the caller owns the row and it's still pending.
-- Sends a HEAD request for both objects in R2; checks they exist, the content type is `image/webp`, and the size is under the limit.
-- Sets `status = 'ready'`. Only ready media can be attached to posts, avatars or products; RLS enforces this.
+- Reads the first 12 bytes of both objects in R2 (a ranged GET: what a HEAD gives, plus the `RIFF····WEBP` signature); checks they exist, the content type is `image/webp`, and the size is under the limit. A missing file answers `upload_incomplete` (the row stays pending); a wrong one deletes both files and sets `status = 'rejected'` (`upload_rejected`).
+- Sets `status = 'ready'` (and `bytes` to the stored size), returning `{ media_id, full_url, thumb_url, width, height, blurhash }`. Finalizing a ready row again returns the same, so retries are safe. Only ready media can be attached to posts, avatars or products; RLS enforces this.
+
+Both functions check the caller's token themselves (`verify_jwt = false`), answer CORS preflights, and give R2 10 seconds per request. The rate limit counts uploads still pending from the last hour.
 
 **Serving:** `https://img.stylper.app/{key}`. Feeds and grids use `thumb_key`; the post detail view uses `full_key`. Use a Cloudflare cache rule with a 1-year TTL; keys never change because every upload gets a new UUID.
 
@@ -167,7 +172,7 @@ It rolls up yesterday's events (Tashkent calendar day), deletes events older tha
 ## 10. Build order (each step should be shippable)
 
 1. `supabase init`, link the project, apply 0001, enable Google + Apple auth. **Done when:** tests pass locally (see §11) and a Flutter user can sign up and see their profile row.
-2. R2 bucket + custom domain + `create-upload` / `finalize-upload`. **Done when:** an avatar upload works end to end and loads from `img.stylper.app`.
+2. R2 bucket + custom domain + `create-upload` / `finalize-upload`. **Done when:** an avatar upload works end to end and loads from `img.stylper.app`. *(2026-10-23: works end to end locally against the dev bucket's r2.dev URL, from Chrome; the custom domain and the cloud deployment come later.)*
 3. Posting flow + post detail + tags. **Done when:** a post with 2 tagged items appears on another account's feed with working tag dots, and a layered outfit (jacket over a t-shirt, tagged separately) shows both tags readable and tappable.
 4. Feed, likes, saves, comments, follows, notifications (Realtime). **Done when:** counters and notifications update live on a second device.
 5. Product pages, search, wardrobe, boards.

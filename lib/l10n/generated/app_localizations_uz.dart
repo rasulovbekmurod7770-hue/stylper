@@ -610,6 +610,25 @@ class AppLocalizationsUz extends AppLocalizations {
   String get profileSave => 'Saqlash';
 
   @override
+  String get profilePhotoAdd => 'Rasm qoʻshish';
+
+  @override
+  String get profilePhotoChange => 'Rasmni almashtirish';
+
+  @override
+  String get profilePhotoLibrary => 'Galereyadan tanlash';
+
+  @override
+  String get profilePhotoCamera => 'Suratga olish';
+
+  @override
+  String get profilePhotoRemove => 'Rasmni oʻchirish';
+
+  @override
+  String get errorPhotoUnusable =>
+      'Bu rasmdan foydalanib boʻlmaydi. Boshqasini tanlang.';
+
+  @override
   String get settingsPrivacy => 'Maxfiylik';
 
   @override

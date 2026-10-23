@@ -9,6 +9,7 @@ import 'package:stylper/app/session/session_cubit.dart';
 import 'package:stylper/app/shell/app_tab_bar.dart';
 import 'package:stylper/core/constants/app_assets.dart';
 import 'package:stylper/core/fake_backend/fake_backend.dart';
+import 'package:stylper/core/widgets/user_avatar.dart';
 import 'package:stylper/core/widgets/app_switch.dart';
 import 'package:stylper/features/auth/presentation/pages/check_email_page.dart';
 import 'package:stylper/features/auth/presentation/pages/sign_in_page.dart';
@@ -49,8 +50,9 @@ void main() {
     await sl.reset();
     configureDependencies(
       backend: FakeBackend(latency: Duration.zero),
-      media: FakeMediaRepository(library: [_newPhoto]),
+      media: FakeMediaRepository(library: [_newPhoto], pickedPhoto: _newPhoto),
       thumbnails: const AssetGalleryThumbnails(),
+      photoEncoder: FakePhotoEncoder(),
     );
     session = sl<SessionCubit>();
   });
@@ -185,6 +187,24 @@ void main() {
     expect(find.text('Layers, always.'), findsOneWidget);
   });
 
+  testWidgets('Edit Profile: a photo from the library becomes the profile '
+      'photo once saved', (tester) async {
+    bool showsUpload(WidgetTester tester) => tester
+        .widgetList<UserAvatar>(find.byType(UserAvatar))
+        .any((avatar) => avatar.imagePath?.startsWith('data:') ?? false);
+
+    await signInAsDemo(tester);
+    await openTab(tester, 'Profile');
+    await tapText(tester, 'Edit Profile');
+    await tapText(tester, 'Add photo');
+    await tapText(tester, 'Choose from library');
+    expect(find.text('Change photo'), findsOneWidget);
+
+    await tapText(tester, 'Save');
+    expect(find.byType(EditProfilePage), findsNothing);
+    expect(showsUpload(tester), isTrue, reason: 'the header shows it');
+  });
+
   testWidgets('Settings: a toggle stays as set when the sheet reopens', (
     tester,
   ) async {
@@ -229,6 +249,7 @@ void main() {
       backend: backend,
       media: FakeMediaRepository(library: [_newPhoto]),
       thumbnails: const AssetGalleryThumbnails(),
+      photoEncoder: FakePhotoEncoder(),
     );
     session = sl<SessionCubit>();
     await launch(tester);

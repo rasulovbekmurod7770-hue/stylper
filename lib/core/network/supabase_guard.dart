@@ -11,7 +11,8 @@ import '../error/exceptions.dart';
 ///
 /// [codes] maps Postgres / PostgREST error codes to API codes for this call,
 /// e.g. `{'23505': ApiErrorCodes.usernameTaken}` where a unique violation means
-/// the username is taken.
+/// the username is taken. Edge Functions answer with the API codes already
+/// (`{error: code, message}`).
 Future<T> guardSupabase<T>(
   Future<T> Function() call, {
   Map<String, String> codes = const {},
@@ -22,6 +23,19 @@ Future<T> guardSupabase<T>(
     throw ServerException(
       statusCode: 400,
       code: codes[e.code] ?? _postgrestCodes[e.code] ?? e.code ?? 'unknown',
+    );
+  } on FunctionsFetchException {
+    throw const NetworkException();
+  } on FunctionException catch (e) {
+    final error = switch (e.details) {
+      {'error': final String code} => code,
+      _ => null,
+    };
+    throw ServerException(
+      statusCode: e.status,
+      code:
+          error ??
+          (e.status == 401 ? ApiErrorCodes.unauthorized : 'function_error'),
     );
   } on AuthRetryableFetchException {
     throw const NetworkException();

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '../domain/money.dart';
 import '../error/exceptions.dart';
 import 'fake_content.dart';
@@ -68,6 +70,9 @@ class FakeBackend {
   /// Items users added to their wardrobes themselves (not catalog products),
   /// by id; only their owner has the id in their wardrobe.
   final _ownItems = <String, Map<String, Object?>>{};
+
+  final _media = <String, Map<String, Object?>>{}; // mediaId → upload
+  final _storedFiles = <String, Uint8List>{}; // storage key → file
 
   /// Every post, newest first: the seeded ones plus those published here.
   var _posts = <String, Map<String, Object?>>{};
@@ -238,9 +243,11 @@ class FakeBackend {
     return Map.of(user);
   }
 
-  /// PATCH /me/profile (Edit Profile). Body: `{name, username, bio}`; `name`
-  /// up to 60 characters and `bio` up to 160, either empty to clear it. The
-  /// username follows the rules of profile setup.
+  /// PATCH /me/profile (Edit Profile). Body: `{name, username, bio,
+  /// avatarMediaId?}`; `name` up to 60 characters and `bio` up to 160, either
+  /// empty to clear it. The username follows the rules of profile setup.
+  /// `avatarMediaId`, when present, is the new photo: a finished upload of
+  /// yours (else 401, as RLS), or null to remove it.
   Future<void> editProfile(String token, Map<String, Object?> body) async {
     await _delay();
     final userId = _userIdFor(token);
@@ -252,8 +259,23 @@ class FakeBackend {
         code: ApiErrorCodes.validation,
       );
     }
+    final changesAvatar = body.containsKey('avatarMediaId');
+    final avatarId = body['avatarMediaId'] as String?;
+    final avatar = avatarId == null ? null : _media[avatarId];
+    if (avatarId != null &&
+        (avatar?['owner'] != userId || avatar?['status'] != 'ready')) {
+      throw const ServerException(
+        statusCode: 401,
+        code: ApiErrorCodes.unauthorized,
+      );
+    }
     _claimUsername(userId, body['username'] as String?);
     final profile = _profiles[userId] ??= {};
+    if (changesAvatar) {
+      profile['avatar'] = avatar == null
+          ? null
+          : _dataUri(_storedFiles[avatar['thumbKey']]!);
+    }
     // Without a name, the profile shows the username.
     if (name.isEmpty) {
       profile.remove('name');
@@ -306,6 +328,125 @@ class FakeBackend {
         if (body[key] case final bool value) key: value,
     };
   }
+
+  // Uploads: the Edge Functions of STYLPER_BACKEND_SPEC.md §6, and the
+  // storage (Cloudflare R2) they hand out URLs for.
+
+  static const _storageUrl = 'https://storage.fake.stylper.test/';
+  static const _maxUploadBytes = 2 * 1024 * 1024;
+
+  /// POST /functions/v1/create-upload (signed-in users). Body: `{kind,
+  /// brand_id?, width, height, bytes, blurhash}`; `kind` is `post`, `avatar`,
+  /// `wardrobe`, `product` or `brand`, and `bytes` (the full file's size) at
+  /// most 2 MB, else 413 `file_too_large` → `{media_id, full_put_url,
+  /// thumb_put_url, expires_in}`: PUT the two WebP files there
+  /// ([putObject]), then [finalizeUpload]. Product and brand photos need a
+  /// brand team, which the fake doesn't have: 403 `forbidden`.
+  Future<Map<String, Object?>> createUpload(
+    String? token,
+    Map<String, Object?> body,
+  ) async {
+    await _delay();
+    final userId = _userIdFor(token ?? '');
+    final kind = body['kind'];
+    final bytes = body['bytes'];
+    if (!const {
+          'post',
+          'avatar',
+          'wardrobe',
+          'product',
+          'brand',
+        }.contains(kind) ||
+        bytes is! int ||
+        bytes <= 0) {
+      throw const ServerException(
+        statusCode: 400,
+        code: ApiErrorCodes.validation,
+      );
+    }
+    if (kind == 'product' || kind == 'brand') {
+      throw const ServerException(
+        statusCode: 403,
+        code: ApiErrorCodes.forbidden,
+      );
+    }
+    if (bytes > _maxUploadBytes) {
+      throw const ServerException(
+        statusCode: 413,
+        code: ApiErrorCodes.fileTooLarge,
+      );
+    }
+    final id = 'media_${_nextId++}';
+    final key = '$kind/$userId/$id';
+    _media[id] = {
+      'owner': userId,
+      'fullKey': '${key}_1080.webp',
+      'thumbKey': '${key}_400.webp',
+      'width': body['width'],
+      'height': body['height'],
+      'blurhash': body['blurhash'],
+      'status': 'pending',
+    };
+    return {
+      'media_id': id,
+      'full_put_url': '$_storageUrl${key}_1080.webp',
+      'thumb_put_url': '$_storageUrl${key}_400.webp',
+      'expires_in': 600,
+    };
+  }
+
+  /// PUT to a URL from [createUpload] (presigned, no token): stores the file.
+  Future<void> putObject(String url, Uint8List bytes) async {
+    await _delay();
+    if (!url.startsWith(_storageUrl)) {
+      throw const ServerException(
+        statusCode: 403,
+        code: ApiErrorCodes.uploadIncomplete,
+      );
+    }
+    _storedFiles[url.substring(_storageUrl.length)] = bytes;
+  }
+
+  /// POST /functions/v1/finalize-upload (the uploader). Body: `{media_id}` →
+  /// `{media_id, full_url, thumb_url, width, height, blurhash}`, and the photo
+  /// can be attached. 404 if it isn't your upload, 409 `upload_incomplete`
+  /// until both files are stored. The URLs are `data:` URIs here, as the fake
+  /// serves no files.
+  Future<Map<String, Object?>> finalizeUpload(
+    String? token,
+    Map<String, Object?> body,
+  ) async {
+    await _delay();
+    final userId = _userIdFor(token ?? '');
+    final id = body['media_id'];
+    final media = _media[id];
+    if (media == null || media['owner'] != userId) {
+      throw const ServerException(
+        statusCode: 404,
+        code: ApiErrorCodes.notFound,
+      );
+    }
+    final full = _storedFiles[media['fullKey']];
+    final thumb = _storedFiles[media['thumbKey']];
+    if (full == null || thumb == null) {
+      throw const ServerException(
+        statusCode: 409,
+        code: ApiErrorCodes.uploadIncomplete,
+      );
+    }
+    media['status'] = 'ready';
+    return {
+      'media_id': id,
+      'full_url': _dataUri(full),
+      'thumb_url': _dataUri(thumb),
+      'width': media['width'],
+      'height': media['height'],
+      'blurhash': media['blurhash'],
+    };
+  }
+
+  static String _dataUri(Uint8List file) =>
+      Uri.dataFromBytes(file, mimeType: 'image/webp').toString();
 
   /// POST /me/onboarding/complete → user.
   /// Body: `{likedOutfit: {topId, bottomId}, styleDna}`; `styleDna` (style

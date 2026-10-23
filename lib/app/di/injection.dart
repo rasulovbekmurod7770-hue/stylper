@@ -49,6 +49,13 @@ import '../../features/search/data/repositories/search_repository_impl.dart';
 import '../../features/search/domain/repositories/search_repository.dart';
 import '../../features/search/domain/usecases/search_usecases.dart';
 import '../../features/search/presentation/cubits/search_cubit.dart';
+import '../../features/uploads/data/datasources/supabase_upload_remote_data_source.dart';
+import '../../features/uploads/data/datasources/upload_remote_data_source.dart';
+import '../../features/uploads/data/device_photo_encoder.dart';
+import '../../features/uploads/data/photo_encoder.dart';
+import '../../features/uploads/data/repositories/upload_repository_impl.dart';
+import '../../features/uploads/domain/repositories/upload_repository.dart';
+import '../../features/uploads/domain/usecases/upload_photo.dart';
 import '../../features/wardrobe/data/datasources/wardrobe_remote_data_source.dart';
 import '../../features/wardrobe/data/repositories/wardrobe_repository_impl.dart';
 import '../../features/wardrobe/domain/repositories/wardrobe_repository.dart';
@@ -81,12 +88,13 @@ final sl = GetIt.instance;
 /// (`BACKEND=supabase`, see `main.dart`); without it everything runs on the
 /// fake backend. [backend] lets tests inject a [FakeBackend] without simulated
 /// latency; [media] and [thumbnails] replace the device's photo library and
-/// camera.
+/// camera, and [photoEncoder] the image codecs that prepare uploads.
 void configureDependencies({
   SupabaseClient? supabase,
   FakeBackend? backend,
   MediaRepository? media,
   GalleryThumbnails? thumbnails,
+  PhotoEncoder? photoEncoder,
 }) {
   // Infrastructure
   sl
@@ -97,6 +105,10 @@ void configureDependencies({
     )
     ..registerLazySingleton<GalleryThumbnails>(
       () => thumbnails ?? const DeviceGalleryThumbnails(),
+    )
+    // WebP compression and blurhash for uploads (flutter_image_compress).
+    ..registerLazySingleton<PhotoEncoder>(
+      () => photoEncoder ?? const DevicePhotoEncoder(),
     );
 
   // ── Backend ──────────────────────────────────────────────────────────────
@@ -105,9 +117,10 @@ void configureDependencies({
   // Supabase one at a time, in the order of STYLPER_BACKEND_SPEC.md §10;
   // nothing outside this block needs to change.
   //
-  // Ported: auth, onboarding and your own profile (header, Edit Profile,
-  // Settings). The rest still call FakeBackend, which doesn't know Supabase
-  // users, so there they act as guests.
+  // Ported: auth, onboarding, your own profile (header, Edit Profile with its
+  // photo, Settings) and photo uploads (Edge Functions + Cloudflare R2). The
+  // rest still call FakeBackend, which doesn't know Supabase users, so there
+  // they act as guests.
   sl.registerLazySingleton(() => backend ?? FakeBackend());
   if (supabase != null) {
     sl
@@ -123,6 +136,9 @@ void configureDependencies({
           sl(),
           FakeProfileRemoteDataSource(sl(), sl()),
         ),
+      )
+      ..registerLazySingleton<UploadRemoteDataSource>(
+        () => SupabaseUploadRemoteDataSource(sl()),
       );
   } else {
     sl
@@ -137,6 +153,9 @@ void configureDependencies({
       )
       ..registerLazySingleton<ProfileRemoteDataSource>(
         () => FakeProfileRemoteDataSource(sl(), sl()),
+      )
+      ..registerLazySingleton<UploadRemoteDataSource>(
+        () => FakeUploadRemoteDataSource(sl(), sl()),
       );
   }
   sl
@@ -187,6 +206,9 @@ void configureDependencies({
     ..registerLazySingleton<SearchRepository>(
       () => SearchRepositoryImpl(remote: sl()),
     )
+    ..registerLazySingleton<UploadRepository>(
+      () => UploadRepositoryImpl(encoder: sl(), remote: sl()),
+    )
     // Use cases
     ..registerFactory(() => RestoreSession(sl()))
     ..registerFactory(() => WatchCurrentUser(sl()))
@@ -219,6 +241,7 @@ void configureDependencies({
     ..registerFactory(() => PublishPost(sl()))
     ..registerFactory(() => GetSearchDiscovery(sl()))
     ..registerFactory(() => SearchBrandsAndPeople(sl()))
+    ..registerFactory(() => UploadPhoto(sl()))
     // Presentation
     ..registerLazySingleton(
       () => SessionCubit(
@@ -248,7 +271,7 @@ void configureDependencies({
     // App-wide, so a post's Follow and the author's profile agree.
     ..registerLazySingleton(() => FollowingCubit(sl()))
     ..registerFactory(() => SavedPostsCubit(sl()))
-    ..registerFactory(() => EditProfileCubit(sl(), sl()))
+    ..registerFactory(() => EditProfileCubit(sl(), sl(), sl(), sl()))
     ..registerFactory(() => SettingsCubit(sl(), sl()))
     // App-wide, so every "save to wardrobe" control agrees.
     ..registerLazySingleton(() => WardrobeMembershipCubit(sl()))

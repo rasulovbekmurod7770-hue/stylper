@@ -1192,6 +1192,42 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get profileSave;
 
+  /// No description provided for @profilePhotoAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Add photo'**
+  String get profilePhotoAdd;
+
+  /// No description provided for @profilePhotoChange.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get profilePhotoChange;
+
+  /// No description provided for @profilePhotoLibrary.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from library'**
+  String get profilePhotoLibrary;
+
+  /// No description provided for @profilePhotoCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get profilePhotoCamera;
+
+  /// No description provided for @profilePhotoRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get profilePhotoRemove;
+
+  /// No description provided for @errorPhotoUnusable.
+  ///
+  /// In en, this message translates to:
+  /// **'This photo can\'t be used. Try another one.'**
+  String get errorPhotoUnusable;
+
   /// No description provided for @settingsPrivacy.
   ///
   /// In en, this message translates to:

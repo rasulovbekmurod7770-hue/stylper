@@ -54,6 +54,7 @@ class ProfileEdit extends Equatable {
     required this.name,
     required this.username,
     required this.bio,
+    this.avatar,
   });
 
   final String name;
@@ -62,8 +63,22 @@ class ProfileEdit extends Equatable {
   final String username;
   final String bio;
 
+  /// A new profile photo; null keeps the current one.
+  final AvatarChange? avatar;
+
   @override
-  List<Object?> get props => [name, username, bio];
+  List<Object?> get props => [name, username, bio, avatar];
+}
+
+/// Edit Profile's new photo: an uploaded photo's [mediaId], or null to
+/// remove the photo.
+class AvatarChange extends Equatable {
+  const AvatarChange(this.mediaId);
+
+  final String? mediaId;
+
+  @override
+  List<Object?> get props => [mediaId];
 }
 
 abstract final class ProfileLimits {

@@ -18,6 +18,11 @@ abstract final class BackendConfig {
     'SUPABASE_PUBLISHABLE_KEY',
   );
 
+  /// Where uploaded photos are public (Cloudflare R2): the dev bucket's
+  /// `https://pub-….r2.dev` locally, `https://img.stylper.app` in production.
+  /// Without it, uploaded photos can't be shown.
+  static const imgPublicBase = String.fromEnvironment('IMG_PUBLIC_BASE');
+
   static BackendKind get kind {
     final kind = BackendKind.values.asNameMap()[_kind];
     if (kind == null) {

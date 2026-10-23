@@ -1,6 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/error/exceptions.dart';
+import '../../../../core/network/media_url.dart';
 import '../../../../core/network/supabase_guard.dart';
 import '../../domain/repositories/profile_repository.dart';
 import 'profile_remote_data_source.dart';
@@ -14,8 +15,8 @@ class SupabaseProfileRemoteDataSource implements ProfileRemoteDataSource {
   final SupabaseClient _client;
   final ProfileRemoteDataSource _notPorted;
 
-  /// Your own profile as `GET /users/me` returns it. No posts until posting
-  /// is ported (spec §10 step 3), no photo until uploads exist (step 2).
+  /// Your own profile as `GET /users/me` returns it, its photo as the 400 px
+  /// thumbnail. No posts until posting is ported (spec §10 step 3).
   @override
   Future<Map<String, Object?>> getProfile(String userId) {
     if (userId != ProfileRepository.me) return _notPorted.getProfile(userId);
@@ -25,7 +26,9 @@ class SupabaseProfileRemoteDataSource implements ProfileRemoteDataSource {
           .from('profiles')
           .select(
             'username, display_name, bio, style_dna, posts_count, '
-            'followers_count, following_count',
+            'followers_count, following_count, '
+            // Two foreign keys join profiles and media; name the photo's.
+            'avatar:media!profiles_avatar_fk(thumb_key)',
           )
           .eq('id', id)
           .single();
@@ -38,7 +41,9 @@ class SupabaseProfileRemoteDataSource implements ProfileRemoteDataSource {
             _client.auth.currentUser?.email?.split('@').first ??
             '',
         'handle': username,
-        'avatar': null,
+        'avatar': mediaUrl(
+          (row['avatar'] as Map<String, Object?>?)?['thumb_key'] as String?,
+        ),
         'bio': row['bio'] ?? '',
         'styles': row['style_dna'],
         'posts': row['posts_count'],
@@ -60,13 +65,16 @@ class SupabaseProfileRemoteDataSource implements ProfileRemoteDataSource {
   Future<Map<String, Object?>> getSavedPosts() => _notPorted.getSavedPosts();
 
   /// A username that is someone else's, a brand's or reserved is a unique
-  /// violation (migration 0002); an empty name or bio clears it.
+  /// violation (migration 0002); an empty name or bio clears it. A photo must
+  /// be a finished upload of yours (RLS), else [ApiErrorCodes.unauthorized].
   @override
   Future<void> updateProfile(Map<String, Object?> body) => guardSupabase(
     () => updateOwnRow(_client, 'profiles', 'id', {
       'display_name': _nullIfEmpty(body['name']),
       'username': body['username'],
       'bio': _nullIfEmpty(body['bio']),
+      if (body.containsKey('avatarMediaId'))
+        'avatar_media_id': body['avatarMediaId'],
     }),
     codes: const {'23505': ApiErrorCodes.usernameTaken},
   );

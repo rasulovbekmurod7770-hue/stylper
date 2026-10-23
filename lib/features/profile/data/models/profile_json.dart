@@ -53,5 +53,6 @@ abstract final class ProfileJson {
     'name': edit.name.trim(),
     'username': edit.username,
     'bio': edit.bio.trim(),
+    if (edit.avatar case final avatar?) 'avatarMediaId': avatar.mediaId,
   };
 }

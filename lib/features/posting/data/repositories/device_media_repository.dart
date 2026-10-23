@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_manager/photo_manager.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -85,6 +86,18 @@ class DeviceMediaRepository implements MediaRepository {
   @override
   Future<String?> takePhoto() async => (await _picker.pickImage(
     source: ImageSource.camera,
+    maxWidth: _maxPhotoSide,
+    maxHeight: _maxPhotoSide,
+    imageQuality: 88,
+    requestFullMetadata: false,
+  ))?.path;
+
+  @override
+  bool get canTakePhoto => !kIsWeb;
+
+  @override
+  Future<String?> pickPhoto() async => (await _picker.pickImage(
+    source: ImageSource.gallery,
     maxWidth: _maxPhotoSide,
     maxHeight: _maxPhotoSide,
     imageQuality: 88,

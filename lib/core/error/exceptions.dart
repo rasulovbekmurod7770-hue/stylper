@@ -30,4 +30,11 @@ abstract final class ApiErrorCodes {
   static const providerUnavailable = 'provider_unavailable';
   static const validation = 'validation_failed';
   static const notFound = 'not_found';
+  static const forbidden = 'forbidden';
+
+  /// Uploads (create-upload / finalize-upload): over 2 MB; a file not in
+  /// storage yet; files that aren't WebP or are too large (deleted).
+  static const fileTooLarge = 'file_too_large';
+  static const uploadIncomplete = 'upload_incomplete';
+  static const uploadRejected = 'upload_rejected';
 }

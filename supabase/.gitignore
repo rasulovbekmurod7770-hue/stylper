@@ -6,3 +6,6 @@
 .env.keys
 .env.local
 .env.*.local
+
+# Edge Function secrets for the local stack (template: functions/.env.example)
+functions/.env
